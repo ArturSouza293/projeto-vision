@@ -1,0 +1,392 @@
+{
+  "app": {
+    "name": "Projeto Vision",
+    "tagline": "Planejamento financeiro, de ponta a ponta"
+  },
+  "common": {
+    "back": "Voltar",
+    "next": "Avançar",
+    "continue": "Continuar",
+    "save": "Salvar",
+    "saved": "Salvo",
+    "saving": "Salvando…",
+    "add": "Adicionar",
+    "remove": "Remover",
+    "edit": "Editar",
+    "cancel": "Cancelar",
+    "done": "Concluir",
+    "close": "Fechar",
+    "monthly": "Mensal",
+    "annual": "Anual",
+    "perMonth": "/mês",
+    "perYear": "/ano",
+    "total": "Total",
+    "loading": "Carregando…",
+    "optional": "opcional",
+    "none": "Nenhum",
+    "yes": "Sim",
+    "no": "Não",
+    "year": "Ano",
+    "years": "anos",
+    "age": "Idade",
+    "name": "Nome",
+    "label": "Descrição",
+    "amount": "Valor",
+    "stepOf": "Etapa {current} de {total}"
+  },
+  "topbar": {
+    "language": "Idioma",
+    "english": "English",
+    "portuguese": "Português (BR)",
+    "openCopilot": "Abrir assistente",
+    "closeCopilot": "Fechar assistente",
+    "backToClients": "Clientes",
+    "save": "Salvar",
+    "savedAt": "Salvo às {time}"
+  },
+  "splash": {
+    "loading": "Preparando seu espaço de trabalho…"
+  },
+  "segment": {
+    "retail": "Varejo",
+    "prime": "Prime",
+    "principal": "Principal",
+    "private": "Private"
+  },
+  "approval": {
+    "draft": "Rascunho",
+    "in_review": "Em análise",
+    "approved": "Aprovado"
+  },
+  "steps": {
+    "profile": "Perfil do cliente",
+    "cashflow": "Fluxo de caixa",
+    "networth": "Patrimônio",
+    "suitability": "Risco & suitability",
+    "goals": "Objetivos de vida",
+    "scenarios": "Simulação de cenários",
+    "review": "Revisão & aprovação"
+  },
+  "stepsShort": {
+    "profile": "Perfil",
+    "cashflow": "Fluxo",
+    "networth": "Patrimônio",
+    "suitability": "Suitability",
+    "goals": "Objetivos",
+    "scenarios": "Cenários",
+    "review": "Revisão"
+  },
+  "entry": {
+    "title": "Escolha um cliente",
+    "subtitle": "Abra um cliente para continuar o plano financeiro — ou comece um novo.",
+    "newClient": "Novo cliente",
+    "newClientDesc": "Começar um plano do zero",
+    "completeness": "{pct}% completo",
+    "openPlan": "Abrir plano",
+    "ageYears": "{age} anos",
+    "empty": "Nenhum cliente ainda",
+    "planForKnown": "Um plano para o que importa"
+  },
+  "persona": {
+    "camilaDiego": { "tagline": "Casal de alta renda no auge da poupança, avaliando o primeiro apartamento" },
+    "fernanda": { "tagline": "Mãe de alta renda garantindo o cuidado vitalício de um filho" },
+    "joseCarlos": { "tagline": "Pré-aposentado transformando o portfólio em renda" },
+    "patricia": { "tagline": "Empreendedora alocando os recursos após a venda" }
+  },
+  "flags": {
+    "soleProvider": "Única provedora — proteção é prioridade",
+    "multipleDependents": "Vários dependentes a proteger",
+    "shortHorizon": "Horizonte curto até a aposentadoria",
+    "profileHorizonMismatch": "Perfil arrojado vs. horizonte curto"
+  },
+  "profile": {
+    "title": "Confirme o perfil do cliente",
+    "subtitle": "Cadastre ou confirme os dados pessoais, familiares e fiscais.",
+    "section": {
+      "personal": "Pessoal",
+      "household": "Família",
+      "employment": "Trabalho & renda",
+      "contact": "Contato",
+      "tax": "Fiscal & compliance"
+    },
+    "field": {
+      "firstName": "Nome",
+      "lastName": "Sobrenome",
+      "dateOfBirth": "Data de nascimento",
+      "gender": "Gênero",
+      "maritalStatus": "Estado civil",
+      "dependents": "Dependentes",
+      "hasPartner": "Tem cônjuge / parceiro(a)",
+      "partnerName": "Nome do(a) parceiro(a)",
+      "employmentStatus": "Vínculo",
+      "occupation": "Profissão",
+      "email": "E-mail",
+      "phone": "Telefone",
+      "city": "Cidade",
+      "state": "Estado (UF)",
+      "taxResidency": "Residência fiscal",
+      "cpf": "CPF",
+      "pep": "Pessoa politicamente exposta",
+      "segment": "Segmento"
+    }
+  },
+  "gender": {
+    "female": "Feminino",
+    "male": "Masculino",
+    "other": "Outro",
+    "undisclosed": "Prefiro não informar"
+  },
+  "marital": {
+    "single": "Solteiro(a)",
+    "married": "Casado(a)",
+    "stable_union": "União estável",
+    "divorced": "Divorciado(a)",
+    "widowed": "Viúvo(a)"
+  },
+  "employment": {
+    "clt": "Empregado (CLT)",
+    "pj": "Empresa (PJ)",
+    "self_employed": "Autônomo",
+    "civil_servant": "Servidor público",
+    "retired": "Aposentado",
+    "business_owner": "Empresário"
+  },
+  "cashflow": {
+    "title": "Mapeie o fluxo de caixa mensal",
+    "subtitle": "Renda e despesas recorrentes. Sobra e taxa de poupança atualizam ao vivo.",
+    "income": "Renda",
+    "expenses": "Despesas",
+    "addIncome": "Adicionar renda",
+    "addExpense": "Adicionar despesa",
+    "surplus": "Sobra mensal",
+    "deficit": "Déficit mensal",
+    "savingsRate": "Taxa de poupança",
+    "totalIncome": "Renda total",
+    "totalExpense": "Despesas totais",
+    "chartTitle": "Renda vs. despesas",
+    "deficitWarning": "As despesas superam a renda — o déficit estrutural que alimenta a dívida."
+  },
+  "incomeKind": {
+    "salary": "Salário",
+    "pro_labore": "Pró-labore",
+    "rent": "Aluguel",
+    "investments": "Investimentos",
+    "pension": "Previdência",
+    "other": "Outro"
+  },
+  "expenseCategory": {
+    "housing": "Moradia",
+    "living": "Custo de vida",
+    "education": "Educação",
+    "health": "Saúde",
+    "debt": "Serviço da dívida",
+    "lifestyle": "Estilo de vida",
+    "other": "Outro"
+  },
+  "networth": {
+    "title": "Monte o balanço patrimonial",
+    "subtitle": "Ativos e passivos. Patrimônio e liquidez atualizam ao vivo.",
+    "assets": "Ativos",
+    "liabilities": "Passivos",
+    "addAsset": "Adicionar ativo",
+    "addLiability": "Adicionar passivo",
+    "totalAssets": "Total de ativos",
+    "totalLiabilities": "Total de passivos",
+    "netWorth": "Patrimônio líquido",
+    "liquidAssets": "Ativos líquidos",
+    "liquid": "Líquido",
+    "compositionTitle": "Composição dos ativos",
+    "rate": "Taxa (% a.a.)"
+  },
+  "assetClass": {
+    "cash": "Caixa & reserva",
+    "investments": "Investimentos",
+    "pension": "Previdência",
+    "real_estate": "Imóveis",
+    "business": "Empresa",
+    "other": "Outro"
+  },
+  "liabilityKind": {
+    "mortgage": "Financiamento imobiliário",
+    "auto": "Financiamento de veículo",
+    "personal": "Empréstimo pessoal",
+    "card": "Cartão de crédito",
+    "consigned": "Consignado",
+    "other": "Outro"
+  },
+  "suitability": {
+    "title": "Perfil de risco & suitability",
+    "subtitle": "Um questionário curto calcula o perfil de risco do cliente.",
+    "compute": "Calcular perfil",
+    "recompute": "Recalcular",
+    "result": "Perfil de risco",
+    "score": "Pontuação",
+    "flagsTitle": "Alertas de suitability",
+    "noFlags": "Nenhum alerta.",
+    "answerAll": "Responda às perguntas para calcular o perfil.",
+    "q": {
+      "horizon": {
+        "prompt": "Quando você espera precisar da maior parte desse dinheiro?",
+        "o0": "Em até 2 anos",
+        "o1": "2–5 anos",
+        "o2": "5–10 anos",
+        "o3": "Mais de 10 anos"
+      },
+      "reaction": {
+        "prompt": "Se sua carteira caísse 20% em um mês, você…",
+        "o0": "Venderia tudo",
+        "o1": "Venderia parte",
+        "o2": "Manteria e esperaria",
+        "o3": "Compraria mais"
+      },
+      "experience": {
+        "prompt": "Sua experiência com investimentos é…",
+        "o0": "Nenhuma ainda",
+        "o1": "Poupança / CDB",
+        "o2": "Fundos & ações",
+        "o3": "Ampla, incl. internacional & alternativos"
+      },
+      "stability": {
+        "prompt": "Quão estável é sua renda?",
+        "o0": "Muito instável",
+        "o1": "Variável",
+        "o2": "Estável",
+        "o3": "Muito estável, com reservas"
+      },
+      "objective": {
+        "prompt": "Sua prioridade para esse dinheiro é…",
+        "o0": "Preservar o capital",
+        "o1": "Gerar renda",
+        "o2": "Crescimento equilibrado",
+        "o3": "Maximizar o crescimento"
+      }
+    }
+  },
+  "riskProfile": {
+    "conservative": "Conservador",
+    "moderate": "Moderado",
+    "aggressive": "Arrojado"
+  },
+  "goals": {
+    "title": "Defina os objetivos de vida",
+    "subtitle": "Para que serve o dinheiro — valor-alvo, horizonte e prioridade.",
+    "addGoal": "Adicionar objetivo",
+    "targetAmount": "Valor-alvo",
+    "targetYear": "Ano-alvo",
+    "priority": "Prioridade",
+    "currentAmount": "Já guardado",
+    "monthlyContribution": "Aporte mensal",
+    "funded": "{pct}% financiado",
+    "horizon": "Horizonte de {years} anos",
+    "empty": "Nenhum objetivo ainda. Adicione um para começar."
+  },
+  "goalType": {
+    "retirement": "Aposentadoria",
+    "education": "Educação",
+    "property": "Imóvel",
+    "travel": "Viagem",
+    "emergency_reserve": "Reserva de emergência",
+    "legacy": "Sucessão",
+    "protection": "Proteção",
+    "custom": "Objetivo personalizado"
+  },
+  "priority": {
+    "high": "Alta",
+    "medium": "Média",
+    "low": "Baixa"
+  },
+  "scenarios": {
+    "title": "Simule o plano",
+    "subtitle": "Ajuste as premissas e veja o plano responder. Antes da alocação de ativos.",
+    "newScenario": "Novo cenário",
+    "duplicate": "Duplicar",
+    "compare": "Comparar cenários",
+    "assumptions": "Parâmetros de planejamento",
+    "run": "Rodar simulação",
+    "running": "Rodando…",
+    "monthlyContribution": "Aporte mensal",
+    "retirementAge": "Idade de aposentadoria",
+    "expectedReturn": "Retorno real esperado",
+    "inflation": "Inflação",
+    "growthScenario": "Cenário de crescimento",
+    "kpi": {
+      "wealthAtRetirement": "Patrimônio na aposentadoria",
+      "retirementDuration": "Renda dura",
+      "probability": "Probabilidade de sucesso",
+      "estate": "Patrimônio no horizonte",
+      "incomeGap": "Lacuna de renda mensal",
+      "surplus": "Sobra / mês"
+    },
+    "chart": {
+      "wealthOverTime": "Patrimônio ao longo do tempo",
+      "incomeVsNeeds": "Renda vs. necessidades",
+      "goalFunding": "Financiamento dos objetivos",
+      "wealth": "Patrimônio",
+      "income": "Renda",
+      "needs": "Necessidades",
+      "contributions": "Aportes"
+    },
+    "growth": {
+      "base": "Base",
+      "cautious": "Cauteloso",
+      "conservative": "Conservador",
+      "stressed": "Estressado",
+      "custom": "Personalizado"
+    },
+    "lastsToHorizon": "Cobre todo o horizonte",
+    "depletesAt": "Esgota aos {age} anos",
+    "empty": "Nenhum cenário ainda.",
+    "createFirst": "Crie o primeiro cenário para simular o plano."
+  },
+  "review": {
+    "title": "Revisar & aprovar",
+    "subtitle": "O resumo do plano antes da alocação de ativos. Aprove para concluir a jornada.",
+    "approve": "Aprovar cenário",
+    "approved": "Cenário aprovado",
+    "approvedAt": "Este plano está aprovado — o ponto de transição antes da alocação de ativos.",
+    "reopen": "Reabrir plano",
+    "summary": "Resumo do plano",
+    "selectedScenario": "Cenário selecionado",
+    "noScenario": "Selecione um cenário na etapa anterior para revisá-lo.",
+    "assumptions": "Premissas",
+    "outcomes": "Resultados projetados",
+    "nextSteps": "Próximos passos (antes da alocação)",
+    "client": "Cliente",
+    "downloadHint": "Este é um protótipo funcional — a aprovação conclui o plano no app.",
+    "next": {
+      "s1": "Automatizar o aporte mensal no dia do pagamento",
+      "s2": "Dimensionar a proteção (seguro de vida e saúde)",
+      "s3": "Confirmar a meta de reserva de emergência",
+      "s4": "Avançar para a alocação de ativos (próxima fase)"
+    }
+  },
+  "copilot": {
+    "title": "Copiloto do consultor",
+    "subtitle": "O consultor do consultor",
+    "placeholder": "Pergunte sobre mercado, um conceito, ou peça um evento para o cliente…",
+    "send": "Enviar",
+    "thinking": "Pensando…",
+    "empty": "Faça uma pergunta de mercado, ou peça para eu redigir um evento.",
+    "noKey": "Defina ANTHROPIC_API_KEY em .env.local para habilitar respostas ao vivo.",
+    "suggestEvent": "Evento sugerido",
+    "acceptEvent": "Adicionar ao plano",
+    "eventAdded": "Evento adicionado ao plano",
+    "suggestions": {
+      "s1": "Explique IPCA+ vs. prefixado de forma simples",
+      "s2": "Por que a Selic está em ~13% agora?",
+      "s3": "Redija uma reunião de revisão de carteira no próximo mês"
+    },
+    "clear": "Limpar"
+  },
+  "eventType": {
+    "review": "Revisão",
+    "rebalancing": "Rebalanceamento",
+    "contribution": "Aporte",
+    "meeting": "Reunião",
+    "other": "Outro"
+  },
+  "events": {
+    "title": "Eventos",
+    "empty": "Nenhum evento ainda."
+  }
+}

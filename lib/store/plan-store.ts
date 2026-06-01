@@ -1,0 +1,472 @@
+"use client";
+
+/**
+ * Project Vision — global plan store (Zustand + persist).
+ *
+ * Single source of truth for the advisor journey: the active plan, locale and
+ * journey UI state, plus every domain action. Persisted to localStorage so the
+ * whole plan survives a full reload. Async actions delegate to the swappable
+ * service stubs in `/lib/api`.
+ */
+
+import { create } from "zustand";
+import { createJSONStorage, persist } from "zustand/middleware";
+
+import { fsc } from "@/lib/api/fsc";
+import { planningEngine } from "@/lib/api/planning-engine";
+import { ageFromDob } from "@/lib/calc";
+import { blankPlan, buildProjectionRequest, defaultAssumptions } from "@/lib/plan";
+import type {
+  AdvisorEvent,
+  Asset,
+  ExpenseItem,
+  Goal,
+  IncomeItem,
+  Liability,
+  Locale,
+  Plan,
+  Scenario,
+  ScenarioAssumptions,
+  ClientProfile,
+  JourneyStepId,
+} from "@/lib/types";
+
+function uid(prefix = "id"): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
+  }
+  return `${prefix}-${Math.floor(Math.random() * 1e9).toString(36)}`;
+}
+
+export interface VisionStore {
+  _hasHydrated: boolean;
+  setHasHydrated: (v: boolean) => void;
+
+  locale: Locale;
+  setLocale: (l: Locale) => void;
+
+  activePlan: Plan | null;
+  currentStepId: JourneyStepId;
+  setCurrentStep: (id: JourneyStepId) => void;
+
+  copilotOpen: boolean;
+  setCopilotOpen: (v: boolean) => void;
+  toggleCopilot: () => void;
+
+  loadingPlan: boolean;
+  busy: boolean;
+  lastSavedAt: string | null;
+
+  // Plan lifecycle
+  loadClient: (clientId: string) => Promise<void>;
+  startNewClient: () => void;
+  closePlan: () => void;
+  savePlan: () => Promise<void>;
+
+  // Step 1 — profile
+  updateClientProfile: (patch: Partial<ClientProfile>) => void;
+
+  // Step 2 — cash flow
+  addIncome: () => void;
+  updateIncome: (id: string, patch: Partial<IncomeItem>) => void;
+  removeIncome: (id: string) => void;
+  addExpense: () => void;
+  updateExpense: (id: string, patch: Partial<ExpenseItem>) => void;
+  removeExpense: (id: string) => void;
+
+  // Step 3 — net worth
+  addAsset: () => void;
+  updateAsset: (id: string, patch: Partial<Asset>) => void;
+  removeAsset: (id: string) => void;
+  addLiability: () => void;
+  updateLiability: (id: string, patch: Partial<Liability>) => void;
+  removeLiability: (id: string) => void;
+
+  // Step 4 — suitability
+  setSuitabilityAnswer: (questionId: string, value: number) => void;
+  runSuitability: () => Promise<void>;
+
+  // Step 5 — goals
+  addGoal: (goal?: Partial<Goal>) => void;
+  updateGoal: (id: string, patch: Partial<Goal>) => void;
+  removeGoal: (id: string) => void;
+
+  // Step 6 — scenarios
+  addScenario: (name?: string) => string;
+  updateScenarioAssumptions: (id: string, patch: Partial<ScenarioAssumptions>) => void;
+  runScenario: (id: string) => Promise<void>;
+  selectScenario: (id: string) => void;
+  removeScenario: (id: string) => void;
+
+  // Step 7 — approval
+  approvePlan: () => void;
+  reopenPlan: () => void;
+
+  // Copilot events
+  addEvent: (event: Omit<AdvisorEvent, "id">) => void;
+  removeEvent: (id: string) => void;
+}
+
+/** Apply an immutable update to the active plan, if one is loaded. */
+function patchPlan(
+  set: (fn: (s: VisionStore) => Partial<VisionStore>) => void,
+  updater: (plan: Plan) => Plan,
+) {
+  set((s) => (s.activePlan ? { activePlan: updater(s.activePlan) } : {}));
+}
+
+export const useVisionStore = create<VisionStore>()(
+  persist(
+    (set, get) => ({
+      _hasHydrated: false,
+      setHasHydrated: (v) => set({ _hasHydrated: v }),
+
+      locale: "en",
+      setLocale: (l) => set({ locale: l }),
+
+      activePlan: null,
+      currentStepId: "profile",
+      setCurrentStep: (id) => set({ currentStepId: id }),
+
+      copilotOpen: false,
+      setCopilotOpen: (v) => set({ copilotOpen: v }),
+      toggleCopilot: () => set((s) => ({ copilotOpen: !s.copilotOpen })),
+
+      loadingPlan: false,
+      busy: false,
+      lastSavedAt: null,
+
+      async loadClient(clientId) {
+        set({ loadingPlan: true });
+        try {
+          const plan = await fsc.getPlan(clientId);
+          set({ activePlan: plan, currentStepId: "profile", loadingPlan: false });
+        } catch (e) {
+          set({ loadingPlan: false });
+          throw e;
+        }
+      },
+
+      startNewClient() {
+        set({
+          activePlan: blankPlan(uid("client")),
+          currentStepId: "profile",
+        });
+      },
+
+      closePlan() {
+        set({ activePlan: null, currentStepId: "profile", copilotOpen: false });
+      },
+
+      async savePlan() {
+        const plan = get().activePlan;
+        if (!plan) return;
+        set({ busy: true });
+        try {
+          const res = await fsc.savePlan(plan);
+          set({ lastSavedAt: res.savedAt });
+        } finally {
+          set({ busy: false });
+        }
+      },
+
+      updateClientProfile(patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          clientProfile: { ...p.clientProfile, ...patch },
+        }));
+      },
+
+      addIncome() {
+        patchPlan(set, (p) => ({
+          ...p,
+          cashFlow: {
+            ...p.cashFlow,
+            incomes: [
+              ...p.cashFlow.incomes,
+              { id: uid("inc"), label: "", monthly: 0, kind: "salary" },
+            ],
+          },
+        }));
+      },
+      updateIncome(id, patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          cashFlow: {
+            ...p.cashFlow,
+            incomes: p.cashFlow.incomes.map((i) =>
+              i.id === id ? { ...i, ...patch } : i,
+            ),
+          },
+        }));
+      },
+      removeIncome(id) {
+        patchPlan(set, (p) => ({
+          ...p,
+          cashFlow: {
+            ...p.cashFlow,
+            incomes: p.cashFlow.incomes.filter((i) => i.id !== id),
+          },
+        }));
+      },
+      addExpense() {
+        patchPlan(set, (p) => ({
+          ...p,
+          cashFlow: {
+            ...p.cashFlow,
+            expenses: [
+              ...p.cashFlow.expenses,
+              { id: uid("exp"), label: "", monthly: 0, category: "living" },
+            ],
+          },
+        }));
+      },
+      updateExpense(id, patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          cashFlow: {
+            ...p.cashFlow,
+            expenses: p.cashFlow.expenses.map((e) =>
+              e.id === id ? { ...e, ...patch } : e,
+            ),
+          },
+        }));
+      },
+      removeExpense(id) {
+        patchPlan(set, (p) => ({
+          ...p,
+          cashFlow: {
+            ...p.cashFlow,
+            expenses: p.cashFlow.expenses.filter((e) => e.id !== id),
+          },
+        }));
+      },
+
+      addAsset() {
+        patchPlan(set, (p) => ({
+          ...p,
+          netWorth: {
+            ...p.netWorth,
+            assets: [
+              ...p.netWorth.assets,
+              { id: uid("ast"), label: "", value: 0, assetClass: "investments", liquid: true },
+            ],
+          },
+        }));
+      },
+      updateAsset(id, patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          netWorth: {
+            ...p.netWorth,
+            assets: p.netWorth.assets.map((a) =>
+              a.id === id ? { ...a, ...patch } : a,
+            ),
+          },
+        }));
+      },
+      removeAsset(id) {
+        patchPlan(set, (p) => ({
+          ...p,
+          netWorth: {
+            ...p.netWorth,
+            assets: p.netWorth.assets.filter((a) => a.id !== id),
+          },
+        }));
+      },
+      addLiability() {
+        patchPlan(set, (p) => ({
+          ...p,
+          netWorth: {
+            ...p.netWorth,
+            liabilities: [
+              ...p.netWorth.liabilities,
+              { id: uid("lia"), label: "", balance: 0, kind: "personal" },
+            ],
+          },
+        }));
+      },
+      updateLiability(id, patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          netWorth: {
+            ...p.netWorth,
+            liabilities: p.netWorth.liabilities.map((l) =>
+              l.id === id ? { ...l, ...patch } : l,
+            ),
+          },
+        }));
+      },
+      removeLiability(id) {
+        patchPlan(set, (p) => ({
+          ...p,
+          netWorth: {
+            ...p.netWorth,
+            liabilities: p.netWorth.liabilities.filter((l) => l.id !== id),
+          },
+        }));
+      },
+
+      setSuitabilityAnswer(questionId, value) {
+        patchPlan(set, (p) => ({
+          ...p,
+          suitability: {
+            ...p.suitability,
+            answers: { ...p.suitability.answers, [questionId]: value },
+          },
+        }));
+      },
+      async runSuitability() {
+        const plan = get().activePlan;
+        if (!plan) return;
+        set({ busy: true });
+        try {
+          const age = ageFromDob(plan.clientProfile.dateOfBirth);
+          const retirementAge =
+            plan.scenarios.find((s) => s.id === plan.selectedScenarioId)?.assumptions
+              .retirementAge ?? 65;
+          const res = await planningEngine.computeSuitability({
+            answers: plan.suitability.answers,
+            context: {
+              dependents: plan.clientProfile.dependents,
+              soleProvider:
+                !plan.clientProfile.hasPartner && plan.clientProfile.dependents > 0,
+              yearsToRetirement: retirementAge - age,
+            },
+          });
+          patchPlan(set, (p) => ({
+            ...p,
+            suitability: {
+              ...p.suitability,
+              score: res.score,
+              profile: res.profile,
+              flags: res.flags,
+            },
+          }));
+        } finally {
+          set({ busy: false });
+        }
+      },
+
+      addGoal(goal) {
+        patchPlan(set, (p) => ({
+          ...p,
+          goals: [
+            ...p.goals,
+            {
+              id: uid("goal"),
+              type: "custom",
+              targetAmount: 100000,
+              targetYear: new Date().getFullYear() + 10,
+              priority: "medium",
+              currentAmount: 0,
+              ...goal,
+            },
+          ],
+        }));
+      },
+      updateGoal(id, patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          goals: p.goals.map((g) => (g.id === id ? { ...g, ...patch } : g)),
+        }));
+      },
+      removeGoal(id) {
+        patchPlan(set, (p) => ({
+          ...p,
+          goals: p.goals.filter((g) => g.id !== id),
+        }));
+      },
+
+      addScenario(name) {
+        const plan = get().activePlan;
+        if (!plan) return "";
+        const id = uid("scn");
+        const scenario: Scenario = {
+          id,
+          name: name ?? `Cenário ${plan.scenarios.length + 1}`,
+          assumptions: defaultAssumptions(plan),
+          createdAt: new Date().toISOString(),
+        };
+        patchPlan(set, (p) => ({
+          ...p,
+          scenarios: [...p.scenarios, scenario],
+          selectedScenarioId: id,
+        }));
+        return id;
+      },
+      updateScenarioAssumptions(id, patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          scenarios: p.scenarios.map((s) =>
+            s.id === id
+              ? { ...s, assumptions: { ...s.assumptions, ...patch }, result: undefined }
+              : s,
+          ),
+        }));
+      },
+      async runScenario(id) {
+        const plan = get().activePlan;
+        if (!plan) return;
+        const scenario = plan.scenarios.find((s) => s.id === id);
+        if (!scenario) return;
+        set({ busy: true });
+        try {
+          const result = await planningEngine.runProjection(
+            buildProjectionRequest(plan, scenario.assumptions),
+          );
+          patchPlan(set, (p) => ({
+            ...p,
+            scenarios: p.scenarios.map((s) => (s.id === id ? { ...s, result } : s)),
+          }));
+        } finally {
+          set({ busy: false });
+        }
+      },
+      selectScenario(id) {
+        patchPlan(set, (p) => ({ ...p, selectedScenarioId: id }));
+      },
+      removeScenario(id) {
+        patchPlan(set, (p) => {
+          const scenarios = p.scenarios.filter((s) => s.id !== id);
+          return {
+            ...p,
+            scenarios,
+            selectedScenarioId:
+              p.selectedScenarioId === id ? scenarios[0]?.id : p.selectedScenarioId,
+          };
+        });
+      },
+
+      approvePlan() {
+        patchPlan(set, (p) => ({ ...p, approvalStatus: "approved" }));
+      },
+      reopenPlan() {
+        patchPlan(set, (p) => ({ ...p, approvalStatus: "draft" }));
+      },
+
+      addEvent(event) {
+        patchPlan(set, (p) => ({
+          ...p,
+          events: [...p.events, { ...event, id: uid("evt") }],
+        }));
+      },
+      removeEvent(id) {
+        patchPlan(set, (p) => ({
+          ...p,
+          events: p.events.filter((e) => e.id !== id),
+        }));
+      },
+    }),
+    {
+      name: "vision-store",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (s) => ({
+        locale: s.locale,
+        activePlan: s.activePlan,
+        currentStepId: s.currentStepId,
+      }),
+      onRehydrateStorage: () => (state) => state?.setHasHydrated(true),
+    },
+  ),
+);

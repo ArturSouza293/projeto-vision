@@ -1,0 +1,392 @@
+{
+  "app": {
+    "name": "Projeto Vision",
+    "tagline": "Financial planning, end to end"
+  },
+  "common": {
+    "back": "Back",
+    "next": "Next",
+    "continue": "Continue",
+    "save": "Save",
+    "saved": "Saved",
+    "saving": "Saving…",
+    "add": "Add",
+    "remove": "Remove",
+    "edit": "Edit",
+    "cancel": "Cancel",
+    "done": "Done",
+    "close": "Close",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "perMonth": "/mo",
+    "perYear": "/yr",
+    "total": "Total",
+    "loading": "Loading…",
+    "optional": "optional",
+    "none": "None",
+    "yes": "Yes",
+    "no": "No",
+    "year": "Year",
+    "years": "years",
+    "age": "Age",
+    "name": "Name",
+    "label": "Description",
+    "amount": "Amount",
+    "stepOf": "Step {current} of {total}"
+  },
+  "topbar": {
+    "language": "Language",
+    "english": "English",
+    "portuguese": "Português (BR)",
+    "openCopilot": "Open assistant",
+    "closeCopilot": "Close assistant",
+    "backToClients": "Clients",
+    "save": "Save",
+    "savedAt": "Saved at {time}"
+  },
+  "splash": {
+    "loading": "Preparing your workspace…"
+  },
+  "segment": {
+    "retail": "Retail",
+    "prime": "Prime",
+    "principal": "Principal",
+    "private": "Private"
+  },
+  "approval": {
+    "draft": "Draft",
+    "in_review": "In review",
+    "approved": "Approved"
+  },
+  "steps": {
+    "profile": "Client profile",
+    "cashflow": "Cash flow",
+    "networth": "Net worth",
+    "suitability": "Risk & suitability",
+    "goals": "Life goals",
+    "scenarios": "Scenario simulation",
+    "review": "Review & approval"
+  },
+  "stepsShort": {
+    "profile": "Profile",
+    "cashflow": "Cash flow",
+    "networth": "Net worth",
+    "suitability": "Suitability",
+    "goals": "Goals",
+    "scenarios": "Scenarios",
+    "review": "Review"
+  },
+  "entry": {
+    "title": "Choose a client",
+    "subtitle": "Open a client to continue their financial plan — or start a new one.",
+    "newClient": "New client",
+    "newClientDesc": "Start a plan from scratch",
+    "completeness": "{pct}% complete",
+    "openPlan": "Open plan",
+    "ageYears": "{age} yrs",
+    "empty": "No clients yet",
+    "planForKnown": "A plan for what they care about"
+  },
+  "persona": {
+    "camilaDiego": { "tagline": "Dual-income couple at peak savings, weighing their first apartment" },
+    "fernanda": { "tagline": "High-income mother securing a child's lifelong care" },
+    "joseCarlos": { "tagline": "Pre-retiree turning a portfolio into income" },
+    "patricia": { "tagline": "Entrepreneur deploying a post-sale windfall" }
+  },
+  "flags": {
+    "soleProvider": "Sole provider — protection is a priority",
+    "multipleDependents": "Multiple dependents to protect",
+    "shortHorizon": "Short horizon to retirement",
+    "profileHorizonMismatch": "Aggressive profile vs. a short horizon"
+  },
+  "profile": {
+    "title": "Confirm the client's profile",
+    "subtitle": "Register or confirm the personal, household and tax details on file.",
+    "section": {
+      "personal": "Personal",
+      "household": "Household",
+      "employment": "Employment & income",
+      "contact": "Contact",
+      "tax": "Tax & compliance"
+    },
+    "field": {
+      "firstName": "First name",
+      "lastName": "Last name",
+      "dateOfBirth": "Date of birth",
+      "gender": "Gender",
+      "maritalStatus": "Marital status",
+      "dependents": "Dependents",
+      "hasPartner": "Has partner / spouse",
+      "partnerName": "Partner's name",
+      "employmentStatus": "Employment",
+      "occupation": "Occupation",
+      "email": "Email",
+      "phone": "Phone",
+      "city": "City",
+      "state": "State (UF)",
+      "taxResidency": "Tax residency",
+      "cpf": "CPF",
+      "pep": "Politically exposed person",
+      "segment": "Segment"
+    }
+  },
+  "gender": {
+    "female": "Female",
+    "male": "Male",
+    "other": "Other",
+    "undisclosed": "Prefer not to say"
+  },
+  "marital": {
+    "single": "Single",
+    "married": "Married",
+    "stable_union": "Stable union",
+    "divorced": "Divorced",
+    "widowed": "Widowed"
+  },
+  "employment": {
+    "clt": "Employee (CLT)",
+    "pj": "Company (PJ)",
+    "self_employed": "Self-employed",
+    "civil_servant": "Civil servant",
+    "retired": "Retired",
+    "business_owner": "Business owner"
+  },
+  "cashflow": {
+    "title": "Map the monthly cash flow",
+    "subtitle": "Income and recurring expenses. Surplus and savings rate update live.",
+    "income": "Income",
+    "expenses": "Expenses",
+    "addIncome": "Add income",
+    "addExpense": "Add expense",
+    "surplus": "Monthly surplus",
+    "deficit": "Monthly deficit",
+    "savingsRate": "Savings rate",
+    "totalIncome": "Total income",
+    "totalExpense": "Total expenses",
+    "chartTitle": "Income vs. expenses",
+    "deficitWarning": "Spending exceeds income — the structural deficit that drives debt."
+  },
+  "incomeKind": {
+    "salary": "Salary",
+    "pro_labore": "Pró-labore",
+    "rent": "Rent",
+    "investments": "Investments",
+    "pension": "Pension",
+    "other": "Other"
+  },
+  "expenseCategory": {
+    "housing": "Housing",
+    "living": "Living",
+    "education": "Education",
+    "health": "Health",
+    "debt": "Debt service",
+    "lifestyle": "Lifestyle",
+    "other": "Other"
+  },
+  "networth": {
+    "title": "Build the balance sheet",
+    "subtitle": "Assets and liabilities. Net worth and liquidity update live.",
+    "assets": "Assets",
+    "liabilities": "Liabilities",
+    "addAsset": "Add asset",
+    "addLiability": "Add liability",
+    "totalAssets": "Total assets",
+    "totalLiabilities": "Total liabilities",
+    "netWorth": "Net worth",
+    "liquidAssets": "Liquid assets",
+    "liquid": "Liquid",
+    "compositionTitle": "Asset composition",
+    "rate": "Rate (% p.a.)"
+  },
+  "assetClass": {
+    "cash": "Cash & reserve",
+    "investments": "Investments",
+    "pension": "Pension",
+    "real_estate": "Real estate",
+    "business": "Business",
+    "other": "Other"
+  },
+  "liabilityKind": {
+    "mortgage": "Mortgage",
+    "auto": "Auto loan",
+    "personal": "Personal loan",
+    "card": "Credit card",
+    "consigned": "Consigned loan",
+    "other": "Other"
+  },
+  "suitability": {
+    "title": "Risk profile & suitability",
+    "subtitle": "A short questionnaire computes the client's risk profile.",
+    "compute": "Compute profile",
+    "recompute": "Recompute",
+    "result": "Risk profile",
+    "score": "Score",
+    "flagsTitle": "Suitability flags",
+    "noFlags": "No flags surfaced.",
+    "answerAll": "Answer the questions to compute a profile.",
+    "q": {
+      "horizon": {
+        "prompt": "When do you expect to need most of this money?",
+        "o0": "Within 2 years",
+        "o1": "2–5 years",
+        "o2": "5–10 years",
+        "o3": "10+ years"
+      },
+      "reaction": {
+        "prompt": "If your portfolio fell 20% in a month, you would…",
+        "o0": "Sell everything",
+        "o1": "Sell part",
+        "o2": "Hold and wait",
+        "o3": "Buy more"
+      },
+      "experience": {
+        "prompt": "Your investing experience is…",
+        "o0": "None yet",
+        "o1": "Poupança / CDB",
+        "o2": "Funds & stocks",
+        "o3": "Broad, incl. international & alternatives"
+      },
+      "stability": {
+        "prompt": "How stable is your income?",
+        "o0": "Very unstable",
+        "o1": "Variable",
+        "o2": "Stable",
+        "o3": "Very stable, with reserves"
+      },
+      "objective": {
+        "prompt": "Your priority for this money is…",
+        "o0": "Preserve capital",
+        "o1": "Generate income",
+        "o2": "Balanced growth",
+        "o3": "Maximize growth"
+      }
+    }
+  },
+  "riskProfile": {
+    "conservative": "Conservative",
+    "moderate": "Moderate",
+    "aggressive": "Aggressive"
+  },
+  "goals": {
+    "title": "Define the life goals",
+    "subtitle": "What the money is for — target amount, horizon and priority.",
+    "addGoal": "Add goal",
+    "targetAmount": "Target amount",
+    "targetYear": "Target year",
+    "priority": "Priority",
+    "currentAmount": "Already saved",
+    "monthlyContribution": "Monthly contribution",
+    "funded": "{pct}% funded",
+    "horizon": "{years}-year horizon",
+    "empty": "No goals yet. Add one to start."
+  },
+  "goalType": {
+    "retirement": "Retirement",
+    "education": "Education",
+    "property": "Property",
+    "travel": "Travel",
+    "emergency_reserve": "Emergency reserve",
+    "legacy": "Legacy",
+    "protection": "Protection",
+    "custom": "Custom goal"
+  },
+  "priority": {
+    "high": "High",
+    "medium": "Medium",
+    "low": "Low"
+  },
+  "scenarios": {
+    "title": "Simulate the plan",
+    "subtitle": "Adjust the assumptions and watch the plan respond. Pre-asset-allocation.",
+    "newScenario": "New scenario",
+    "duplicate": "Duplicate",
+    "compare": "Compare scenarios",
+    "assumptions": "Planning parameters",
+    "run": "Run simulation",
+    "running": "Running…",
+    "monthlyContribution": "Monthly contribution",
+    "retirementAge": "Retirement age",
+    "expectedReturn": "Expected real return",
+    "inflation": "Inflation",
+    "growthScenario": "Growth scenario",
+    "kpi": {
+      "wealthAtRetirement": "Wealth at retirement",
+      "retirementDuration": "Income lasts",
+      "probability": "Probability of success",
+      "estate": "Estate at horizon",
+      "incomeGap": "Monthly income gap",
+      "surplus": "Surplus / month"
+    },
+    "chart": {
+      "wealthOverTime": "Wealth over time",
+      "incomeVsNeeds": "Net income vs. needs",
+      "goalFunding": "Goal funding",
+      "wealth": "Wealth",
+      "income": "Income",
+      "needs": "Needs",
+      "contributions": "Contributions"
+    },
+    "growth": {
+      "base": "Base",
+      "cautious": "Cautious",
+      "conservative": "Conservative",
+      "stressed": "Stressed",
+      "custom": "Custom"
+    },
+    "lastsToHorizon": "Funds the full horizon",
+    "depletesAt": "Depletes at age {age}",
+    "empty": "No scenarios yet.",
+    "createFirst": "Create the first scenario to simulate the plan."
+  },
+  "review": {
+    "title": "Review & approve",
+    "subtitle": "The plan summary before asset allocation. Approve to complete the journey.",
+    "approve": "Approve scenario",
+    "approved": "Scenario approved",
+    "approvedAt": "This plan is approved — the hand-off point before asset allocation.",
+    "reopen": "Reopen plan",
+    "summary": "Plan summary",
+    "selectedScenario": "Selected scenario",
+    "noScenario": "Select a scenario in the previous step to review it.",
+    "assumptions": "Assumptions",
+    "outcomes": "Projected outcomes",
+    "nextSteps": "Next steps (pre-allocation)",
+    "client": "Client",
+    "downloadHint": "This is a functional prototype — approval marks the plan complete in-app.",
+    "next": {
+      "s1": "Automate the monthly contribution on payday",
+      "s2": "Right-size protection (life & health cover)",
+      "s3": "Confirm the emergency-reserve target",
+      "s4": "Proceed to asset allocation (the next phase)"
+    }
+  },
+  "copilot": {
+    "title": "Advisor copilot",
+    "subtitle": "The advisor of the advisor",
+    "placeholder": "Ask about markets, a concept, or draft a client event…",
+    "send": "Send",
+    "thinking": "Thinking…",
+    "empty": "Ask a market question, or ask me to draft a client event.",
+    "noKey": "Set ANTHROPIC_API_KEY in .env.local to enable live responses.",
+    "suggestEvent": "Suggested event",
+    "acceptEvent": "Add to plan",
+    "eventAdded": "Event added to the plan",
+    "suggestions": {
+      "s1": "Explain IPCA+ vs. prefixado in simple terms",
+      "s2": "Why is the Selic at ~13% right now?",
+      "s3": "Draft a portfolio-review meeting next month"
+    },
+    "clear": "Clear"
+  },
+  "eventType": {
+    "review": "Review",
+    "rebalancing": "Rebalancing",
+    "contribution": "Contribution",
+    "meeting": "Meeting",
+    "other": "Other"
+  },
+  "events": {
+    "title": "Events",
+    "empty": "No events yet."
+  }
+}
