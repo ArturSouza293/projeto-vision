@@ -15,7 +15,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { salesforce } from "@/lib/api/salesforce";
 import { planningEngine } from "@/lib/api/planning-engine";
 import { ageFromDob } from "@/lib/calc";
-import { blankPlan, buildProjectionRequest, defaultAssumptions } from "@/lib/plan";
+import { blankPlan, buildProjectionRequest, defaultAssumptions, defaultGoals } from "@/lib/plan";
 import type {
   AdvisorEvent,
   Asset,
@@ -111,6 +111,7 @@ export interface VisionStore {
   addGoal: (goal?: Partial<Goal>) => void;
   updateGoal: (id: string, patch: Partial<Goal>) => void;
   removeGoal: (id: string) => void;
+  seedDefaultGoals: () => void;
 
   // Step 6 — scenarios
   addScenario: (name?: string) => string;
@@ -463,6 +464,12 @@ export const useVisionStore = create<VisionStore>()(
           ...p,
           goals: p.goals.filter((g) => g.id !== id),
         }));
+      },
+      seedDefaultGoals() {
+        const plan = get().activePlan;
+        if (!plan || plan.goals.length > 0) return;
+        const goals = defaultGoals(plan);
+        patchPlan(set, (p) => ({ ...p, goals }));
       },
 
       addScenario(name) {

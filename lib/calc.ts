@@ -51,7 +51,10 @@ export interface CashFlowTotals {
 }
 
 export function cashFlowTotals(cf: CashFlow): CashFlowTotals {
-  const income = cf.incomes.reduce((s, i) => s + i.monthly, 0);
+  // One-time events (recurring === false) don't count toward monthly income.
+  const income = cf.incomes
+    .filter((i) => i.recurring !== false)
+    .reduce((s, i) => s + i.monthly, 0);
   const expense = cf.expenses.reduce((s, e) => s + e.monthly, 0);
   const surplus = income - expense;
   const savingsRate = income > 0 ? surplus / income : 0;
@@ -70,6 +73,49 @@ export function monthlyContinuingIncome(cf: CashFlow): number {
   return cf.incomes
     .filter((i) => i.kind === "pension" || i.kind === "rent")
     .reduce((s, i) => s + i.monthly, 0);
+}
+
+/** Recurring (non-event) monthly income. */
+export function recurringMonthlyIncome(cf: CashFlow): number {
+  return cf.incomes.filter((i) => i.recurring !== false).reduce((s, i) => s + i.monthly, 0);
+}
+
+/** Sum of essential (primary) monthly expenses — the emergency-reserve base. */
+export function essentialMonthlyExpenses(cf: CashFlow): number {
+  return cf.expenses.filter((e) => e.primary !== false).reduce((s, e) => s + e.monthly, 0);
+}
+
+/** Estimated monthly INSS benefit (capped at the ~2024 ceiling). Heuristic for the prototype. */
+export function estimatedInssBenefit(cf: CashFlow): number {
+  const INSS_CEILING = 7786;
+  return Math.min(Math.round(recurringMonthlyIncome(cf) * 0.6), INSS_CEILING);
+}
+
+/** Target monthly income in retirement, from the client's retirementIncome config (default 70%). */
+export function retirementMonthlyNeed(cf: CashFlow): number {
+  const ri = cf.retirementIncome ?? { mode: "percent" as const, value: 70, inss: true };
+  if (ri.mode === "nominal") return Math.max(0, ri.value);
+  return Math.max(0, (ri.value / 100) * recurringMonthlyIncome(cf));
+}
+
+/** Monthly income continuing into retirement: pension + rent, plus INSS when opted in. */
+export function continuingMonthlyIncome(cf: CashFlow): number {
+  const inss = cf.retirementIncome?.inss ? estimatedInssBenefit(cf) : 0;
+  return monthlyContinuingIncome(cf) + inss;
+}
+
+/** Emergency-reserve target = months × essential monthly expenses. */
+export function emergencyReserveTarget(cf: CashFlow, months: 6 | 12 = 6): number {
+  return months * essentialMonthlyExpenses(cf);
+}
+
+/**
+ * Succession liquidity target = max(0, 20% of gross assets − previdência − seguros).
+ * Previdência = pension asset class; insurance cover has no field yet, treated as 0.
+ */
+export function successionTarget(nw: NetWorth): number {
+  const t = netWorthTotals(nw);
+  return Math.max(0, Math.round(0.2 * t.totalAssets - t.byClass.pension));
 }
 
 /* ------------------------------------------------------------------ */
@@ -178,7 +224,7 @@ function fvOfContributions(monthly: number, years: number, r: number): number {
 }
 
 /** Present-value annuity factor for `n` years at real rate `r`. */
-function annuityFactor(n: number, r: number): number {
+export function annuityFactor(n: number, r: number): number {
   if (n <= 0) return 0;
   if (Math.abs(r) < 1e-9) return n;
   return (1 - Math.pow(1 + r, -n)) / r;

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useTranslations } from "next-intl";
 import {
   ChevronDown,
@@ -19,6 +20,7 @@ import {
 import { Money } from "@/components/app/money";
 import { MoneyInput } from "@/components/app/number-field";
 import { StepHeader } from "@/components/journey/step-header";
+import { StatTile } from "@/components/journey/stat-tile";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -35,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { goalFundedPct } from "@/lib/calc";
+import { cashFlowTotals, goalFundedPct } from "@/lib/calc";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { Goal, GoalPriority, GoalType } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -182,8 +184,19 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
 export function GoalsStep() {
   const t = useTranslations();
   const goals = useVisionStore((s) => s.activePlan!.goals);
+  const cashFlow = useVisionStore((s) => s.activePlan!.cashFlow);
   const addGoal = useVisionStore((s) => s.addGoal);
+  const seedDefaultGoals = useVisionStore((s) => s.seedDefaultGoals);
   const thisYear = new Date().getFullYear();
+
+  // Seed the default goals (emergency / retirement / succession) on first visit.
+  useEffect(() => {
+    seedDefaultGoals();
+  }, [seedDefaultGoals]);
+
+  const totals = cashFlowTotals(cashFlow);
+  const allocated = goals.reduce((s, g) => s + (g.monthlyContribution ?? 0), 0);
+  const free = totals.surplus - allocated;
 
   function addGoalOfType(type: GoalType) {
     addGoal({
@@ -199,6 +212,27 @@ export function GoalsStep() {
   return (
     <div>
       <StepHeader title={t("goals.title")} subtitle={t("goals.subtitle")} />
+
+      {/* Dynamic cash-flow header — surplus vs. allocated to goals, always visible */}
+      <div className="mb-4 grid grid-cols-3 gap-3">
+        <StatTile
+          label={t("goals.surplus")}
+          tone={totals.surplus < 0 ? "negative" : "positive"}
+          value={<Money value={totals.surplus} />}
+          hint={t("common.perMonth")}
+        />
+        <StatTile
+          label={t("goals.allocated")}
+          value={<Money value={allocated} />}
+          hint={t("common.perMonth")}
+        />
+        <StatTile
+          label={t("goals.free")}
+          tone={free < 0 ? "negative" : "positive"}
+          value={<Money value={free} />}
+          hint={t("goals.freeHint")}
+        />
+      </div>
 
       <div className="mb-4 flex justify-end">
         <DropdownMenu>

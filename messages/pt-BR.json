@@ -369,7 +369,11 @@
     "monthlyContribution": "Aporte mensal",
     "funded": "{pct}% financiado",
     "horizon": "Horizonte de {years} anos",
-    "empty": "Nenhum objetivo ainda. Adicione um para começar."
+    "empty": "Nenhum objetivo ainda. Adicione um para começar.",
+    "surplus": "Sobra mensal",
+    "allocated": "Alocado em objetivos",
+    "free": "Saldo livre",
+    "freeHint": "sobra − aportes"
   },
   "goalType": {
     "retirement": "Aposentadoria",

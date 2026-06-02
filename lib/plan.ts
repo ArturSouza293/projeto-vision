@@ -5,15 +5,19 @@
  */
 
 import {
-  cashFlowTotals,
-  investableWealth,
-  monthlyContinuingIncome,
-  monthlyNeedsBaseline,
   ageFromDob,
+  annuityFactor,
+  cashFlowTotals,
+  continuingMonthlyIncome,
+  emergencyReserveTarget,
+  investableWealth,
   project,
+  retirementMonthlyNeed,
+  successionTarget,
 } from "@/lib/calc";
 import { requestToInput, type ProjectionRequest } from "@/lib/api/planning-engine";
 import type {
+  Goal,
   GrowthScenario,
   Plan,
   ProjectionResult,
@@ -98,18 +102,72 @@ export function planCompleteness(plan: Plan): number {
   return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
+/** Longevity age for the "centenary" retirement planning (parametrizable later). */
+export const LONGEVITY_AGE = 100;
+
 /** Sensible starting assumptions derived from the client's own numbers. */
 export function defaultAssumptions(plan: Plan): ScenarioAssumptions {
   const { surplus } = cashFlowTotals(plan.cashFlow);
   const age = ageFromDob(plan.clientProfile.dateOfBirth);
-  const retirementAge = age >= 60 ? Math.min(age + 5, 75) : 65;
+  const usufruct = plan.clientProfile.retirementUsufructAge;
+  const retirementAge =
+    usufruct && usufruct > age ? usufruct : age >= 60 ? Math.min(age + 5, 75) : 65;
   return {
+    // Contribution is capped at the monthly cash-flow surplus.
     monthlyContribution: Math.max(0, Math.round(surplus)),
     retirementAge,
     expectedRealReturn: 4,
     inflation: 5,
     growthScenario: "custom",
   };
+}
+
+/**
+ * Seed the three default goals (emergency reserve, retirement, succession),
+ * pre-filled from the plan's own numbers. Used when a plan has no goals yet.
+ */
+export function defaultGoals(plan: Plan): Goal[] {
+  const thisYear = new Date().getFullYear();
+  const age = ageFromDob(plan.clientProfile.dateOfBirth);
+  const usufruct = plan.clientProfile.retirementUsufructAge ?? (age >= 60 ? age + 5 : 65);
+  const retirementYear = thisYear + Math.max(1, usufruct - age);
+
+  // Retirement capital: fund the monthly gap (need − continuing income) across the
+  // centenary horizon via a real annuity factor (default 4% real).
+  const monthlyGap = Math.max(
+    0,
+    retirementMonthlyNeed(plan.cashFlow) - continuingMonthlyIncome(plan.cashFlow),
+  );
+  const retirementCapital = Math.round(
+    monthlyGap * 12 * annuityFactor(Math.max(1, LONGEVITY_AGE - usufruct), 0.04),
+  );
+
+  return [
+    {
+      id: "goal-emergency",
+      type: "emergency_reserve",
+      targetAmount: emergencyReserveTarget(plan.cashFlow, 6),
+      targetYear: thisYear + 1,
+      priority: "high",
+      currentAmount: 0,
+    },
+    {
+      id: "goal-retirement",
+      type: "retirement",
+      targetAmount: retirementCapital,
+      targetYear: retirementYear,
+      priority: "high",
+      currentAmount: 0,
+    },
+    {
+      id: "goal-succession",
+      type: "legacy",
+      targetAmount: successionTarget(plan.netWorth),
+      targetYear: thisYear + 20,
+      priority: "medium",
+      currentAmount: 0,
+    },
+  ];
 }
 
 /** Map a plan + scenario assumptions into a projection-engine request. */
@@ -127,8 +185,8 @@ export function buildProjectionRequest(
     expectedRealReturn: a.expectedRealReturn,
     inflation: a.inflation,
     annualIncomeNow: income * 12,
-    annualNeeds: monthlyNeedsBaseline(plan.cashFlow) * 12,
-    annualOtherIncome: monthlyContinuingIncome(plan.cashFlow) * 12,
+    annualNeeds: retirementMonthlyNeed(plan.cashFlow) * 12,
+    annualOtherIncome: continuingMonthlyIncome(plan.cashFlow) * 12,
     goals: plan.goals,
   };
 }

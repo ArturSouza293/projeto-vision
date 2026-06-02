@@ -369,7 +369,11 @@
     "monthlyContribution": "Monthly contribution",
     "funded": "{pct}% funded",
     "horizon": "{years}-year horizon",
-    "empty": "No goals yet. Add one to start."
+    "empty": "No goals yet. Add one to start.",
+    "surplus": "Monthly surplus",
+    "allocated": "Allocated to goals",
+    "free": "Free balance",
+    "freeHint": "surplus − contributions"
   },
   "goalType": {
     "retirement": "Retirement",

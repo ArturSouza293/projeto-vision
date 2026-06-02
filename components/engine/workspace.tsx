@@ -302,7 +302,7 @@ export function Workspace() {
                 value={a.monthlyContribution}
                 display={formatCurrency(a.monthlyContribution, locale)}
                 min={0}
-                max={Math.min(100000, Math.max(20000, Math.ceil(a.monthlyContribution / 5000) * 10000))}
+                max={Math.max(0, Math.round(cf.surplus))}
                 step={100}
                 onChange={(v) => update({ monthlyContribution: v })}
               />
@@ -311,7 +311,10 @@ export function Workspace() {
                 value={a.retirementAge}
                 display={`${a.retirementAge}`}
                 min={Math.max(currentAge + 1, 45)}
-                max={80}
+                max={Math.max(
+                  Math.max(currentAge + 1, 45),
+                  Math.min(80, plan.clientProfile.retirementUsufructAge ?? 80),
+                )}
                 step={1}
                 onChange={(v) => update({ retirementAge: v })}
               />
