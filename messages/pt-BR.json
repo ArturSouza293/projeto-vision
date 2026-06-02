@@ -88,6 +88,8 @@
     "planForKnown": "Um plano para o que importa"
   },
   "persona": {
+    "marcos": { "tagline": "Trabalhador endividado fugindo do crédito caro" },
+    "aline": { "tagline": "Quase sem dívidas, prestes a poupar pela primeira vez" },
     "camilaDiego": { "tagline": "Casal de alta renda no auge da poupança, avaliando o primeiro apartamento" },
     "fernanda": { "tagline": "Mãe de alta renda garantindo o cuidado vitalício de um filho" },
     "joseCarlos": { "tagline": "Pré-aposentado transformando o portfólio em renda" },

@@ -9,6 +9,8 @@ import type { Plan } from "@/lib/types";
 
 /** Persona descriptor keys, resolved through the i18n catalogs. */
 export const PERSONA_META: Record<string, { taglineKey: string }> = {
+  marcos: { taglineKey: "persona.marcos.tagline" },
+  aline: { taglineKey: "persona.aline.tagline" },
   "camila-diego": { taglineKey: "persona.camilaDiego.tagline" },
   fernanda: { taglineKey: "persona.fernanda.tagline" },
   "jose-carlos": { taglineKey: "persona.joseCarlos.tagline" },
@@ -279,4 +281,113 @@ const patricia: Plan = {
   events: [],
 };
 
-export const SEED_PLANS: Plan[] = [camilaDiego, fernanda, joseCarlos, patricia];
+const marcos: Plan = {
+  clientId: "marcos",
+  clientProfile: {
+    id: "marcos",
+    firstName: "Marcos",
+    lastName: "Tavares",
+    dateOfBirth: "1987-07-22",
+    gender: "male",
+    maritalStatus: "married",
+    dependents: 1,
+    hasPartner: true,
+    partnerName: "Sandra",
+    employmentStatus: "clt",
+    occupation: "Operador logístico",
+    email: "marcos.tavares@example.com",
+    phone: "+55 11 99432-1200",
+    city: "Guarulhos",
+    state: "SP",
+    taxResidency: "BR",
+    cpfMasked: "***.***.118-**",
+    pep: false,
+    segment: "retail",
+  },
+  cashFlow: {
+    incomes: [{ id: "i1", label: "Salário líquido", monthly: 4000, kind: "salary" }],
+    expenses: [
+      { id: "e1", label: "Aluguel", monthly: 1300, category: "housing" },
+      { id: "e2", label: "Essenciais (mercado, transporte)", monthly: 1400, category: "living" },
+      { id: "e3", label: "Serviço da dívida", monthly: 1200, category: "debt" },
+      { id: "e4", label: "Estilo de vida", monthly: 300, category: "lifestyle" },
+    ],
+  },
+  netWorth: {
+    assets: [
+      { id: "a1", label: "Conta / CDB (quase sempre zerado)", value: 300, assetClass: "cash", liquid: true },
+    ],
+    liabilities: [
+      { id: "l1", label: "Rotativo do cartão", balance: 15000, kind: "card", annualRate: 300 },
+      { id: "l2", label: "Cheque especial", balance: 5000, kind: "personal", annualRate: 130 },
+      { id: "l3", label: "Consignado", balance: 15000, kind: "consigned", annualRate: 28 },
+    ],
+  },
+  suitability: { answers: {}, flags: [] },
+  goals: [],
+  scenarios: [],
+  approvalStatus: "draft",
+  events: [],
+};
+
+const aline: Plan = {
+  clientId: "aline",
+  clientProfile: {
+    id: "aline",
+    firstName: "Aline",
+    lastName: "Moreira",
+    dateOfBirth: "1997-03-10",
+    gender: "female",
+    maritalStatus: "single",
+    dependents: 0,
+    hasPartner: false,
+    employmentStatus: "clt",
+    occupation: "Analista administrativa",
+    email: "aline.moreira@example.com",
+    phone: "+55 21 99765-4300",
+    city: "Rio de Janeiro",
+    state: "RJ",
+    taxResidency: "BR",
+    cpfMasked: "***.***.452-**",
+    pep: false,
+    segment: "retail",
+  },
+  cashFlow: {
+    incomes: [{ id: "i1", label: "Salário líquido", monthly: 5900, kind: "salary" }],
+    expenses: [
+      { id: "e1", label: "Aluguel", monthly: 1600, category: "housing" },
+      { id: "e2", label: "Custo de vida", monthly: 1500, category: "living" },
+      { id: "e3", label: "Quitação da dívida", monthly: 900, category: "debt" },
+      { id: "e4", label: "Estilo de vida", monthly: 500, category: "lifestyle" },
+    ],
+  },
+  netWorth: {
+    assets: [
+      { id: "a1", label: "Reserva inicial", value: 1500, assetClass: "cash", liquid: true },
+    ],
+    liabilities: [
+      { id: "l1", label: "Empréstimo pessoal (residual)", balance: 5000, kind: "personal", annualRate: 60 },
+    ],
+  },
+  suitability: {
+    answers: { horizon: 1, reaction: 0, experience: 0, stability: 1, objective: 0 },
+    score: 13,
+    profile: "conservative",
+    flags: [],
+  },
+  goals: [
+    { id: "g1", type: "emergency_reserve", label: "Reserva de emergência", targetAmount: 35000, targetYear: 2028, priority: "high", currentAmount: 1500, monthlyContribution: 1400 },
+  ],
+  scenarios: [],
+  approvalStatus: "draft",
+  events: [],
+};
+
+export const SEED_PLANS: Plan[] = [
+  marcos,
+  aline,
+  camilaDiego,
+  fernanda,
+  joseCarlos,
+  patricia,
+];

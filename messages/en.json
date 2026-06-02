@@ -88,6 +88,8 @@
     "planForKnown": "A plan for what they care about"
   },
   "persona": {
+    "marcos": { "tagline": "Over-indebted worker escaping high-cost debt" },
+    "aline": { "tagline": "Almost debt-free, about to become a first-time saver" },
     "camilaDiego": { "tagline": "Dual-income couple at peak savings, weighing their first apartment" },
     "fernanda": { "tagline": "High-income mother securing a child's lifelong care" },
     "joseCarlos": { "tagline": "Pre-retiree turning a portfolio into income" },
