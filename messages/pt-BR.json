@@ -93,7 +93,15 @@
     "camilaDiego": { "tagline": "Casal de alta renda no auge da poupança, avaliando o primeiro apartamento" },
     "fernanda": { "tagline": "Mãe de alta renda garantindo o cuidado vitalício de um filho" },
     "joseCarlos": { "tagline": "Pré-aposentado transformando o portfólio em renda" },
-    "patricia": { "tagline": "Empreendedora alocando os recursos após a venda" }
+    "patricia": { "tagline": "Empreendedora alocando os recursos após a venda" },
+    "julia": { "tagline": "Primeiro emprego formal, alto potencial de poupança, hábito a construir" },
+    "bruno": { "tagline": "Herdeiro na encruzilhada — carreira própria vs. a empresa da família" },
+    "luana": { "tagline": "Mãe única provedora que valoriza proteção acima de rentabilidade" },
+    "thiago": { "tagline": "Freelancer de renda variável sem rede de previdência" },
+    "roberto": { "tagline": "Acabou de quitar a dívida — amortizar vs. investir o financiamento?" },
+    "ricardo": { "tagline": "Executivo de alta renda com patrimônio disperso e ineficiente em IR" },
+    "helena": { "tagline": "Viúva vivendo da carteira — precisa de renda protegida da inflação" },
+    "antonio": { "tagline": "Patrimônio antigo consolidado — sucessão & liquidez é o trabalho" }
   },
   "flags": {
     "soleProvider": "Única provedora — proteção é prioridade",

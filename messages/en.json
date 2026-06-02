@@ -93,7 +93,15 @@
     "camilaDiego": { "tagline": "Dual-income couple at peak savings, weighing their first apartment" },
     "fernanda": { "tagline": "High-income mother securing a child's lifelong care" },
     "joseCarlos": { "tagline": "Pre-retiree turning a portfolio into income" },
-    "patricia": { "tagline": "Entrepreneur deploying a post-sale windfall" }
+    "patricia": { "tagline": "Entrepreneur deploying a post-sale windfall" },
+    "julia": { "tagline": "First formal job, high savings potential, habit yet to build" },
+    "bruno": { "tagline": "Heir at a crossroads — own career vs. the family business" },
+    "luana": { "tagline": "Sole-provider mother who values protection over returns" },
+    "thiago": { "tagline": "Variable-income freelancer with no pension safety net" },
+    "roberto": { "tagline": "Just cleared consumer debt — amortize vs. invest the mortgage?" },
+    "ricardo": { "tagline": "High-earning executive with scattered, tax-inefficient wealth" },
+    "helena": { "tagline": "Widow living off her portfolio — needs inflation-proof income" },
+    "antonio": { "tagline": "Consolidated old-money estate — succession & liquidity is the work" }
   },
   "flags": {
     "soleProvider": "Sole provider — protection is a priority",
