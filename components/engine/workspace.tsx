@@ -10,7 +10,7 @@ import {
   Play,
   Plus,
   X,
-} from "lucide-react";
+} from "@/components/app/icons";
 
 import { Money } from "@/components/app/money";
 import { IncomeNeedsChart } from "@/components/charts/income-needs-chart";

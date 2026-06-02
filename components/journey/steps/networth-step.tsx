@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2 } from "@/components/app/icons";
 
 import { Money } from "@/components/app/money";
 import { MoneyInput } from "@/components/app/number-field";

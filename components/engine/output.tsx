@@ -19,7 +19,7 @@ import {
   TrendingUp,
   Wallet,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/app/icons";
 
 import { Money } from "@/components/app/money";
 import { Button } from "@/components/ui/button";

@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "@/components/app/icons";
 
 import { CashflowStep } from "@/components/journey/steps/cashflow-step";
 import { GoalsStep } from "@/components/journey/steps/goals-step";

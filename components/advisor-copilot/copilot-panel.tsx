@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { CalendarPlus, Send, Sparkles } from "lucide-react";
+import { CalendarPlus, Send, Sparkles } from "@/components/app/icons";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";

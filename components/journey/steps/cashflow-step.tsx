@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Plus, Trash2, TriangleAlert } from "lucide-react";
+import { Plus, Trash2, TriangleAlert } from "@/components/app/icons";
 
 import { MoneyInput } from "@/components/app/number-field";
 import { StepHeader } from "@/components/journey/step-header";

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { ArrowRight, MapPin, Plus, Radio } from "lucide-react";
+import { ArrowRight, MapPin, Plus, Radio } from "@/components/app/icons";
 
 import { LocaleToggle } from "@/components/app/locale-toggle";
 import { Money } from "@/components/app/money";

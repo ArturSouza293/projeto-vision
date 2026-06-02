@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Sparkles, TriangleAlert } from "lucide-react";
+import { Sparkles, TriangleAlert } from "@/components/app/icons";
 
 import { StepHeader } from "@/components/journey/step-header";
 import { Button } from "@/components/ui/button";

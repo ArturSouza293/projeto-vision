@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, Database, Sparkles } from "lucide-react";
+import { ChevronLeft, Database, Sparkles } from "@/components/app/icons";
 
 import { BrandMark } from "@/components/app/brand-mark";
 import { LocaleToggle } from "@/components/app/locale-toggle";

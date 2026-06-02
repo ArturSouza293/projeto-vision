@@ -14,7 +14,7 @@ import {
   Trash2,
   Umbrella,
   type LucideIcon,
-} from "lucide-react";
+} from "@/components/app/icons";
 
 import { Money } from "@/components/app/money";
 import { MoneyInput } from "@/components/app/number-field";
