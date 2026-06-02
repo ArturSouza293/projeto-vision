@@ -137,8 +137,31 @@
       "taxResidency": "Tax residency",
       "cpf": "CPF",
       "pep": "Politically exposed person",
-      "segment": "Segment"
+      "segment": "Segment",
+      "retirementUsufructAge": "Planned retirement age",
+      "partnerCpf": "Spouse CPF",
+      "marriageRegime": "Marriage regime"
+    },
+    "dependents": {
+      "title": "Dependents",
+      "add": "Add dependent",
+      "empty": "No dependents added.",
+      "name": "Name",
+      "age": "Age"
     }
+  },
+  "marriageRegime": {
+    "partial": "Partial community",
+    "universal": "Universal community",
+    "separate": "Full separation",
+    "final_aquestos": "Final participation in aquestos"
+  },
+  "relation": {
+    "child": "Child",
+    "spouse": "Spouse",
+    "parent": "Parent",
+    "sibling": "Sibling",
+    "other": "Other"
   },
   "gender": {
     "female": "Female",
@@ -182,7 +205,25 @@
     "rent": "Rent",
     "investments": "Investments",
     "pension": "Pension",
+    "bonus": "Bonus",
+    "plr": "Profit sharing (PLR)",
+    "thirteenth": "13th salary",
     "other": "Other"
+  },
+  "periodicity": {
+    "once": "One-time",
+    "annual": "Annual",
+    "thirteenth": "13th"
+  },
+  "income": {
+    "title": "Income",
+    "subtitle": "Recurring income and one-time events (bonus, PLR, 13th). Surplus updates live.",
+    "add": "Add income",
+    "empty": "No income added.",
+    "recurringMonthly": "Recurring income",
+    "eventsTotal": "One-time events",
+    "eventsHint": "bonus · PLR · 13th",
+    "eventAmount": "Event amount"
   },
   "expenseCategory": {
     "housing": "Housing",
@@ -190,8 +231,32 @@
     "education": "Education",
     "health": "Health",
     "debt": "Debt service",
+    "card": "Credit card",
+    "vehicle": "Vehicles",
+    "taxes": "Taxes (IR/IPVA/IPTU)",
+    "insurance": "Insurance",
     "lifestyle": "Lifestyle",
     "other": "Other"
+  },
+  "expense": {
+    "title": "Expenses",
+    "subtitle": "Categorize, flag essential vs. discretionary, and see the % of income.",
+    "add": "Add expense",
+    "empty": "No expenses added.",
+    "total": "Total expenses",
+    "essential": "Essential",
+    "primary": "Essential",
+    "secondary": "Discretionary",
+    "commitment": "{pct} of income",
+    "subcategory": "Sub-category",
+    "retirement": {
+      "title": "Retirement income",
+      "subtitle": "Link current income to the desired retirement income.",
+      "percent": "% of current income",
+      "nominal": "Nominal amount",
+      "ofIncome": "% of income",
+      "inss": "Include INSS"
+    }
   },
   "networth": {
     "title": "Build the balance sheet",
@@ -206,15 +271,31 @@
     "liquidAssets": "Liquid assets",
     "liquid": "Liquid",
     "compositionTitle": "Asset composition",
-    "rate": "Rate (% p.a.)"
+    "rate": "Rate",
+    "balance": "Outstanding balance",
+    "term": "Term",
+    "months": "months",
+    "payment": "Payment",
+    "guarantee": "Guarantee",
+    "fgtsUseDate": "Planned FGTS use date"
   },
   "assetClass": {
     "cash": "Cash & reserve",
     "investments": "Investments",
     "pension": "Pension",
     "real_estate": "Real estate",
+    "vehicle": "Vehicles",
+    "foreign": "Foreign investments",
+    "fgts": "FGTS",
     "business": "Business",
     "other": "Other"
+  },
+  "propertyType": {
+    "house": "House",
+    "apartment": "Apartment",
+    "farm": "Farm",
+    "land": "Land",
+    "commercial": "Commercial"
   },
   "liabilityKind": {
     "mortgage": "Mortgage",
@@ -456,7 +537,7 @@
     "title": "Client data",
     "subtitle": "Fill or refine the dossier — the simulation updates live.",
     "finish": "Done",
-    "tab": { "profile": "Profile", "cashflow": "Cash flow", "networth": "Net worth", "suitability": "Suitability", "goals": "Goals" }
+    "tab": { "profile": "Profile", "income": "Income", "expense": "Expenses", "networth": "Net worth", "suitability": "Suitability", "goals": "Goals" }
   },
   "output": {
     "title": "Handoff to Salesforce",

@@ -23,6 +23,28 @@ export type MaritalStatus =
   | "divorced"
   | "widowed";
 
+/** Brazilian marriage property regime. */
+export type MarriageRegime =
+  | "partial" // comunhão parcial
+  | "universal" // comunhão universal
+  | "separate" // separação total
+  | "final_aquestos"; // participação final nos aquestos
+
+export type DependentRelation =
+  | "child"
+  | "spouse"
+  | "parent"
+  | "sibling"
+  | "other";
+
+/** A detailed financial dependent (for succession + goals). */
+export interface Dependent {
+  id: string;
+  name: string;
+  relation: DependentRelation;
+  age: number;
+}
+
 export type EmploymentStatus =
   | "clt"
   | "pj"
@@ -47,10 +69,18 @@ export interface ClientProfile {
   maritalStatus: MaritalStatus;
   /** Number of financial dependents (children, supported family). */
   dependents: number;
+  /** Detailed dependents (relation + age) for succession / goals. */
+  dependentsDetail?: Dependent[];
+  /** Planned age to start drawing retirement (usufruto): default retirement-goal target + age cap. */
+  retirementUsufructAge?: number;
 
   // Household
   hasPartner: boolean;
   partnerName?: string;
+  /** Spouse CPF (display only). */
+  partnerCpf?: string;
+  /** Marriage property regime. */
+  marriageRegime?: MarriageRegime;
 
   // Employment & income source
   employmentStatus: EmploymentStatus;
@@ -83,7 +113,13 @@ export type IncomeKind =
   | "rent"
   | "investments"
   | "pension"
+  | "bonus"
+  | "plr"
+  | "thirteenth"
   | "other";
+
+/** Periodicity for non-recurring (one-time) income events. */
+export type Periodicity = "once" | "annual" | "thirteenth";
 
 export type ExpenseCategory =
   | "housing"
@@ -91,15 +127,25 @@ export type ExpenseCategory =
   | "education"
   | "health"
   | "debt"
+  | "card"
+  | "vehicle"
+  | "taxes"
+  | "insurance"
   | "lifestyle"
   | "other";
 
 export interface IncomeItem {
   id: string;
   label: string;
-  /** Monthly amount in BRL. */
+  /** Monthly amount in BRL (for recurring income). For one-time events this is the event amount. */
   monthly: number;
   kind: IncomeKind;
+  /** Recurring monthly income (default) vs a one-time event (bonus / PLR / 13º). */
+  recurring?: boolean;
+  /** ISO date for one-time events. */
+  eventDate?: string;
+  /** Periodicity for non-recurring income. */
+  periodicity?: Periodicity;
 }
 
 export interface ExpenseItem {
@@ -108,11 +154,26 @@ export interface ExpenseItem {
   /** Monthly amount in BRL. */
   monthly: number;
   category: ExpenseCategory;
+  /** Essential (primary) vs discretionary (secondary). Defaults to essential. */
+  primary?: boolean;
+  /** Optional free-text sub-category (e.g. card spend bucket: IR / IPVA / IPTU). */
+  subcategory?: string;
+}
+
+/** How the retirement income need is derived from current income. */
+export interface RetirementIncomeConfig {
+  /** Target retirement income as a % of current income, or a nominal monthly BRL. */
+  mode: "percent" | "nominal";
+  value: number;
+  /** Add an estimated INSS benefit as continuing retirement income. */
+  inss: boolean;
 }
 
 export interface CashFlow {
   incomes: IncomeItem[];
   expenses: ExpenseItem[];
+  /** Retirement income target derived from current income (Step Despesas). */
+  retirementIncome?: RetirementIncomeConfig;
 }
 
 /* ------------------------------------------------------------------ */
@@ -124,8 +185,14 @@ export type AssetClass =
   | "investments"
   | "pension"
   | "real_estate"
+  | "vehicle"
+  | "foreign"
+  | "fgts"
   | "business"
   | "other";
+
+/** Real-estate property type (when assetClass = real_estate). */
+export type PropertyType = "farm" | "house" | "apartment" | "land" | "commercial";
 
 export type LiabilityKind =
   | "mortgage"
@@ -143,16 +210,26 @@ export interface Asset {
   assetClass: AssetClass;
   /** Counts toward the liquidity / emergency reserve view. */
   liquid: boolean;
+  /** For real_estate: the property type. */
+  propertyType?: PropertyType;
+  /** For fgts: planned date of use (ISO). */
+  fgtsUseDate?: string;
 }
 
 export interface Liability {
   id: string;
   label: string;
-  /** Outstanding balance in BRL. */
+  /** Outstanding balance in BRL (saldo devedor). */
   balance: number;
   kind: LiabilityKind;
   /** Effective annual rate (%), where known. */
   annualRate?: number;
+  /** Remaining term in months (prazo). */
+  termMonths?: number;
+  /** Monthly payment / installment in BRL (parcela). */
+  monthlyPayment?: number;
+  /** Whether the debt is secured by a guarantee/collateral (garantia). */
+  hasGuarantee?: boolean;
 }
 
 export interface NetWorth {

@@ -137,8 +137,31 @@
       "taxResidency": "Residência fiscal",
       "cpf": "CPF",
       "pep": "Pessoa politicamente exposta",
-      "segment": "Segmento"
+      "segment": "Segmento",
+      "retirementUsufructAge": "Idade prevista de usufruto",
+      "partnerCpf": "CPF do cônjuge",
+      "marriageRegime": "Regime de casamento"
+    },
+    "dependents": {
+      "title": "Dependentes",
+      "add": "Adicionar dependente",
+      "empty": "Nenhum dependente cadastrado.",
+      "name": "Nome",
+      "age": "Idade"
     }
+  },
+  "marriageRegime": {
+    "partial": "Comunhão parcial",
+    "universal": "Comunhão universal",
+    "separate": "Separação total",
+    "final_aquestos": "Participação final nos aquestos"
+  },
+  "relation": {
+    "child": "Filho(a)",
+    "spouse": "Cônjuge",
+    "parent": "Pai/Mãe",
+    "sibling": "Irmão(ã)",
+    "other": "Outro"
   },
   "gender": {
     "female": "Feminino",
@@ -182,7 +205,25 @@
     "rent": "Aluguel",
     "investments": "Investimentos",
     "pension": "Previdência",
+    "bonus": "Bônus",
+    "plr": "PLR",
+    "thirteenth": "13º salário",
     "other": "Outro"
+  },
+  "periodicity": {
+    "once": "Único",
+    "annual": "Anual",
+    "thirteenth": "13º"
+  },
+  "income": {
+    "title": "Renda",
+    "subtitle": "Renda recorrente e eventos únicos (bônus, PLR, 13º). A sobra atualiza ao vivo.",
+    "add": "Adicionar renda",
+    "empty": "Nenhuma renda cadastrada.",
+    "recurringMonthly": "Renda recorrente",
+    "eventsTotal": "Eventos únicos",
+    "eventsHint": "bônus · PLR · 13º",
+    "eventAmount": "Valor do evento"
   },
   "expenseCategory": {
     "housing": "Moradia",
@@ -190,8 +231,32 @@
     "education": "Educação",
     "health": "Saúde",
     "debt": "Serviço da dívida",
+    "card": "Cartão de crédito",
+    "vehicle": "Veículos",
+    "taxes": "Impostos (IR/IPVA/IPTU)",
+    "insurance": "Seguros",
     "lifestyle": "Estilo de vida",
     "other": "Outro"
+  },
+  "expense": {
+    "title": "Despesas",
+    "subtitle": "Categorize, marque essencial vs. discricionário e veja o % de comprometimento.",
+    "add": "Adicionar despesa",
+    "empty": "Nenhuma despesa cadastrada.",
+    "total": "Despesas totais",
+    "essential": "Essenciais",
+    "primary": "Essencial",
+    "secondary": "Discricionário",
+    "commitment": "{pct} da renda",
+    "subcategory": "Subcategoria",
+    "retirement": {
+      "title": "Renda na aposentadoria",
+      "subtitle": "Vincule a renda atual à renda desejada na aposentadoria.",
+      "percent": "% da renda atual",
+      "nominal": "Valor nominal",
+      "ofIncome": "% da renda",
+      "inss": "Considerar INSS"
+    }
   },
   "networth": {
     "title": "Monte o balanço patrimonial",
@@ -206,15 +271,31 @@
     "liquidAssets": "Ativos líquidos",
     "liquid": "Líquido",
     "compositionTitle": "Composição dos ativos",
-    "rate": "Taxa (% a.a.)"
+    "rate": "Taxa",
+    "balance": "Saldo devedor",
+    "term": "Prazo",
+    "months": "meses",
+    "payment": "Parcela",
+    "guarantee": "Garantia",
+    "fgtsUseDate": "Data prevista de uso (FGTS)"
   },
   "assetClass": {
     "cash": "Caixa & reserva",
     "investments": "Investimentos",
     "pension": "Previdência",
     "real_estate": "Imóveis",
+    "vehicle": "Veículos",
+    "foreign": "Investimentos no exterior",
+    "fgts": "FGTS",
     "business": "Empresa",
     "other": "Outro"
+  },
+  "propertyType": {
+    "house": "Casa",
+    "apartment": "Apartamento",
+    "farm": "Fazenda",
+    "land": "Terreno",
+    "commercial": "Comercial"
   },
   "liabilityKind": {
     "mortgage": "Financiamento imobiliário",
@@ -456,7 +537,7 @@
     "title": "Dados do cliente",
     "subtitle": "Preencha ou refine o dossiê — a simulação atualiza ao vivo.",
     "finish": "Concluir",
-    "tab": { "profile": "Perfil", "cashflow": "Fluxo", "networth": "Patrimônio", "suitability": "Suitability", "goals": "Objetivos" }
+    "tab": { "profile": "Perfil", "income": "Renda", "expense": "Despesas", "networth": "Patrimônio", "suitability": "Suitability", "goals": "Objetivos" }
   },
   "output": {
     "title": "Entrega para o Salesforce",

@@ -24,11 +24,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Plus, Trash2 } from "@/components/app/icons";
 import { ageFromDob } from "@/lib/calc";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type {
+  DependentRelation,
   EmploymentStatus,
   Gender,
+  MarriageRegime,
   MaritalStatus,
   Segment,
 } from "@/lib/types";
@@ -46,8 +50,11 @@ const schema = z.object({
     "widowed",
   ]),
   dependents: z.number().int().min(0).max(20),
+  retirementUsufructAge: z.number().int().min(40).max(110),
   hasPartner: z.boolean(),
   partnerName: z.string().optional(),
+  partnerCpf: z.string().optional(),
+  marriageRegime: z.enum(["partial", "universal", "separate", "final_aquestos"]),
   employmentStatus: z.enum([
     "clt",
     "pj",
@@ -143,6 +150,69 @@ function SelectField({
   );
 }
 
+function DependentsEditor() {
+  const t = useTranslations();
+  const deps = useVisionStore((s) => s.activePlan?.clientProfile.dependentsDetail) ?? [];
+  const addDependent = useVisionStore((s) => s.addDependent);
+  const updateDependent = useVisionStore((s) => s.updateDependent);
+  const removeDependent = useVisionStore((s) => s.removeDependent);
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <span className="text-sm font-medium text-foreground">{t("profile.dependents.title")}</span>
+        <Button type="button" variant="outline" size="sm" onClick={addDependent}>
+          <Plus className="size-4" />
+          {t("profile.dependents.add")}
+        </Button>
+      </div>
+      {deps.length === 0 ? (
+        <p className="text-xs text-muted-foreground">{t("profile.dependents.empty")}</p>
+      ) : (
+        <div className="space-y-2">
+          {deps.map((d) => (
+            <div key={d.id} className="flex items-center gap-2">
+              <Input
+                value={d.name}
+                placeholder={t("profile.dependents.name")}
+                onChange={(e) => updateDependent(d.id, { name: e.target.value })}
+                className="min-w-0 flex-1"
+              />
+              <Select value={d.relation} onValueChange={(v) => updateDependent(d.id, { relation: v as DependentRelation })}>
+                <SelectTrigger className="w-32 shrink-0">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {["child", "spouse", "parent", "sibling", "other"].map((r) => (
+                    <SelectItem key={r} value={r}>
+                      {t(`relation.${r}`)}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Input
+                type="number"
+                min={0}
+                max={120}
+                aria-label={t("profile.dependents.age")}
+                value={Number.isFinite(d.age) ? d.age : 0}
+                onChange={(e) =>
+                  updateDependent(d.id, {
+                    age: Number.isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber,
+                  })
+                }
+                className="w-16 shrink-0 tabular-nums"
+              />
+              <Button type="button" variant="ghost" size="icon-sm" onClick={() => removeDependent(d.id)}>
+                <Trash2 className="size-4 text-muted-foreground" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function ProfileStep() {
   const t = useTranslations();
   const updateClientProfile = useVisionStore((s) => s.updateClientProfile);
@@ -160,8 +230,11 @@ export function ProfileStep() {
       gender: initial.gender,
       maritalStatus: initial.maritalStatus,
       dependents: initial.dependents,
+      retirementUsufructAge: initial.retirementUsufructAge ?? 65,
       hasPartner: initial.hasPartner,
       partnerName: initial.partnerName ?? "",
+      partnerCpf: initial.partnerCpf ?? "",
+      marriageRegime: initial.marriageRegime ?? "partial",
       employmentStatus: initial.employmentStatus,
       occupation: initial.occupation ?? "",
       email: initial.email ?? "",
@@ -191,8 +264,11 @@ export function ProfileStep() {
         gender: v.gender as Gender,
         maritalStatus: v.maritalStatus as MaritalStatus,
         dependents: Number(v.dependents ?? 0),
+        retirementUsufructAge: Number(v.retirementUsufructAge ?? 65),
         hasPartner: !!v.hasPartner,
         partnerName: v.partnerName || undefined,
+        partnerCpf: v.partnerCpf || undefined,
+        marriageRegime: v.marriageRegime as MarriageRegime,
         employmentStatus: v.employmentStatus as EmploymentStatus,
         occupation: v.occupation || undefined,
         email: v.email || undefined,
@@ -259,6 +335,29 @@ export function ProfileStep() {
                   </FormItem>
                 )}
               />
+              <FormField
+                control={control}
+                name="retirementUsufructAge"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("profile.field.retirementUsufructAge")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={40}
+                        max={110}
+                        value={Number.isFinite(field.value) ? field.value : 65}
+                        onChange={(e) =>
+                          field.onChange(
+                            Number.isNaN(e.target.valueAsNumber) ? 65 : e.target.valueAsNumber,
+                          )
+                        }
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <h3 className="mt-6 mb-4 text-sm font-semibold text-foreground">
@@ -303,8 +402,20 @@ export function ProfileStep() {
                   )}
                 />
                 {hasPartner && (
-                  <TextField control={control} name="partnerName" label={t("profile.field.partnerName")} />
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <TextField control={control} name="partnerName" label={t("profile.field.partnerName")} />
+                    <TextField control={control} name="partnerCpf" label={t("profile.field.partnerCpf")} />
+                    <SelectField
+                      control={control}
+                      name="marriageRegime"
+                      label={t("profile.field.marriageRegime")}
+                      options={opt("marriageRegime", ["partial", "universal", "separate", "final_aquestos"])}
+                    />
+                  </div>
                 )}
+                <div className="border-t border-border pt-4">
+                  <DependentsEditor />
+                </div>
               </div>
             </section>
 

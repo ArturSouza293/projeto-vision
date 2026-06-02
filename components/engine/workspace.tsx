@@ -348,7 +348,7 @@ export function Workspace() {
           <section className="surface rounded-2xl p-5">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-foreground">{t("workspace.dossier")}</h3>
-              <Button variant="ghost" size="xs" onClick={() => setDataTab("cashflow")}>
+              <Button variant="ghost" size="xs" onClick={() => setDataTab("expense")}>
                 <PencilLine className="size-3.5" />
                 {t("workspace.editData")}
               </Button>

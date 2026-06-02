@@ -11,6 +11,9 @@ export const ASSET_CLASS_COLOR: Record<AssetClass, string> = {
   investments: "var(--chart-3)",
   pension: "var(--chart-5)",
   real_estate: "var(--chart-4)",
+  vehicle: "color-mix(in srgb, var(--chart-1), white 35%)",
+  foreign: "color-mix(in srgb, var(--chart-3), var(--chart-2) 55%)",
+  fgts: "color-mix(in srgb, var(--chart-4), white 28%)",
   business: "var(--chart-1)",
   other: "var(--muted-foreground)",
 };

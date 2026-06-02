@@ -4,7 +4,8 @@ import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { ArrowLeft, ArrowRight, Check } from "@/components/app/icons";
 
-import { CashflowStep } from "@/components/journey/steps/cashflow-step";
+import { ExpenseStep } from "@/components/journey/steps/expense-step";
+import { IncomeStep } from "@/components/journey/steps/income-step";
 import { GoalsStep } from "@/components/journey/steps/goals-step";
 import { NetWorthStep } from "@/components/journey/steps/networth-step";
 import { ProfileStep } from "@/components/journey/steps/profile-step";
@@ -20,11 +21,12 @@ import {
 import { useVisionStore, type DataTab } from "@/lib/store/plan-store";
 import { cn } from "@/lib/utils";
 
-const TABS: DataTab[] = ["profile", "cashflow", "networth", "suitability", "goals"];
+const TABS: DataTab[] = ["profile", "income", "expense", "networth", "suitability", "goals"];
 
 const COMPONENT: Record<DataTab, React.ComponentType> = {
   profile: ProfileStep,
-  cashflow: CashflowStep,
+  income: IncomeStep,
+  expense: ExpenseStep,
   networth: NetWorthStep,
   suitability: SuitabilityStep,
   goals: GoalsStep,
@@ -44,7 +46,10 @@ export function DataStudio() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="flex max-h-[88vh] w-[calc(100vw-2rem)] sm:max-w-3xl flex-col gap-0 overflow-hidden p-0">
+      <DialogContent
+        className="flex max-h-[88vh] w-[calc(100vw-2rem)] sm:max-w-3xl flex-col gap-0 overflow-hidden p-0"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
         <div className="border-b border-border px-5 pt-5 pb-4">
           <DialogHeader className="space-y-1 text-left">
             <DialogTitle className="font-heading text-lg">{t("dataDrawer.title")}</DialogTitle>

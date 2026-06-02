@@ -19,12 +19,14 @@ import { blankPlan, buildProjectionRequest, defaultAssumptions } from "@/lib/pla
 import type {
   AdvisorEvent,
   Asset,
+  Dependent,
   ExpenseItem,
   Goal,
   IncomeItem,
   Liability,
   Locale,
   Plan,
+  RetirementIncomeConfig,
   Scenario,
   ScenarioAssumptions,
   ClientProfile,
@@ -35,7 +37,8 @@ import type {
 
 export type DataTab =
   | "profile"
-  | "cashflow"
+  | "income"
+  | "expense"
   | "networth"
   | "suitability"
   | "goals";
@@ -79,6 +82,10 @@ export interface VisionStore {
 
   // Step 1 — profile
   updateClientProfile: (patch: Partial<ClientProfile>) => void;
+  addDependent: () => void;
+  updateDependent: (id: string, patch: Partial<Dependent>) => void;
+  removeDependent: (id: string) => void;
+  updateRetirementIncome: (patch: Partial<RetirementIncomeConfig>) => void;
 
   // Step 2 — cash flow
   addIncome: () => void;
@@ -207,6 +214,55 @@ export const useVisionStore = create<VisionStore>()(
           clientProfile: { ...p.clientProfile, ...patch },
         }));
       },
+      addDependent() {
+        patchPlan(set, (p) => ({
+          ...p,
+          clientProfile: {
+            ...p.clientProfile,
+            dependentsDetail: [
+              ...(p.clientProfile.dependentsDetail ?? []),
+              { id: uid("dep"), name: "", relation: "child", age: 0 },
+            ],
+          },
+        }));
+      },
+      updateDependent(id, patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          clientProfile: {
+            ...p.clientProfile,
+            dependentsDetail: (p.clientProfile.dependentsDetail ?? []).map((d) =>
+              d.id === id ? { ...d, ...patch } : d,
+            ),
+          },
+        }));
+      },
+      removeDependent(id) {
+        patchPlan(set, (p) => ({
+          ...p,
+          clientProfile: {
+            ...p.clientProfile,
+            dependentsDetail: (p.clientProfile.dependentsDetail ?? []).filter(
+              (d) => d.id !== id,
+            ),
+          },
+        }));
+      },
+      updateRetirementIncome(patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          cashFlow: {
+            ...p.cashFlow,
+            retirementIncome: {
+              mode: "percent",
+              value: 70,
+              inss: true,
+              ...p.cashFlow.retirementIncome,
+              ...patch,
+            },
+          },
+        }));
+      },
 
       addIncome() {
         patchPlan(set, (p) => ({
@@ -215,7 +271,7 @@ export const useVisionStore = create<VisionStore>()(
             ...p.cashFlow,
             incomes: [
               ...p.cashFlow.incomes,
-              { id: uid("inc"), label: "", monthly: 0, kind: "salary" },
+              { id: uid("inc"), label: "", monthly: 0, kind: "salary", recurring: true },
             ],
           },
         }));
@@ -247,7 +303,7 @@ export const useVisionStore = create<VisionStore>()(
             ...p.cashFlow,
             expenses: [
               ...p.cashFlow.expenses,
-              { id: uid("exp"), label: "", monthly: 0, category: "living" },
+              { id: uid("exp"), label: "", monthly: 0, category: "living", primary: true },
             ],
           },
         }));
