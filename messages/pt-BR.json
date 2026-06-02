@@ -390,5 +390,127 @@
   "events": {
     "title": "Eventos",
     "empty": "Nenhum evento ainda."
+  },
+  "intake": {
+    "title": "Dossiês de clientes, recebidos",
+    "subtitle": "Os dados cadastrais e financeiros chegam dos sistemas do banco. Abra um dossiê para rodar a simulação.",
+    "status": "Engine online · {n} dossiês recebidos",
+    "ageYears": "{age} anos",
+    "receivedAgo": "há {h}h",
+    "investable": "Investível",
+    "open": "Abrir no engine",
+    "newDossier": "Novo dossiê",
+    "newDossierDesc": "Começar de uma entrada em branco",
+    "engine": "Engine de Simulação de Planejamento",
+    "loading": "Carregando dossiê…"
+  },
+  "engine": {
+    "phaseSimulate": "Simular",
+    "phaseOutput": "Entrega",
+    "data": "Dados",
+    "copilot": "Copiloto"
+  },
+  "workspace": {
+    "scenarios": "Cenários",
+    "newScenario": "Novo cenário",
+    "scenarioName": "Cenário {n}",
+    "scenarioCopy": "{name} (cópia)",
+    "duplicate": "Duplicar",
+    "compare": "Comparar",
+    "createFirst": "Crie o primeiro cenário para iniciar o loop de simulação.",
+    "parameters": "Parâmetros de planejamento",
+    "growthScenario": "Cenário de crescimento",
+    "growth": { "base": "Base", "cautious": "Cauteloso", "conservative": "Conservador", "stressed": "Estressado", "custom": "Personalizado" },
+    "monthlyContribution": "Aporte mensal",
+    "retirementAge": "Idade de aposentadoria",
+    "expectedReturn": "Retorno real esperado",
+    "inflation": "Inflação",
+    "run": "Rodar simulação",
+    "running": "Rodando…",
+    "lastsToHorizon": "Cobre todo o horizonte",
+    "depletesAt": "Esgota aos {age} anos",
+    "dossier": "Dossiê recebido",
+    "editData": "Editar dados"
+  },
+  "kpi": {
+    "wealthAtRetirement": "Patrimônio na aposentadoria",
+    "retirementDuration": "Renda dura",
+    "probability": "Probabilidade de sucesso",
+    "estate": "Patrimônio no horizonte",
+    "incomeGap": "Lacuna de renda mensal"
+  },
+  "chart": {
+    "wealthOverTime": "Patrimônio ao longo do tempo",
+    "incomeVsNeeds": "Renda vs. necessidades",
+    "goalFunding": "Financiamento dos objetivos"
+  },
+  "dataDrawer": {
+    "title": "Dados recebidos",
+    "subtitle": "Refine o dossiê recebido do banco — a simulação atualiza ao vivo.",
+    "tab": { "profile": "Perfil", "cashflow": "Fluxo", "networth": "Patrimônio", "suitability": "Suitability", "goals": "Objetivos" }
+  },
+  "output": {
+    "title": "Entrega para o Salesforce",
+    "subtitle": "Aprove o plano para gerar o pacote de saída — plano + oportunidades de cross-sell + dados gerados.",
+    "approved": "Plano aprovado",
+    "notApproved": "Aprovação pendente",
+    "approvedHint": "O pacote está pronto para ser entregue ao Salesforce.",
+    "approveHint": "Aprove o cenário selecionado para habilitar a entrega.",
+    "approve": "Aprovar plano",
+    "reopen": "Reabrir",
+    "crossSell": "Oportunidades de cross-sell",
+    "estimatedTotal": "Potencial em jogo:",
+    "potential": "Potencial:",
+    "fit": { "high": "Alto fit", "medium": "Médio fit", "low": "Baixo fit" },
+    "generatedData": "Dados gerados",
+    "payload": "Pacote de saída (API)",
+    "viewJson": "JSON bruto",
+    "hideJson": "Resumo",
+    "opportunities": "oportunidades",
+    "send": "Enviar ao Salesforce",
+    "sending": "Enviando…",
+    "sent": "Plano entregue ao Salesforce",
+    "delivered": "Entregue ao Salesforce",
+    "approveToSend": "Aprove o plano para habilitar o envio."
+  },
+  "crosssell": {
+    "product": {
+      "debtRestructure": "Renegociação / portabilidade para consignado",
+      "lifeInsurance": "Seguro de vida",
+      "emergencyFund": "Reserva de emergência (Fundo DI)",
+      "cashMigration": "Migrar caixa parado para CDB / LCI / Tesouro",
+      "pension": "Previdência privada (PGBL/VGBL)",
+      "education": "Plano de educação (Tesouro Educa+)",
+      "realEstate": "Financiamento imobiliário / consórcio",
+      "mortgageReview": "Análise amortizar-vs-investir + prestamista",
+      "offshore": "Sleeve internacional / offshore",
+      "succession": "Estrutura sucessória (holding, ITCMD)",
+      "autoInvest": "Aporte mensal automático"
+    },
+    "cat": {
+      "credit": "Crédito",
+      "protection": "Proteção",
+      "reserve": "Reserva",
+      "investments": "Investimentos",
+      "retirement": "Aposentadoria",
+      "goals": "Objetivos",
+      "international": "Internacional",
+      "wealth": "Estruturação patrimonial"
+    },
+    "why": {
+      "highCostDebt": "Dívida cara drenando o orçamento — reestruturar é o movimento de maior retorno.",
+      "soleProvider": "Única provedora com dependentes — proteção é prioridade.",
+      "dependents": "Dependentes a proteger se a renda parar.",
+      "reserveGap": "A reserva líquida está abaixo de três meses de despesas.",
+      "idleCash": "Um grande saldo em caixa parado, perdendo para a inflação.",
+      "noPensionPj": "Autônomo sem previdência privada — o Estado não cobre.",
+      "pensionTopUp": "Renda alta com espaço para aportes em previdência mais eficientes em impostos.",
+      "educationGoal": "Um objetivo de educação combina com um plano Educa+ programado.",
+      "propertyGoal": "Um objetivo de imóvel — modelar consórcio vs. financiamento.",
+      "mortgage": "Financiamento ativo — modelar amortizar-vs-investir e prestamista.",
+      "offshore": "Patrimônio concentrado no Brasil — adicionar diversificação internacional.",
+      "succession": "Um patrimônio relevante precisa de sucessão e planejamento de liquidez.",
+      "autoInvest": "Sobra mensal ainda não automatizada em investimentos."
+    }
   }
 }

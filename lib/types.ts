@@ -345,4 +345,67 @@ export interface ClientSummary {
   /** 0..100 completeness of the plan across the journey. */
   completeness: number;
   approvalStatus: ApprovalStatus;
+  /** Investable wealth teaser (BRL). */
+  investable: number;
+  /** ISO timestamp the dossier was received from the bank (inbound). */
+  receivedAt?: string;
+}
+
+/* ------------------------------------------------------------------ */
+/* Standalone engine: phases, cross-sell, outbound payload             */
+/* ------------------------------------------------------------------ */
+
+/** When a client dossier is loaded, which phase of the engine is active. */
+export type EnginePhase = "simulate" | "output";
+
+export type Fit = "high" | "medium" | "low";
+
+export interface CrossSellOpportunity {
+  id: string;
+  productKey: string;
+  categoryKey: string;
+  rationaleKey: string;
+  fit: Fit;
+  /** Illustrative BRL signal (coverage / AUM / balance at stake). */
+  estimatedValue: number;
+}
+
+export interface OutboundResult {
+  ok: boolean;
+  /** Salesforce record reference (stub). */
+  ref: string;
+  sentAt: string;
+}
+
+export interface OutputPayload {
+  meta: { generatedAt: string; engineVersion: string; status: ApprovalStatus };
+  client: { id: string; name: string; segment: Segment };
+  riskProfile: RiskProfile | null;
+  approvedScenario: {
+    id: string;
+    name: string;
+    assumptions: ScenarioAssumptions;
+  } | null;
+  projection: {
+    wealthAtRetirement: number;
+    retirementDurationYears: number;
+    probabilityOfSuccess: number;
+    estateAtDeath: number;
+    incomeGap: number;
+  } | null;
+  balanceSheet: { netWorth: number; liquidAssets: number };
+  cashFlow: { surplus: number; savingsRate: number };
+  goals: {
+    type: GoalType;
+    targetAmount: number;
+    targetYear: number;
+    fundedPct: number;
+  }[];
+  crossSell: {
+    product: string;
+    category: string;
+    fit: Fit;
+    estimatedValue: number;
+    rationale: string;
+  }[];
 }

@@ -17,9 +17,9 @@ const heading = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "Projeto Vision — Planejamento Financeiro",
+  title: "Projeto Vision — Planning Simulation Engine",
   description:
-    "Advisor-facing financial planning journey for Projeto Vision (Bradesco).",
+    "Standalone financial planning simulation engine — bank data in, scenario loop, plan + cross-sell payload out.",
 };
 
 export default function RootLayout({
@@ -30,7 +30,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${sans.variable} ${heading.variable} h-full antialiased`}
+      className={`dark ${sans.variable} ${heading.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">

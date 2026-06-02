@@ -81,7 +81,7 @@
 }
 
 :root {
-  --radius: 0.75rem;
+  --radius: 0.85rem;
 
   /* Brand — Bradesco red (#CC092F at 500) */
   --brand-50: #fdeaef;
@@ -96,14 +96,13 @@
   --brand-900: #470310;
   --brand-950: #2a0209;
 
-  /* Surfaces & text — warm, near-neutral ramp */
+  /* Light variant (re-themeable) */
   --background: oklch(0.995 0.0015 75);
   --foreground: oklch(0.205 0.01 60);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.205 0.01 60);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.205 0.01 60);
-
   --primary: var(--brand-500);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.968 0.004 75);
@@ -112,15 +111,10 @@
   --muted-foreground: oklch(0.515 0.012 60);
   --accent: oklch(0.963 0.006 70);
   --accent-foreground: oklch(0.225 0.012 60);
-
-  /* Distinct alert red — NOT the brand red */
   --destructive: #d92d20;
-
   --border: oklch(0.915 0.004 75);
   --input: oklch(0.915 0.004 75);
   --ring: var(--brand-500);
-
-  /* Finance semantics */
   --positive: #15803d;
   --positive-foreground: #ffffff;
   --positive-muted: #e7f6ec;
@@ -133,15 +127,11 @@
   --info: #1d4ed8;
   --info-foreground: #ffffff;
   --info-muted: #e8edfc;
-
-  /* Chart palette — distinct hues for wealth composition */
   --chart-1: #cc092f;
   --chart-2: #0e7c86;
   --chart-3: #2563eb;
   --chart-4: #d97706;
   --chart-5: #7c3aed;
-
-  /* Left nav rail — light, with red active states */
   --sidebar: oklch(0.992 0.002 75);
   --sidebar-foreground: oklch(0.30 0.01 60);
   --sidebar-primary: var(--brand-500);
@@ -150,58 +140,70 @@
   --sidebar-accent-foreground: var(--brand-600);
   --sidebar-border: oklch(0.915 0.004 75);
   --sidebar-ring: var(--brand-500);
+
+  /* Premium FX (overridden per theme) */
+  --glow-primary: 0 0 0 1px color-mix(in oklch, var(--primary) 22%, transparent),
+    0 18px 50px -18px color-mix(in oklch, var(--primary) 30%, transparent);
+  --bg-glow-1: color-mix(in oklch, var(--primary) 8%, transparent);
+  --bg-glow-2: color-mix(in oklch, var(--info) 6%, transparent);
 }
 
+/* Premium dark — the default theme ("simulation engine") */
 .dark {
-  --background: oklch(0.185 0.008 60);
-  --foreground: oklch(0.965 0.003 75);
-  --card: oklch(0.215 0.009 60);
-  --card-foreground: oklch(0.965 0.003 75);
-  --popover: oklch(0.215 0.009 60);
-  --popover-foreground: oklch(0.965 0.003 75);
+  --background: oklch(0.158 0.014 264);
+  --foreground: oklch(0.975 0.006 250);
+  --card: oklch(0.198 0.016 264);
+  --card-foreground: oklch(0.975 0.006 250);
+  --popover: oklch(0.205 0.017 264);
+  --popover-foreground: oklch(0.975 0.006 250);
 
-  --primary: var(--brand-500);
+  --primary: #e11d3f;
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.27 0.01 60);
-  --secondary-foreground: oklch(0.965 0.003 75);
-  --muted: oklch(0.27 0.01 60);
-  --muted-foreground: oklch(0.715 0.008 70);
-  --accent: oklch(0.30 0.012 60);
-  --accent-foreground: oklch(0.965 0.003 75);
+  --secondary: oklch(0.258 0.018 264);
+  --secondary-foreground: oklch(0.97 0.006 250);
+  --muted: oklch(0.238 0.015 264);
+  --muted-foreground: oklch(0.685 0.022 258);
+  --accent: oklch(0.285 0.022 264);
+  --accent-foreground: oklch(0.985 0.006 250);
 
-  --destructive: #f0584b;
+  --destructive: #fb7185;
 
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: var(--brand-400);
+  --border: oklch(1 0 0 / 9%);
+  --input: oklch(1 0 0 / 12%);
+  --ring: #e11d3f;
 
-  --positive: #3ddc84;
-  --positive-foreground: #04130a;
-  --positive-muted: oklch(0.30 0.06 150);
-  --negative: #f0584b;
-  --negative-foreground: #1a0504;
-  --negative-muted: oklch(0.32 0.08 25);
-  --warning: #e9a23b;
-  --warning-foreground: #160d02;
-  --warning-muted: oklch(0.32 0.06 70);
-  --info: #6ea0ff;
-  --info-foreground: #040a1a;
-  --info-muted: oklch(0.30 0.06 265);
+  --positive: #34d399;
+  --positive-foreground: #04150c;
+  --positive-muted: oklch(0.32 0.07 165);
+  --negative: #fb7185;
+  --negative-foreground: #1d0509;
+  --negative-muted: oklch(0.33 0.09 15);
+  --warning: #fbbf24;
+  --warning-foreground: #1a1102;
+  --warning-muted: oklch(0.34 0.07 75);
+  --info: #60a5fa;
+  --info-foreground: #040b1c;
+  --info-muted: oklch(0.32 0.07 255);
 
-  --chart-1: #f25268;
+  --chart-1: #fb3b5c;
   --chart-2: #2dd4bf;
   --chart-3: #60a5fa;
   --chart-4: #fbbf24;
   --chart-5: #a78bfa;
 
-  --sidebar: oklch(0.205 0.009 60);
-  --sidebar-foreground: oklch(0.965 0.003 75);
-  --sidebar-primary: var(--brand-400);
+  --sidebar: oklch(0.185 0.016 264);
+  --sidebar-foreground: oklch(0.97 0.006 250);
+  --sidebar-primary: #e11d3f;
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.30 0.012 60);
-  --sidebar-accent-foreground: oklch(0.965 0.003 75);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: var(--brand-400);
+  --sidebar-accent: oklch(0.27 0.02 264);
+  --sidebar-accent-foreground: oklch(0.985 0.006 250);
+  --sidebar-border: oklch(1 0 0 / 9%);
+  --sidebar-ring: #e11d3f;
+
+  --glow-primary: 0 0 0 1px color-mix(in oklch, var(--primary) 35%, transparent),
+    0 22px 60px -20px color-mix(in oklch, var(--primary) 45%, transparent);
+  --bg-glow-1: color-mix(in oklch, var(--primary) 16%, transparent);
+  --bg-glow-2: color-mix(in oklch, var(--info) 12%, transparent);
 }
 
 @layer base {
@@ -210,14 +212,63 @@
   }
   body {
     @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(1100px 560px at 78% -8%, var(--bg-glow-1), transparent 60%),
+      radial-gradient(900px 520px at 12% 4%, var(--bg-glow-2), transparent 58%);
+    background-attachment: fixed;
     font-feature-settings: "cv02", "cv03", "cv04";
   }
   html {
     @apply font-sans;
+    color-scheme: dark;
   }
-  /* Align all financial figures on a tabular grid (no jitter on update) */
+  ::selection {
+    background: color-mix(in oklch, var(--primary) 32%, transparent);
+  }
+  /* Refined scrollbars */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
+  }
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  *::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--foreground) 16%, transparent);
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  *::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklch, var(--foreground) 28%, transparent);
+    background-clip: content-box;
+  }
+}
+
+@layer utilities {
+  /* Tabular numerals for financial figures (no jitter on update) */
   .tnum {
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
+  }
+  /* Frosted, layered surface */
+  .glass {
+    background: color-mix(in oklch, var(--card) 86%, transparent);
+    backdrop-filter: blur(12px) saturate(1.2);
+  }
+  /* Soft brand glow for hero figures / active states */
+  .glow-primary {
+    box-shadow: var(--glow-primary);
+  }
+  .text-glow-primary {
+    text-shadow: 0 0 24px color-mix(in oklch, var(--primary) 45%, transparent);
+  }
+  /* Subtle top hairline highlight on elevated cards */
+  .surface {
+    background:
+      linear-gradient(180deg, color-mix(in oklch, #fff 4%, transparent), transparent 30%),
+      var(--card);
+    border: 1px solid var(--border);
   }
 }

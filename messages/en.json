@@ -390,5 +390,127 @@
   "events": {
     "title": "Events",
     "empty": "No events yet."
+  },
+  "intake": {
+    "title": "Client dossiers, received",
+    "subtitle": "Cadastral and financial data arrives from the bank's systems. Open a dossier to run the simulation.",
+    "status": "Engine online · {n} dossiers received",
+    "ageYears": "{age} yrs",
+    "receivedAgo": "{h}h ago",
+    "investable": "Investable",
+    "open": "Open in engine",
+    "newDossier": "New dossier",
+    "newDossierDesc": "Start from a blank intake",
+    "engine": "Planning Simulation Engine",
+    "loading": "Loading dossier…"
+  },
+  "engine": {
+    "phaseSimulate": "Simulate",
+    "phaseOutput": "Handoff",
+    "data": "Data",
+    "copilot": "Copilot"
+  },
+  "workspace": {
+    "scenarios": "Scenarios",
+    "newScenario": "New scenario",
+    "scenarioName": "Scenario {n}",
+    "scenarioCopy": "{name} (copy)",
+    "duplicate": "Duplicate",
+    "compare": "Compare",
+    "createFirst": "Create the first scenario to start the simulation loop.",
+    "parameters": "Planning parameters",
+    "growthScenario": "Growth scenario",
+    "growth": { "base": "Base", "cautious": "Cautious", "conservative": "Conservative", "stressed": "Stressed", "custom": "Custom" },
+    "monthlyContribution": "Monthly contribution",
+    "retirementAge": "Retirement age",
+    "expectedReturn": "Expected real return",
+    "inflation": "Inflation",
+    "run": "Run simulation",
+    "running": "Running…",
+    "lastsToHorizon": "Funds the full horizon",
+    "depletesAt": "Depletes at age {age}",
+    "dossier": "Received dossier",
+    "editData": "Edit data"
+  },
+  "kpi": {
+    "wealthAtRetirement": "Wealth at retirement",
+    "retirementDuration": "Income lasts",
+    "probability": "Probability of success",
+    "estate": "Estate at horizon",
+    "incomeGap": "Monthly income gap"
+  },
+  "chart": {
+    "wealthOverTime": "Wealth over time",
+    "incomeVsNeeds": "Net income vs. needs",
+    "goalFunding": "Goal funding"
+  },
+  "dataDrawer": {
+    "title": "Received data",
+    "subtitle": "Refine the dossier received from the bank — the simulation updates live.",
+    "tab": { "profile": "Profile", "cashflow": "Cash flow", "networth": "Net worth", "suitability": "Suitability", "goals": "Goals" }
+  },
+  "output": {
+    "title": "Handoff to Salesforce",
+    "subtitle": "Approve the plan to generate the outbound payload — plan + cross-sell opportunities + generated data.",
+    "approved": "Plan approved",
+    "notApproved": "Pending approval",
+    "approvedHint": "The payload is ready to hand off to Salesforce.",
+    "approveHint": "Approve the selected scenario to enable the handoff.",
+    "approve": "Approve plan",
+    "reopen": "Reopen",
+    "crossSell": "Cross-sell opportunities",
+    "estimatedTotal": "Potential at stake:",
+    "potential": "Potential:",
+    "fit": { "high": "High fit", "medium": "Medium fit", "low": "Low fit" },
+    "generatedData": "Generated data",
+    "payload": "Output payload (API)",
+    "viewJson": "Raw JSON",
+    "hideJson": "Summary",
+    "opportunities": "opportunities",
+    "send": "Send to Salesforce",
+    "sending": "Sending…",
+    "sent": "Plan delivered to Salesforce",
+    "delivered": "Delivered to Salesforce",
+    "approveToSend": "Approve the plan to enable sending."
+  },
+  "crosssell": {
+    "product": {
+      "debtRestructure": "Debt renegotiation / consigned portability",
+      "lifeInsurance": "Life insurance",
+      "emergencyFund": "Emergency reserve (Fundo DI)",
+      "cashMigration": "Move idle cash to CDB / LCI / Tesouro",
+      "pension": "Private pension (PGBL/VGBL)",
+      "education": "Education plan (Tesouro Educa+)",
+      "realEstate": "Property financing / consórcio",
+      "mortgageReview": "Amortize-vs-invest review + credit-life",
+      "offshore": "International / offshore sleeve",
+      "succession": "Succession structure (holding, ITCMD)",
+      "autoInvest": "Automatic monthly contribution"
+    },
+    "cat": {
+      "credit": "Credit",
+      "protection": "Protection",
+      "reserve": "Reserve",
+      "investments": "Investments",
+      "retirement": "Retirement",
+      "goals": "Goals",
+      "international": "International",
+      "wealth": "Wealth structuring"
+    },
+    "why": {
+      "highCostDebt": "High-cost debt is draining the budget — restructuring is the highest-return move.",
+      "soleProvider": "Sole provider with dependents — protection is the priority.",
+      "dependents": "Dependents to protect if income stops.",
+      "reserveGap": "Liquid reserve is below three months of expenses.",
+      "idleCash": "A large cash balance is sitting idle, losing to inflation.",
+      "noPensionPj": "Self-employed with no private pension — the State won't cover it.",
+      "pensionTopUp": "High income with room for tax-efficient pension contributions.",
+      "educationGoal": "An education goal fits a programmed Educa+ plan.",
+      "propertyGoal": "A property goal — model consórcio vs. financing.",
+      "mortgage": "An active mortgage — model amortize-vs-invest and credit-life.",
+      "offshore": "Wealth is BR-concentrated — add international diversification.",
+      "succession": "A sizeable estate needs succession and liquidity planning.",
+      "autoInvest": "Monthly surplus not yet automated into investments."
+    }
   }
 }

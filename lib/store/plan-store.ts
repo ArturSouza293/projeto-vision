@@ -12,7 +12,7 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-import { fsc } from "@/lib/api/fsc";
+import { salesforce } from "@/lib/api/salesforce";
 import { planningEngine } from "@/lib/api/planning-engine";
 import { ageFromDob } from "@/lib/calc";
 import { blankPlan, buildProjectionRequest, defaultAssumptions } from "@/lib/plan";
@@ -28,8 +28,17 @@ import type {
   Scenario,
   ScenarioAssumptions,
   ClientProfile,
-  JourneyStepId,
+  EnginePhase,
+  OutboundResult,
+  OutputPayload,
 } from "@/lib/types";
+
+export type DataTab =
+  | "profile"
+  | "cashflow"
+  | "networth"
+  | "suitability"
+  | "goals";
 
 function uid(prefix = "id"): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -46,8 +55,13 @@ export interface VisionStore {
   setLocale: (l: Locale) => void;
 
   activePlan: Plan | null;
-  currentStepId: JourneyStepId;
-  setCurrentStep: (id: JourneyStepId) => void;
+  phase: EnginePhase;
+  setPhase: (p: EnginePhase) => void;
+
+  dataDrawerOpen: boolean;
+  setDataDrawerOpen: (v: boolean) => void;
+  dataTab: DataTab;
+  setDataTab: (t: DataTab) => void;
 
   copilotOpen: boolean;
   setCopilotOpen: (v: boolean) => void;
@@ -55,13 +69,13 @@ export interface VisionStore {
 
   loadingPlan: boolean;
   busy: boolean;
-  lastSavedAt: string | null;
+  outbound: OutboundResult | null;
 
   // Plan lifecycle
   loadClient: (clientId: string) => Promise<void>;
   startNewClient: () => void;
   closePlan: () => void;
-  savePlan: () => Promise<void>;
+  sendToSalesforce: (payload: OutputPayload) => Promise<void>;
 
   // Step 1 — profile
   updateClientProfile: (patch: Partial<ClientProfile>) => void;
@@ -125,8 +139,13 @@ export const useVisionStore = create<VisionStore>()(
       setLocale: (l) => set({ locale: l }),
 
       activePlan: null,
-      currentStepId: "profile",
-      setCurrentStep: (id) => set({ currentStepId: id }),
+      phase: "simulate",
+      setPhase: (p) => set({ phase: p }),
+
+      dataDrawerOpen: false,
+      setDataDrawerOpen: (v) => set({ dataDrawerOpen: v }),
+      dataTab: "profile",
+      setDataTab: (t) => set({ dataTab: t, dataDrawerOpen: true }),
 
       copilotOpen: false,
       setCopilotOpen: (v) => set({ copilotOpen: v }),
@@ -134,13 +153,18 @@ export const useVisionStore = create<VisionStore>()(
 
       loadingPlan: false,
       busy: false,
-      lastSavedAt: null,
+      outbound: null,
 
       async loadClient(clientId) {
         set({ loadingPlan: true });
         try {
-          const plan = await fsc.getPlan(clientId);
-          set({ activePlan: plan, currentStepId: "profile", loadingPlan: false });
+          const plan = await salesforce.inbound.fetchDossier(clientId);
+          set({
+            activePlan: plan,
+            phase: "simulate",
+            outbound: null,
+            loadingPlan: false,
+          });
         } catch (e) {
           set({ loadingPlan: false });
           throw e;
@@ -150,21 +174,26 @@ export const useVisionStore = create<VisionStore>()(
       startNewClient() {
         set({
           activePlan: blankPlan(uid("client")),
-          currentStepId: "profile",
+          phase: "simulate",
+          outbound: null,
         });
       },
 
       closePlan() {
-        set({ activePlan: null, currentStepId: "profile", copilotOpen: false });
+        set({
+          activePlan: null,
+          phase: "simulate",
+          outbound: null,
+          copilotOpen: false,
+          dataDrawerOpen: false,
+        });
       },
 
-      async savePlan() {
-        const plan = get().activePlan;
-        if (!plan) return;
+      async sendToSalesforce(payload) {
         set({ busy: true });
         try {
-          const res = await fsc.savePlan(plan);
-          set({ lastSavedAt: res.savedAt });
+          const res = await salesforce.outbound.pushPlan(payload);
+          set({ outbound: res });
         } finally {
           set({ busy: false });
         }
@@ -464,7 +493,7 @@ export const useVisionStore = create<VisionStore>()(
       partialize: (s) => ({
         locale: s.locale,
         activePlan: s.activePlan,
-        currentStepId: s.currentStepId,
+        phase: s.phase,
       }),
       onRehydrateStorage: () => (state) => state?.setHasHydrated(true),
     },

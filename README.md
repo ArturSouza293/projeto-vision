@@ -1,13 +1,14 @@
 # Projeto Vision — Advisor Financial Planning Journey
 
-A production-grade, **advisor-facing** financial-planning prototype for a Brazilian
-wealth-management context (Bradesco / "Projeto Vision"). It guides a bank advisor
-through a single fluid journey of building a client's financial plan, ending at the
-approval of a simulated scenario — **pre-asset-allocation**.
+A **standalone planning simulation engine** for a Brazilian wealth-management context
+(Bradesco / "Projeto Vision"). Client data arrives from the bank (cadastral +
+financial), an analyst works a **scenario loop** (create / recalculate N scenarios
+live), and on approval the engine emits an **outbound API payload** back to the bank's
+Salesforce — the approved plan + **cross-sell opportunities** + generated data.
 
-Built to evolve into real software and later integrate with **Salesforce Financial
-Services Cloud (FSC)** and the **aixigo / ALTO** planning engine, so the architecture,
-typing and data/API layer are clean and swappable.
+Salesforce is just the integration boundary (inbound dossiers, outbound payload), not
+the look of the product. The architecture, typing and I/O layer are clean and
+swappable, so the mock stubs can become real Salesforce / planning-engine calls.
 
 ---
 
@@ -65,19 +66,22 @@ the key instead of crashing. With a key it streams answers and can suggest a str
 
 ---
 
-## The journey
+## The flow
 
-`Entry (client selection)` → **Profile** → **Cash flow** → **Net worth** →
-**Suitability** → **Life goals** → **Scenario simulation** → **Review & approval**.
+**Intake** (dossiers received from the bank) → **Simulate** (the scenario loop — create
+& recalculate N scenarios, live) → **Handoff** (approve → cross-sell opportunities +
+the outbound API payload → send to Salesforce).
 
-The flow is fluid, not a gated wizard: the advisor can jump between steps via the
-persistent stepper, state persists across reloads, and every input feeds live
-computations and charts. The scenario step's what-if sliders (contribution, retirement
-age, expected real return, inflation) recompute the projection instantly.
+The simulate loop is the centerpiece: what-if sliders (contribution, retirement age,
+expected real return, inflation) recompute the projection and animate the KPIs
+instantly; scenarios can be created, duplicated and compared. The received dossier is
+editable in a side drawer and the simulation updates live. State persists across reloads.
 
-Four seed clients span the segments and narratives: **Camila & Diego** (Prime,
-accumulation), **Fernanda** (Principal, protection), **José Carlos** (Principal,
-decumulation) and **Patrícia** (Private, post-liquidity).
+Six seed dossiers span the segments and narratives: **Marcos** (Retail, over-indebted),
+**Aline** (Retail, comeback), **Camila & Diego** (Prime, accumulation), **Fernanda**
+(Principal, protection), **José Carlos** (Principal, decumulation) and **Patrícia**
+(Private, post-liquidity). The **cross-sell engine** (`lib/cross-sell.ts`) derives ranked
+product opportunities from each plan's signals, grounded in the Bradesco product map.
 
 ---
 
@@ -152,7 +156,9 @@ Components added (`npx shadcn@latest add <name>`):
   `--negative` (a distinct alert red, **not** the brand red), `--warning`, `--info`.
 - **Type**: Hanken Grotesk (UI) + Fraunces (display), with tabular numerals on every
   financial figure so numbers align and update without jitter.
-- Light theme, with dark-ready CSS-variable tokens already structured.
+- **Dark premium default** ("simulation engine") with a subtle red/blue glow; the light
+  theme stays as a re-themeable CSS-variable set. Animated KPI counters and fluid
+  phase/scenario transitions via Framer Motion.
 
 ---
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { Splash } from "@/components/app/splash";
-import { EntryScreen } from "@/components/journey/entry-screen";
-import { JourneyShell } from "@/components/journey/journey-shell";
+import { EngineShell } from "@/components/engine/engine-shell";
+import { Intake } from "@/components/engine/intake";
 import { useVisionStore } from "@/lib/store/plan-store";
 
 export default function Home() {
@@ -10,5 +10,5 @@ export default function Home() {
   const hasPlan = useVisionStore((s) => s.activePlan !== null);
 
   if (!hydrated) return <Splash />;
-  return hasPlan ? <JourneyShell /> : <EntryScreen />;
+  return hasPlan ? <EngineShell /> : <Intake />;
 }
