@@ -21,6 +21,7 @@ import { Money } from "@/components/app/money";
 import { MoneyInput } from "@/components/app/number-field";
 import { StepHeader } from "@/components/journey/step-header";
 import { StatTile } from "@/components/journey/stat-tile";
+import { LifeTimeline } from "@/components/charts/life-timeline";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -268,6 +269,10 @@ export function GoalsStep() {
           ))}
         </div>
       )}
+
+      <div className="mt-5">
+        <LifeTimeline />
+      </div>
     </div>
   );
 }

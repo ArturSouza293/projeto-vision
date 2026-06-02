@@ -473,6 +473,15 @@
     },
     "clear": "Clear"
   },
+  "timeline": {
+    "title": "Timeline",
+    "hint": "Click the line to add an event",
+    "retirement": "Retirement",
+    "add": "Add",
+    "cancel": "Cancel",
+    "eventTitle": "Event title",
+    "newEvent": "Event"
+  },
   "eventType": {
     "review": "Review",
     "rebalancing": "Rebalancing",

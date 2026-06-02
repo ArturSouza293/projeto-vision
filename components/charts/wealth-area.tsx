@@ -20,9 +20,11 @@ import type { ProjectionPoint } from "@/lib/types";
 export function WealthArea({
   points,
   retirementYear,
+  events = [],
 }: {
   points: ProjectionPoint[];
   retirementYear: number;
+  events?: { year: number; title: string }[];
 }) {
   const t = useTranslations();
   const locale = useVisionStore((s) => s.locale);
@@ -72,6 +74,20 @@ export function WealthArea({
             strokeWidth={2}
             fill="url(#wealthFill)"
           />
+          {events.map((ev, i) => (
+            <ReferenceLine
+              key={`ev-${i}`}
+              x={ev.year}
+              stroke="var(--info)"
+              strokeDasharray="2 3"
+              label={{
+                value: ev.title,
+                position: "insideTopLeft",
+                fontSize: 9,
+                fill: "var(--info)",
+              }}
+            />
+          ))}
         </AreaChart>
       </ResponsiveContainer>
     </div>

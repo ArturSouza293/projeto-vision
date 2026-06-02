@@ -473,6 +473,15 @@
     },
     "clear": "Limpar"
   },
+  "timeline": {
+    "title": "Linha do tempo",
+    "hint": "Clique na linha para adicionar um evento",
+    "retirement": "Aposentadoria",
+    "add": "Adicionar",
+    "cancel": "Cancelar",
+    "eventTitle": "Título do evento",
+    "newEvent": "Evento"
+  },
   "eventType": {
     "review": "Revisão",
     "rebalancing": "Rebalanceamento",

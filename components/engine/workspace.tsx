@@ -241,7 +241,14 @@ export function Workspace() {
         <div className="space-y-5 lg:col-span-2">
           <section className="surface rounded-2xl p-5">
             <h3 className="mb-1 text-sm font-semibold text-foreground">{t("chart.wealthOverTime")}</h3>
-            <WealthArea points={result.points} retirementYear={retirementYear} />
+            <WealthArea
+              points={result.points}
+              retirementYear={retirementYear}
+              events={plan.events.map((e) => ({
+                year: new Date(e.date).getFullYear(),
+                title: e.title,
+              }))}
+            />
           </section>
           <section className="surface rounded-2xl p-5">
             <h3 className="mb-1 text-sm font-semibold text-foreground">{t("chart.incomeVsNeeds")}</h3>
