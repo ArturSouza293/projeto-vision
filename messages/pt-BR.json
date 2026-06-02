@@ -453,8 +453,9 @@
     "goalFunding": "Financiamento dos objetivos"
   },
   "dataDrawer": {
-    "title": "Dados recebidos",
-    "subtitle": "Refine o dossiê recebido do banco — a simulação atualiza ao vivo.",
+    "title": "Dados do cliente",
+    "subtitle": "Preencha ou refine o dossiê — a simulação atualiza ao vivo.",
+    "finish": "Concluir",
     "tab": { "profile": "Perfil", "cashflow": "Fluxo", "networth": "Patrimônio", "suitability": "Suitability", "goals": "Objetivos" }
   },
   "output": {

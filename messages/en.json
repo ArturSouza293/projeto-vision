@@ -453,8 +453,9 @@
     "goalFunding": "Goal funding"
   },
   "dataDrawer": {
-    "title": "Received data",
-    "subtitle": "Refine the dossier received from the bank — the simulation updates live.",
+    "title": "Client data",
+    "subtitle": "Fill or refine the dossier — the simulation updates live.",
+    "finish": "Done",
     "tab": { "profile": "Profile", "cashflow": "Cash flow", "networth": "Net worth", "suitability": "Suitability", "goals": "Goals" }
   },
   "output": {

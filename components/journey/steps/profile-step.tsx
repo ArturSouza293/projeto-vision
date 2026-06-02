@@ -216,8 +216,8 @@ export function ProfileStep() {
       <StepHeader title={t("profile.title")} subtitle={t("profile.subtitle")} />
 
       <Form {...form}>
-        <form className="grid gap-5 lg:grid-cols-3">
-          <section className="rounded-2xl border border-border bg-card p-5 lg:col-span-2">
+        <form className="space-y-5">
+          <section className="rounded-2xl border border-border bg-card p-5">
             <h3 className="mb-4 text-sm font-semibold text-foreground">
               {t("profile.section.personal")}
             </h3>
@@ -285,8 +285,7 @@ export function ProfileStep() {
             </div>
           </section>
 
-          <aside className="flex flex-col gap-5">
-            <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-2xl border border-border bg-card p-5">
               <h3 className="mb-4 text-sm font-semibold text-foreground">
                 {t("profile.section.household")}
               </h3>
@@ -341,7 +340,6 @@ export function ProfileStep() {
                 </p>
               )}
             </section>
-          </aside>
         </form>
       </Form>
     </div>

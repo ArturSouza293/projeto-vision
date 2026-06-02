@@ -7,7 +7,7 @@ import { ChevronLeft, Database, Sparkles } from "lucide-react";
 import { BrandMark } from "@/components/app/brand-mark";
 import { LocaleToggle } from "@/components/app/locale-toggle";
 import { CopilotPanel } from "@/components/advisor-copilot/copilot-panel";
-import { DataDrawer } from "@/components/engine/data-drawer";
+import { DataStudio } from "@/components/engine/data-studio";
 import { Output } from "@/components/engine/output";
 import { Workspace } from "@/components/engine/workspace";
 import { Button } from "@/components/ui/button";
@@ -98,7 +98,7 @@ export function EngineShell() {
           </div>
 
           <div className="flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => setDataTab("cashflow")}>
+            <Button variant="outline" size="sm" onClick={() => setDataTab("profile")}>
               <Database className="size-4" />
               <span className="hidden md:inline">{t("engine.data")}</span>
             </Button>
@@ -127,7 +127,7 @@ export function EngineShell() {
         </motion.div>
       </main>
 
-      <DataDrawer />
+      <DataStudio />
 
       <Sheet open={copilotOpen} onOpenChange={setCopilotOpen}>
         <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">

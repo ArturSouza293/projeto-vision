@@ -176,6 +176,8 @@ export const useVisionStore = create<VisionStore>()(
           activePlan: blankPlan(uid("client")),
           phase: "simulate",
           outbound: null,
+          dataTab: "profile",
+          dataDrawerOpen: true,
         });
       },
 
