@@ -10,7 +10,7 @@ export function BrandMark({
 }) {
   return (
     <span className={cn("flex items-center gap-2.5", className)}>
-      <span className="relative grid size-8 place-items-center overflow-hidden rounded-[10px] bg-gradient-to-b from-brand-500 to-brand-700 shadow-sm ring-1 ring-black/10">
+      <span className="relative grid size-8 place-items-center overflow-hidden rounded-[10px] bg-primary shadow-sm ring-1 ring-black/5">
         <svg
           viewBox="0 0 24 24"
           className="h-4 w-4 text-white"

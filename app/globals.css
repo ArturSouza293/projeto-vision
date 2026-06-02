@@ -44,7 +44,7 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
-  /* Semantic finance tokens (kept separate from brand red) */
+  /* Semantic finance tokens (status / feedback) */
   --color-positive: var(--positive);
   --color-positive-foreground: var(--positive-foreground);
   --color-positive-muted: var(--positive-muted);
@@ -58,7 +58,7 @@
   --color-info-foreground: var(--info-foreground);
   --color-info-muted: var(--info-muted);
 
-  /* Brand (Bradesco red) scale */
+  /* Liquid Red — primary action / destructive (brand-* aliases the ramp) */
   --color-brand-50: var(--brand-50);
   --color-brand-100: var(--brand-100);
   --color-brand-200: var(--brand-200);
@@ -71,6 +71,23 @@
   --color-brand-900: var(--brand-900);
   --color-brand-950: var(--brand-950);
 
+  /* Liquid Blue — secondary action, links, switches, info */
+  --color-royal-50: var(--royal-50);
+  --color-royal-100: var(--royal-100);
+  --color-royal-200: var(--royal-200);
+  --color-royal-300: var(--royal-300);
+  --color-royal-400: var(--royal-400);
+  --color-royal-500: var(--royal-500);
+  --color-royal-600: var(--royal-600);
+  --color-royal-700: var(--royal-700);
+  --color-royal-800: var(--royal-800);
+  --color-royal-900: var(--royal-900);
+
+  /* Liquid Sky — section-header accent (display only) */
+  --color-sky-300: var(--sky-300);
+  --color-sky-400: var(--sky-400);
+  --color-sky-500: var(--sky-500);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -81,129 +98,121 @@
 }
 
 :root {
-  --radius: 0.85rem;
+  /* Cards = 12px; pills handled per-component with rounded-full */
+  --radius: 0.75rem;
 
-  /* Brand — Bradesco red (#CC092F at 500) */
-  --brand-50: #fdeaef;
-  --brand-100: #fbd0da;
-  --brand-200: #f5a3b6;
-  --brand-300: #ee7390;
-  --brand-400: #e23e63;
-  --brand-500: #cc092f;
-  --brand-600: #b00829;
-  --brand-700: #8c0721;
-  --brand-800: #680518;
-  --brand-900: #470310;
+  /* ===========================================================
+     LIQUID — Red (primary action, alerts, accents)
+     =========================================================== */
+  --brand-50: #fdecef;
+  --brand-100: #f8c8d0;
+  --brand-200: #f19baa;
+  --brand-300: #e66378;
+  --brand-400: #da3f58;
+  --brand-500: #ce2a47; /* default brand red */
+  --brand-600: #b72340;
+  --brand-700: #971b37;
+  --brand-800: #76122b;
+  --brand-900: #530a1e;
   --brand-950: #2a0209;
 
-  /* Light variant (re-themeable) */
-  --background: oklch(0.995 0.0015 75);
-  --foreground: oklch(0.205 0.01 60);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.205 0.01 60);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.205 0.01 60);
+  /* ===========================================================
+     LIQUID — Blue (secondary, links, switches, info)
+     =========================================================== */
+  --royal-50: #e8effe;
+  --royal-100: #c8d8fc;
+  --royal-200: #93b2f8;
+  --royal-300: #5e8bf3;
+  --royal-400: #3d6fec;
+  --royal-500: #2c5be2; /* default brand blue */
+  --royal-600: #2348c2;
+  --royal-700: #1c3a9f;
+  --royal-800: #152c7a;
+  --royal-900: #0d1d55;
+
+  /* ===========================================================
+     LIQUID — Sky (section headers)
+     =========================================================== */
+  --sky-300: #8fd0f8;
+  --sky-400: #5db7f5;
+  --sky-500: #2e9dee;
+
+  /* ===========================================================
+     LIQUID — warm-gray neutrals
+     =========================================================== */
+  --gray-0: #ffffff;
+  --gray-50: #f7f8fa;
+  --gray-100: #eef0f3;
+  --gray-200: #e1e4e8;
+  --gray-300: #c9ced5;
+  --gray-400: #9ca3ad;
+  --gray-500: #6b7280;
+  --gray-600: #4b5260;
+  --gray-700: #2f3540;
+  --gray-800: #1c1f26;
+  --gray-900: #15181c;
+
+  /* ===========================================================
+     Semantic surfaces / text / borders (shadcn contract)
+     =========================================================== */
+  --background: var(--gray-0);
+  --foreground: var(--gray-900);
+  --card: var(--gray-0);
+  --card-foreground: var(--gray-900);
+  --popover: var(--gray-0);
+  --popover-foreground: var(--gray-900);
+
   --primary: var(--brand-500);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.968 0.004 75);
-  --secondary-foreground: oklch(0.225 0.012 60);
-  --muted: oklch(0.967 0.004 75);
-  --muted-foreground: oklch(0.515 0.012 60);
-  --accent: oklch(0.963 0.006 70);
-  --accent-foreground: oklch(0.225 0.012 60);
-  --destructive: #d92d20;
-  --border: oklch(0.915 0.004 75);
-  --input: oklch(0.915 0.004 75);
-  --ring: var(--brand-500);
-  --positive: #15803d;
+  --primary-foreground: #ffffff;
+  --secondary: var(--gray-100);
+  --secondary-foreground: var(--gray-800);
+  --muted: var(--gray-50);
+  --muted-foreground: var(--gray-500);
+  --accent: var(--gray-50);
+  --accent-foreground: var(--gray-800);
+
+  --destructive: var(--brand-500);
+
+  --border: var(--gray-200);
+  --input: var(--gray-200);
+  --ring: var(--royal-500); /* Liquid focus is blue */
+
+  /* Finance / status semantics */
+  --positive: #1ba15b;
   --positive-foreground: #ffffff;
-  --positive-muted: #e7f6ec;
-  --negative: #d92d20;
+  --positive-muted: #e6f6ee;
+  --negative: var(--brand-500);
   --negative-foreground: #ffffff;
-  --negative-muted: #fdeceb;
-  --warning: #b45309;
+  --negative-muted: var(--brand-50);
+  --warning: #b57f12;
   --warning-foreground: #ffffff;
-  --warning-muted: #fbf0df;
-  --info: #1d4ed8;
+  --warning-muted: #fff8c4;
+  --info: var(--royal-500);
   --info-foreground: #ffffff;
-  --info-muted: #e8edfc;
-  --chart-1: #cc092f;
-  --chart-2: #0e7c86;
-  --chart-3: #2563eb;
-  --chart-4: #d97706;
-  --chart-5: #7c3aed;
-  --sidebar: oklch(0.992 0.002 75);
-  --sidebar-foreground: oklch(0.30 0.01 60);
+  --info-muted: var(--royal-50);
+
+  /* Charts — Liquid duotone + supporting accents */
+  --chart-1: #ce2a47; /* red */
+  --chart-2: #2c5be2; /* blue */
+  --chart-3: #5db7f5; /* sky */
+  --chart-4: #1ba15b; /* green */
+  --chart-5: #f2b53a; /* yellow */
+
+  --sidebar: var(--gray-50);
+  --sidebar-foreground: var(--gray-700);
   --sidebar-primary: var(--brand-500);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: oklch(0.963 0.006 70);
+  --sidebar-accent: var(--gray-100);
   --sidebar-accent-foreground: var(--brand-600);
-  --sidebar-border: oklch(0.915 0.004 75);
-  --sidebar-ring: var(--brand-500);
+  --sidebar-border: var(--gray-200);
+  --sidebar-ring: var(--royal-500);
 
-  /* Premium FX (overridden per theme) */
-  --glow-primary: 0 0 0 1px color-mix(in oklch, var(--primary) 22%, transparent),
-    0 18px 50px -18px color-mix(in oklch, var(--primary) 30%, transparent);
-  --bg-glow-1: color-mix(in oklch, var(--primary) 8%, transparent);
-  --bg-glow-2: color-mix(in oklch, var(--info) 6%, transparent);
-}
-
-/* Premium dark — the default theme ("simulation engine") */
-.dark {
-  --background: oklch(0.158 0.014 264);
-  --foreground: oklch(0.975 0.006 250);
-  --card: oklch(0.198 0.016 264);
-  --card-foreground: oklch(0.975 0.006 250);
-  --popover: oklch(0.205 0.017 264);
-  --popover-foreground: oklch(0.975 0.006 250);
-
-  --primary: #e11d3f;
-  --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.258 0.018 264);
-  --secondary-foreground: oklch(0.97 0.006 250);
-  --muted: oklch(0.238 0.015 264);
-  --muted-foreground: oklch(0.685 0.022 258);
-  --accent: oklch(0.285 0.022 264);
-  --accent-foreground: oklch(0.985 0.006 250);
-
-  --destructive: #fb7185;
-
-  --border: oklch(1 0 0 / 9%);
-  --input: oklch(1 0 0 / 12%);
-  --ring: #e11d3f;
-
-  --positive: #34d399;
-  --positive-foreground: #04150c;
-  --positive-muted: oklch(0.32 0.07 165);
-  --negative: #fb7185;
-  --negative-foreground: #1d0509;
-  --negative-muted: oklch(0.33 0.09 15);
-  --warning: #fbbf24;
-  --warning-foreground: #1a1102;
-  --warning-muted: oklch(0.34 0.07 75);
-  --info: #60a5fa;
-  --info-foreground: #040b1c;
-  --info-muted: oklch(0.32 0.07 255);
-
-  --chart-1: #fb3b5c;
-  --chart-2: #2dd4bf;
-  --chart-3: #60a5fa;
-  --chart-4: #fbbf24;
-  --chart-5: #a78bfa;
-
-  --sidebar: oklch(0.185 0.016 264);
-  --sidebar-foreground: oklch(0.97 0.006 250);
-  --sidebar-primary: #e11d3f;
-  --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.27 0.02 264);
-  --sidebar-accent-foreground: oklch(0.985 0.006 250);
-  --sidebar-border: oklch(1 0 0 / 9%);
-  --sidebar-ring: #e11d3f;
-
-  --glow-primary: 0 0 0 1px color-mix(in oklch, var(--primary) 35%, transparent),
-    0 22px 60px -20px color-mix(in oklch, var(--primary) 45%, transparent);
-  --bg-glow-1: color-mix(in oklch, var(--primary) 16%, transparent);
-  --bg-glow-2: color-mix(in oklch, var(--info) 12%, transparent);
+  /* Elevation — soft, low, warm-neutral (Liquid) */
+  --elev-1: 0 1px 2px rgba(20, 24, 32, 0.04);
+  --elev-2: 0 1px 3px rgba(20, 24, 32, 0.06), 0 1px 2px rgba(20, 24, 32, 0.04);
+  --elev-3: 0 4px 8px rgba(20, 24, 32, 0.06), 0 2px 4px rgba(20, 24, 32, 0.04);
+  --elev-4: 0 10px 24px rgba(20, 24, 32, 0.08), 0 4px 8px rgba(20, 24, 32, 0.04);
+  --elev-fab: 0 6px 16px rgba(44, 91, 226, 0.3), 0 2px 4px rgba(20, 24, 32, 0.08);
 }
 
 @layer base {
@@ -212,36 +221,32 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image:
-      radial-gradient(1100px 560px at 78% -8%, var(--bg-glow-1), transparent 60%),
-      radial-gradient(900px 520px at 12% 4%, var(--bg-glow-2), transparent 58%);
-    background-attachment: fixed;
     font-feature-settings: "cv02", "cv03", "cv04";
   }
   html {
     @apply font-sans;
-    color-scheme: dark;
+    color-scheme: light;
   }
   ::selection {
-    background: color-mix(in oklch, var(--primary) 32%, transparent);
+    background: color-mix(in srgb, var(--primary) 22%, transparent);
   }
   /* Refined scrollbars */
   * {
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in oklch, var(--foreground) 20%, transparent) transparent;
+    scrollbar-color: var(--gray-300) transparent;
   }
   *::-webkit-scrollbar {
     width: 10px;
     height: 10px;
   }
   *::-webkit-scrollbar-thumb {
-    background: color-mix(in oklch, var(--foreground) 16%, transparent);
+    background: var(--gray-300);
     border-radius: 9999px;
     border: 3px solid transparent;
     background-clip: content-box;
   }
   *::-webkit-scrollbar-thumb:hover {
-    background: color-mix(in oklch, var(--foreground) 28%, transparent);
+    background: var(--gray-400);
     background-clip: content-box;
   }
 }
@@ -252,23 +257,33 @@
     font-variant-numeric: tabular-nums;
     font-feature-settings: "tnum";
   }
-  /* Frosted, layered surface */
+
+  /* Frosted sticky surface (used by the app header) — clean translucent white */
   .glass {
-    background: color-mix(in oklch, var(--card) 86%, transparent);
-    backdrop-filter: blur(12px) saturate(1.2);
+    background: color-mix(in srgb, var(--card) 82%, transparent);
+    backdrop-filter: blur(10px) saturate(1.1);
   }
-  /* Soft brand glow for hero figures / active states */
+
+  /* Plain elevated surface — white card with hairline border */
+  .surface {
+    background: var(--card);
+    border: 1px solid var(--border);
+  }
+
+  /* Liquid uses soft neutral elevation, not colored glow.
+     These keep existing class usages working with Liquid semantics. */
   .glow-primary {
-    box-shadow: var(--glow-primary);
+    box-shadow: var(--elev-4);
   }
   .text-glow-primary {
-    text-shadow: 0 0 24px color-mix(in oklch, var(--primary) 45%, transparent);
+    text-shadow: none;
   }
-  /* Subtle top hairline highlight on elevated cards */
-  .surface {
-    background:
-      linear-gradient(180deg, color-mix(in oklch, #fff 4%, transparent), transparent 30%),
-      var(--card);
-    border: 1px solid var(--border);
+
+  /* Liquid section header — heavy display weight, sky-blue, display-only */
+  .section-heading {
+    font-family: var(--font-heading);
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: var(--sky-400);
   }
 }

@@ -1,19 +1,20 @@
 import type { Metadata } from "next";
-import { Hanken_Grotesk, Fraunces } from "next/font/google";
+import { Nunito, Nunito_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
-const sans = Hanken_Grotesk({
+// Liquid Design System — Nunito Sans (body) + Nunito (heavy display).
+const sans = Nunito_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
 });
 
-const heading = Fraunces({
+const heading = Nunito({
   subsets: ["latin"],
   variable: "--font-heading",
   display: "swap",
-  axes: ["opsz", "SOFT"],
+  weight: ["400", "500", "600", "700", "800", "900"],
 });
 
 export const metadata: Metadata = {
@@ -30,7 +31,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`dark ${sans.variable} ${heading.variable} h-full antialiased`}
+      className={`${sans.variable} ${heading.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col bg-background text-foreground">
