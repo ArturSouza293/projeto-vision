@@ -366,6 +366,8 @@ export interface CrossSellOpportunity {
   categoryKey: string;
   rationaleKey: string;
   fit: Fit;
+  /** 0..100 fit score for ranking and display. */
+  score: number;
   /** Illustrative BRL signal (coverage / AUM / balance at stake). */
   estimatedValue: number;
 }
@@ -405,6 +407,7 @@ export interface OutputPayload {
     product: string;
     category: string;
     fit: Fit;
+    score: number;
     estimatedValue: number;
     rationale: string;
   }[];

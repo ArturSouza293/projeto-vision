@@ -1,23 +1,34 @@
 /**
  * Cross-sell opportunity engine — derives ranked product opportunities from a
  * plan's signals, grounded in the Bradesco product map and the personas'
- * advisory moves. Deterministic and pure. Output keys resolve via i18n.
+ * advisory moves. Deterministic and pure; output keys resolve via i18n.
+ *
+ * Each opportunity gets a 0..100 fit score (tier base + a log boost on the BRL
+ * signal); results are de-duplicated by product and ranked by score.
  */
 
 import {
+  ageFromDob,
   cashFlowTotals,
   investableWealth,
   netWorthTotals,
 } from "@/lib/calc";
 import type { CrossSellOpportunity, Fit, Plan } from "@/lib/types";
 
-const FIT_ORDER: Record<Fit, number> = { high: 0, medium: 1, low: 2 };
+const FIT_BASE: Record<Fit, number> = { high: 70, medium: 50, low: 32 };
+
+function scoreFor(fit: Fit, estimatedValue: number): number {
+  const boost = Math.min(26, Math.round(Math.log10(Math.max(1, estimatedValue)) * 4));
+  return Math.min(99, FIT_BASE[fit] + boost);
+}
 
 export function generateOpportunities(plan: Plan): CrossSellOpportunity[] {
   const cf = cashFlowTotals(plan.cashFlow);
   const nw = netWorthTotals(plan.netWorth);
   const investable = investableWealth(plan.netWorth);
   const p = plan.clientProfile;
+  const age = ageFromDob(p.dateOfBirth);
+  const thisYear = new Date().getFullYear();
 
   const monthlyExpense = cf.expense;
   const annualIncome = cf.income * 12;
@@ -28,6 +39,9 @@ export function generateOpportunities(plan: Plan): CrossSellOpportunity[] {
   const mortgageBalance = plan.netWorth.liabilities
     .filter((l) => l.kind === "mortgage")
     .reduce((s, l) => s + l.balance, 0);
+  const healthMonthly = plan.cashFlow.expenses
+    .filter((e) => e.category === "health")
+    .reduce((s, e) => s + e.monthly, 0);
   const hasPension = nw.byClass.pension > 0;
   const isPJ =
     p.employmentStatus === "pj" ||
@@ -38,116 +52,74 @@ export function generateOpportunities(plan: Plan): CrossSellOpportunity[] {
   const wealthy = p.segment === "principal" || p.segment === "private";
   const educationGoal = plan.goals.find((g) => g.type === "education");
   const propertyGoal = plan.goals.find((g) => g.type === "property");
+  const retirementGoal = plan.goals.find((g) => g.type === "retirement");
+  const nearRetirement =
+    age >= 54 || (retirementGoal ? retirementGoal.targetYear - thisYear <= 8 : false);
 
   const out: CrossSellOpportunity[] = [];
   let i = 0;
-  const add = (o: Omit<CrossSellOpportunity, "id">) =>
-    out.push({ id: `op-${i++}`, ...o });
+  const add = (
+    fit: Fit,
+    productKey: string,
+    categoryKey: string,
+    rationaleKey: string,
+    estimatedValue: number,
+  ) =>
+    out.push({
+      id: `op-${i++}`,
+      productKey,
+      categoryKey,
+      rationaleKey,
+      fit,
+      estimatedValue,
+      score: scoreFor(fit, estimatedValue),
+    });
 
   if (cf.surplus < 0 || highRateBalance > 0) {
-    add({
-      productKey: "crosssell.product.debtRestructure",
-      categoryKey: "crosssell.cat.credit",
-      rationaleKey: "crosssell.why.highCostDebt",
-      fit: "high",
-      estimatedValue: Math.max(highRateBalance, monthlyExpense * 3),
-    });
+    add("high", "crosssell.product.debtRestructure", "crosssell.cat.credit", "crosssell.why.highCostDebt", Math.max(highRateBalance, monthlyExpense * 3));
   }
   if (p.dependents >= 1) {
-    add({
-      productKey: "crosssell.product.lifeInsurance",
-      categoryKey: "crosssell.cat.protection",
-      rationaleKey: soleProvider ? "crosssell.why.soleProvider" : "crosssell.why.dependents",
-      fit: soleProvider ? "high" : "medium",
-      estimatedValue: Math.min(annualIncome * 10, 3_000_000),
-    });
+    add(soleProvider ? "high" : "medium", "crosssell.product.lifeInsurance", "crosssell.cat.protection", soleProvider ? "crosssell.why.soleProvider" : "crosssell.why.dependents", Math.min(annualIncome * 10, 3_000_000));
+  }
+  if (healthMonthly >= 2000 && p.dependents >= 1) {
+    add("high", "crosssell.product.medicalFund", "crosssell.cat.protection", "crosssell.why.medicalContinuity", Math.min(5_000_000, healthMonthly * 180));
   }
   if (liquidGap > 0) {
-    add({
-      productKey: "crosssell.product.emergencyFund",
-      categoryKey: "crosssell.cat.reserve",
-      rationaleKey: "crosssell.why.reserveGap",
-      fit: "high",
-      estimatedValue: liquidGap,
-    });
+    add("high", "crosssell.product.emergencyFund", "crosssell.cat.reserve", "crosssell.why.reserveGap", liquidGap);
   }
   if (idleCash > 50_000 && nw.byClass.cash >= nw.byClass.investments) {
-    add({
-      productKey: "crosssell.product.cashMigration",
-      categoryKey: "crosssell.cat.investments",
-      rationaleKey: "crosssell.why.idleCash",
-      fit: "high",
-      estimatedValue: idleCash,
-    });
+    add("high", "crosssell.product.cashMigration", "crosssell.cat.investments", "crosssell.why.idleCash", idleCash);
   }
   if (!hasPension && (isPJ || annualIncome > 240_000)) {
-    add({
-      productKey: "crosssell.product.pension",
-      categoryKey: "crosssell.cat.retirement",
-      rationaleKey: isPJ ? "crosssell.why.noPensionPj" : "crosssell.why.pensionTopUp",
-      fit: isPJ ? "high" : "medium",
-      estimatedValue: Math.round(annualIncome * 0.12),
-    });
+    add(isPJ ? "high" : "medium", "crosssell.product.pension", "crosssell.cat.retirement", isPJ ? "crosssell.why.noPensionPj" : "crosssell.why.pensionTopUp", Math.round(annualIncome * 0.12));
+  }
+  if (nearRetirement && investable > 0) {
+    add(age >= 58 ? "high" : "medium", "crosssell.product.incomeLadder", "crosssell.cat.retirement", "crosssell.why.incomeLadder", Math.round(investable * 0.4));
   }
   if (educationGoal) {
-    add({
-      productKey: "crosssell.product.education",
-      categoryKey: "crosssell.cat.goals",
-      rationaleKey: "crosssell.why.educationGoal",
-      fit: "high",
-      estimatedValue: educationGoal.targetAmount,
-    });
+    add("high", "crosssell.product.education", "crosssell.cat.goals", "crosssell.why.educationGoal", educationGoal.targetAmount);
   }
   if (propertyGoal) {
-    add({
-      productKey: "crosssell.product.realEstate",
-      categoryKey: "crosssell.cat.credit",
-      rationaleKey: "crosssell.why.propertyGoal",
-      fit: "medium",
-      estimatedValue: propertyGoal.targetAmount,
-    });
+    add("medium", "crosssell.product.realEstate", "crosssell.cat.credit", "crosssell.why.propertyGoal", propertyGoal.targetAmount);
   }
   if (mortgageBalance > 0) {
-    add({
-      productKey: "crosssell.product.mortgageReview",
-      categoryKey: "crosssell.cat.credit",
-      rationaleKey: "crosssell.why.mortgage",
-      fit: "medium",
-      estimatedValue: mortgageBalance,
-    });
+    add("medium", "crosssell.product.mortgageReview", "crosssell.cat.credit", "crosssell.why.mortgage", mortgageBalance);
   }
   if (wealthy && investable > 0) {
-    add({
-      productKey: "crosssell.product.offshore",
-      categoryKey: "crosssell.cat.international",
-      rationaleKey: "crosssell.why.offshore",
-      fit: p.segment === "private" ? "high" : "medium",
-      estimatedValue: Math.round(investable * 0.2),
-    });
+    add(p.segment === "private" ? "high" : "medium", "crosssell.product.offshore", "crosssell.cat.international", "crosssell.why.offshore", Math.round(investable * 0.2));
   }
   if (p.segment === "private") {
-    add({
-      productKey: "crosssell.product.succession",
-      categoryKey: "crosssell.cat.wealth",
-      rationaleKey: "crosssell.why.succession",
-      fit: "high",
-      estimatedValue: nw.netWorth,
-    });
+    add("high", "crosssell.product.succession", "crosssell.cat.wealth", "crosssell.why.succession", nw.netWorth);
   }
   if (cf.surplus > 500) {
-    add({
-      productKey: "crosssell.product.autoInvest",
-      categoryKey: "crosssell.cat.investments",
-      rationaleKey: "crosssell.why.autoInvest",
-      fit: "medium",
-      estimatedValue: Math.round(cf.surplus * 12),
-    });
+    add("medium", "crosssell.product.autoInvest", "crosssell.cat.investments", "crosssell.why.autoInvest", Math.round(cf.surplus * 12));
   }
 
-  return out
-    .sort(
-      (a, b) =>
-        FIT_ORDER[a.fit] - FIT_ORDER[b.fit] || b.estimatedValue - a.estimatedValue,
-    )
-    .slice(0, 6);
+  // De-duplicate by product (keep the higher score) and rank.
+  const byProduct = new Map<string, CrossSellOpportunity>();
+  for (const o of out) {
+    const ex = byProduct.get(o.productKey);
+    if (!ex || o.score > ex.score) byProduct.set(o.productKey, o);
+  }
+  return [...byProduct.values()].sort((a, b) => b.score - a.score).slice(0, 6);
 }

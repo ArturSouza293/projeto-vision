@@ -174,6 +174,15 @@ export function Output() {
                       <span className="text-muted-foreground">{t("output.potential")} </span>
                       <Money value={o.estimatedValue} compact className="font-semibold text-foreground" />
                     </div>
+                    <div className="mt-3">
+                      <div className="mb-1 flex items-center justify-between text-[11px] text-muted-foreground">
+                        <span>{t("output.fitScore")}</span>
+                        <span className="tabular-nums">{o.score}</span>
+                      </div>
+                      <div className="h-1 overflow-hidden rounded-full bg-muted">
+                        <div className="h-full rounded-full bg-primary" style={{ width: `${o.score}%` }} />
+                      </div>
+                    </div>
                   </motion.div>
                 );
               })}

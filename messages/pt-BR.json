@@ -471,7 +471,8 @@
     "sending": "Enviando…",
     "sent": "Plano entregue ao Salesforce",
     "delivered": "Entregue ao Salesforce",
-    "approveToSend": "Aprove o plano para habilitar o envio."
+    "approveToSend": "Aprove o plano para habilitar o envio.",
+    "fitScore": "Score de fit"
   },
   "crosssell": {
     "product": {
@@ -485,7 +486,9 @@
       "mortgageReview": "Análise amortizar-vs-investir + prestamista",
       "offshore": "Sleeve internacional / offshore",
       "succession": "Estrutura sucessória (holding, ITCMD)",
-      "autoInvest": "Aporte mensal automático"
+      "autoInvest": "Aporte mensal automático",
+      "medicalFund": "Fundo médico blindado + continuidade do plano de saúde",
+      "incomeLadder": "Escada de renda FII + Tesouro Renda+"
     },
     "cat": {
       "credit": "Crédito",
@@ -510,7 +513,9 @@
       "mortgage": "Financiamento ativo — modelar amortizar-vs-investir e prestamista.",
       "offshore": "Patrimônio concentrado no Brasil — adicionar diversificação internacional.",
       "succession": "Um patrimônio relevante precisa de sucessão e planejamento de liquidez.",
-      "autoInvest": "Sobra mensal ainda não automatizada em investimentos."
+      "autoInvest": "Sobra mensal ainda não automatizada em investimentos.",
+      "medicalContinuity": "Custos médicos altos e recorrentes com dependentes — capitalize o fluxo e garanta a continuidade da cobertura.",
+      "incomeLadder": "Perto da aposentadoria — converter o portfólio em renda protegida da inflação."
     }
   }
 }

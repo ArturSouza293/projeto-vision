@@ -471,7 +471,8 @@
     "sending": "Sending…",
     "sent": "Plan delivered to Salesforce",
     "delivered": "Delivered to Salesforce",
-    "approveToSend": "Approve the plan to enable sending."
+    "approveToSend": "Approve the plan to enable sending.",
+    "fitScore": "Fit score"
   },
   "crosssell": {
     "product": {
@@ -485,7 +486,9 @@
       "mortgageReview": "Amortize-vs-invest review + credit-life",
       "offshore": "International / offshore sleeve",
       "succession": "Succession structure (holding, ITCMD)",
-      "autoInvest": "Automatic monthly contribution"
+      "autoInvest": "Automatic monthly contribution",
+      "medicalFund": "Ring-fenced medical fund + health-plan continuity",
+      "incomeLadder": "FII + Tesouro Renda+ income ladder"
     },
     "cat": {
       "credit": "Credit",
@@ -510,7 +513,9 @@
       "mortgage": "An active mortgage — model amortize-vs-invest and credit-life.",
       "offshore": "Wealth is BR-concentrated — add international diversification.",
       "succession": "A sizeable estate needs succession and liquidity planning.",
-      "autoInvest": "Monthly surplus not yet automated into investments."
+      "autoInvest": "Monthly surplus not yet automated into investments.",
+      "medicalContinuity": "High recurring medical costs with dependents — fund the stream and secure coverage continuity.",
+      "incomeLadder": "Approaching retirement — convert the portfolio into an inflation-protected income stream."
     }
   }
 }

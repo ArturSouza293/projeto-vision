@@ -66,6 +66,7 @@ export function buildOutputPayload(args: {
       product: resolve(o.productKey),
       category: resolve(o.categoryKey),
       fit: o.fit,
+      score: o.score,
       estimatedValue: o.estimatedValue,
       rationale: resolve(o.rationaleKey),
     })),
