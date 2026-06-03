@@ -3,16 +3,17 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { ArrowRight, MapPin, Plus, Radio } from "@/components/app/icons";
+import { ArrowRight, MapPin, Plus, Radio, Trash2 } from "@/components/app/icons";
 
 import { LocaleToggle } from "@/components/app/locale-toggle";
 import { Money } from "@/components/app/money";
 import { TopBar } from "@/components/app/top-bar";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { salesforce } from "@/lib/api/salesforce";
 import { useVisionStore } from "@/lib/store/plan-store";
-import type { ClientSummary, Segment } from "@/lib/types";
+import type { ClientSummary, SavedPersona, Segment } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const SEGMENT_DOT: Record<Segment, string> = {
@@ -107,19 +108,72 @@ function DossierCard({ client }: { client: ClientSummary }) {
   );
 }
 
+function SavedPersonaCard({ persona }: { persona: SavedPersona }) {
+  const t = useTranslations();
+  const loadSavedPersona = useVisionStore((s) => s.loadSavedPersona);
+  const deleteSavedPersona = useVisionStore((s) => s.deleteSavedPersona);
+  return (
+    <motion.div variants={item} className="surface flex flex-col rounded-2xl p-5">
+      <button
+        type="button"
+        onClick={() => loadSavedPersona(persona.clientId)}
+        className="flex items-start gap-3 text-left focus-visible:outline-none"
+      >
+        <Avatar className="size-11 border border-border">
+          <AvatarFallback className="bg-secondary font-heading text-sm font-semibold text-foreground">
+            {initials(persona.name)}
+          </AvatarFallback>
+        </Avatar>
+        <div className="min-w-0 flex-1">
+          <div className="truncate font-heading text-[15px] font-semibold text-foreground">{persona.name}</div>
+          <div className="mt-1 flex items-center gap-2 text-xs text-muted-foreground">
+            <span className="inline-flex items-center gap-1.5">
+              <span className={cn("size-1.5 rounded-full", SEGMENT_DOT[persona.segment])} />
+              {t(`segment.${persona.segment}`)}
+            </span>
+            {persona.author && <span className="truncate">· {t("library.by", { author: persona.author })}</span>}
+          </div>
+        </div>
+      </button>
+      <div className="mt-4 flex items-center justify-between">
+        <button
+          type="button"
+          onClick={() => loadSavedPersona(persona.clientId)}
+          className="inline-flex items-center gap-1 text-sm font-medium text-primary"
+        >
+          {t("intake.open")} <ArrowRight className="size-4" />
+        </button>
+        <button
+          type="button"
+          aria-label={t("common.remove")}
+          onClick={() => deleteSavedPersona(persona.clientId)}
+          className="text-muted-foreground transition-colors hover:text-negative"
+        >
+          <Trash2 className="size-4" />
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 export function Intake() {
   const t = useTranslations();
   const [clients, setClients] = useState<ClientSummary[] | null>(null);
   const startNewClient = useVisionStore((s) => s.startNewClient);
   const loadingPlan = useVisionStore((s) => s.loadingPlan);
+  const advisorName = useVisionStore((s) => s.advisorName);
+  const setAdvisorName = useVisionStore((s) => s.setAdvisorName);
+  const savedPersonas = useVisionStore((s) => s.savedPersonas);
+  const fetchSavedPersonas = useVisionStore((s) => s.fetchSavedPersonas);
 
   useEffect(() => {
     let active = true;
     salesforce.inbound.fetchQueue().then((c) => active && setClients(c));
+    fetchSavedPersonas();
     return () => {
       active = false;
     };
-  }, []);
+  }, [fetchSavedPersonas]);
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -146,6 +200,15 @@ export function Intake() {
             {t("intake.title")}
           </h1>
           <p className="mt-3 text-lg text-muted-foreground">{t("intake.subtitle")}</p>
+          <div className="mt-5 flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">{t("library.you")}</span>
+            <Input
+              value={advisorName}
+              onChange={(e) => setAdvisorName(e.target.value)}
+              placeholder={t("library.youPlaceholder")}
+              className="h-8 max-w-52"
+            />
+          </div>
         </motion.div>
 
         {clients === null ? (
@@ -184,6 +247,23 @@ export function Intake() {
               </div>
             </motion.button>
           </motion.div>
+        )}
+        {savedPersonas.length > 0 && (
+          <section className="mt-12">
+            <h2 className="mb-4 font-heading text-xl font-semibold text-foreground">
+              {t("library.title")}
+            </h2>
+            <motion.div
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {savedPersonas.map((p) => (
+                <SavedPersonaCard key={p.clientId} persona={p} />
+              ))}
+            </motion.div>
+          </section>
         )}
       </main>
 

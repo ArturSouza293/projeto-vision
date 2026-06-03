@@ -13,6 +13,7 @@ import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import { salesforce } from "@/lib/api/salesforce";
+import { personaLibrary } from "@/lib/api/library";
 import { planningEngine } from "@/lib/api/planning-engine";
 import { ageFromDob } from "@/lib/calc";
 import { blankPlan, buildProjectionRequest, defaultAssumptions, defaultGoals } from "@/lib/plan";
@@ -27,6 +28,7 @@ import type {
   Locale,
   Plan,
   RetirementIncomeConfig,
+  SavedPersona,
   Scenario,
   ScenarioAssumptions,
   ClientProfile,
@@ -56,6 +58,16 @@ export interface VisionStore {
 
   locale: Locale;
   setLocale: (l: Locale) => void;
+
+  // Shared persona library (Supabase)
+  advisorName: string;
+  setAdvisorName: (name: string) => void;
+  savedPersonas: SavedPersona[];
+  savedLoading: boolean;
+  fetchSavedPersonas: () => Promise<void>;
+  savePlan: () => Promise<void>;
+  loadSavedPersona: (clientId: string) => Promise<void>;
+  deleteSavedPersona: (clientId: string) => Promise<void>;
 
   activePlan: Plan | null;
   phase: EnginePhase;
@@ -145,6 +157,40 @@ export const useVisionStore = create<VisionStore>()(
 
       locale: "en",
       setLocale: (l) => set({ locale: l }),
+
+      advisorName: "",
+      setAdvisorName: (name) => set({ advisorName: name }),
+      savedPersonas: [],
+      savedLoading: false,
+      async fetchSavedPersonas() {
+        set({ savedLoading: true });
+        try {
+          const savedPersonas = await personaLibrary.list();
+          set({ savedPersonas, savedLoading: false });
+        } catch {
+          set({ savedPersonas: [], savedLoading: false });
+        }
+      },
+      async savePlan() {
+        const { activePlan, advisorName } = get();
+        if (!activePlan) return;
+        await personaLibrary.save(activePlan, advisorName);
+        void get().fetchSavedPersonas();
+      },
+      async loadSavedPersona(clientId) {
+        set({ loadingPlan: true });
+        try {
+          const plan = await personaLibrary.load(clientId);
+          set({ activePlan: plan, phase: "simulate", outbound: null, loadingPlan: false });
+        } catch (e) {
+          set({ loadingPlan: false });
+          throw e;
+        }
+      },
+      async deleteSavedPersona(clientId) {
+        await personaLibrary.remove(clientId);
+        void get().fetchSavedPersonas();
+      },
 
       activePlan: null,
       phase: "simulate",
@@ -559,6 +605,7 @@ export const useVisionStore = create<VisionStore>()(
         locale: s.locale,
         activePlan: s.activePlan,
         phase: s.phase,
+        advisorName: s.advisorName,
       }),
       onRehydrateStorage: () => (state) => state?.setHasHydrated(true),
     },

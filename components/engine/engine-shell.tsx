@@ -2,7 +2,8 @@
 
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
-import { ChevronLeft, Database, Sparkles } from "@/components/app/icons";
+import { toast } from "sonner";
+import { ChevronLeft, Database, Save, Sparkles } from "@/components/app/icons";
 
 import { BrandMark } from "@/components/app/brand-mark";
 import { LocaleToggle } from "@/components/app/locale-toggle";
@@ -66,6 +67,20 @@ export function EngineShell() {
   const copilotOpen = useVisionStore((s) => s.copilotOpen);
   const setCopilotOpen = useVisionStore((s) => s.setCopilotOpen);
   const toggleCopilot = useVisionStore((s) => s.toggleCopilot);
+  const savePlan = useVisionStore((s) => s.savePlan);
+
+  async function handleSave() {
+    try {
+      await savePlan();
+      toast.success(t("library.saved"));
+    } catch (e) {
+      toast.error(
+        e instanceof Error && e.message === "not-configured"
+          ? t("library.notConfigured")
+          : t("library.saveError"),
+      );
+    }
+  }
 
   if (!plan) return null;
   const p = plan.clientProfile;
@@ -101,6 +116,10 @@ export function EngineShell() {
             <Button variant="outline" size="sm" onClick={() => setDataTab("profile")}>
               <Database className="size-4" />
               <span className="hidden md:inline">{t("engine.data")}</span>
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleSave}>
+              <Save className="size-4" />
+              <span className="hidden md:inline">{t("library.save")}</span>
             </Button>
             <LocaleToggle />
             <Button

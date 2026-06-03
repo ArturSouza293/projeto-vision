@@ -569,6 +569,16 @@
     "incomeVsNeeds": "Renda vs. necessidades",
     "goalFunding": "Financiamento dos objetivos"
   },
+  "library": {
+    "title": "Personas do time",
+    "you": "Você:",
+    "youPlaceholder": "Seu nome",
+    "by": "por {author}",
+    "save": "Salvar",
+    "saved": "Persona salva na biblioteca do time",
+    "saveError": "Não foi possível salvar",
+    "notConfigured": "Banco de personas não configurado"
+  },
   "dataDrawer": {
     "title": "Dados do cliente",
     "subtitle": "Preencha ou refine o dossiê — a simulação atualiza ao vivo.",

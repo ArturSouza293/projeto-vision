@@ -42,6 +42,7 @@ export {
   Plus,
   Radio,
   RotateCcw,
+  Save,
   Send,
   ShieldCheck,
   Sparkles,

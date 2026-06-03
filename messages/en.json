@@ -569,6 +569,16 @@
     "incomeVsNeeds": "Net income vs. needs",
     "goalFunding": "Goal funding"
   },
+  "library": {
+    "title": "Team personas",
+    "you": "You:",
+    "youPlaceholder": "Your name",
+    "by": "by {author}",
+    "save": "Save",
+    "saved": "Persona saved to the team library",
+    "saveError": "Couldn't save",
+    "notConfigured": "Persona database not configured"
+  },
   "dataDrawer": {
     "title": "Client data",
     "subtitle": "Fill or refine the dossier — the simulation updates live.",

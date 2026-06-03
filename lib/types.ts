@@ -428,6 +428,16 @@ export interface ClientSummary {
   receivedAt?: string;
 }
 
+/** A team-saved persona — lightweight row from the shared library (vision.plans). */
+export interface SavedPersona {
+  clientId: string;
+  name: string;
+  author: string | null;
+  segment: Segment;
+  /** ISO timestamp of the last save. */
+  updatedAt: string;
+}
+
 /* ------------------------------------------------------------------ */
 /* Standalone engine: phases, cross-sell, outbound payload             */
 /* ------------------------------------------------------------------ */
