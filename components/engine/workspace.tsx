@@ -22,6 +22,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -98,38 +99,102 @@ function ParamSlider({
 function CompareDialog({ plan }: { plan: Plan }) {
   const t = useTranslations();
   const locale = useVisionStore((s) => s.locale);
+  const fmt = (n: number) => formatCompactCurrency(n, locale);
+  const cur = (n: number) => formatCurrency(n, locale);
+  const rows = plan.scenarios.map((s) => ({ s, r: projectPlan(plan, s.assumptions) }));
+  type Row = (typeof rows)[number];
+  const selectedId = plan.selectedScenarioId;
+
+  const metrics: { label: string; value: (x: Row) => React.ReactNode }[] = [
+    { label: t("workspace.monthlyContribution"), value: ({ s }) => cur(s.assumptions.monthlyContribution) },
+    { label: t("workspace.retirementAge"), value: ({ s }) => s.assumptions.retirementAge },
+    { label: t("workspace.expectedReturn"), value: ({ s }) => `IPCA+${s.assumptions.expectedRealReturn}%` },
+    { label: t("kpi.wealthAtRetirement"), value: ({ r }) => fmt(r.wealthAtRetirement) },
+    {
+      label: t("kpi.probability"),
+      value: ({ r }) => (
+        <span
+          className={cn(
+            r.probabilityOfSuccess >= 70
+              ? "text-positive"
+              : r.probabilityOfSuccess >= 40
+                ? ""
+                : "text-negative",
+          )}
+        >
+          {r.probabilityOfSuccess}%
+        </span>
+      ),
+    },
+    { label: t("kpi.retirementDuration"), value: ({ r }) => `${Math.round(r.retirementDurationYears)} ${t("common.years")}` },
+    { label: t("kpi.objectives"), value: ({ r }) => `${achievableGoalCount(r.goalFunding)}/${plan.goals.length}` },
+    { label: t("kpi.estate"), value: ({ r }) => fmt(r.estateAtDeath) },
+    {
+      label: t("kpi.incomeGap"),
+      value: ({ r }) => (
+        <span className={r.incomeGap >= 0 ? "text-positive" : "text-negative"}>{cur(r.incomeGap)}</span>
+      ),
+    },
+  ];
+
   return (
-    <DialogContent className="max-w-2xl">
-      <DialogHeader>
-        <DialogTitle className="font-heading">{t("workspace.compare")}</DialogTitle>
+    <DialogContent className="flex max-h-[85vh] w-[calc(100vw-2rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl">
+      <DialogHeader className="border-b border-border px-5 pt-5 pb-4 text-left">
+        <DialogTitle className="font-heading text-lg">{t("workspace.compareTitle")}</DialogTitle>
+        <DialogDescription>{t("workspace.compareSubtitle")}</DialogDescription>
       </DialogHeader>
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-border text-left text-muted-foreground">
-              <th className="py-2 pr-3 font-medium">{t("common.name")}</th>
-              <th className="px-3 py-2 font-medium">{t("kpi.wealthAtRetirement")}</th>
-              <th className="px-3 py-2 font-medium">{t("kpi.probability")}</th>
-              <th className="py-2 pl-3 font-medium">{t("kpi.incomeGap")}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {plan.scenarios.map((s) => {
-              const r = projectPlan(plan, s.assumptions);
-              return (
-                <tr key={s.id} className="border-b border-border/60">
-                  <td className="py-2.5 pr-3 font-medium text-foreground">{s.name}</td>
-                  <td className="px-3 py-2.5 tabular-nums">{formatCurrency(r.wealthAtRetirement, locale)}</td>
-                  <td className="px-3 py-2.5 tabular-nums">{r.probabilityOfSuccess}%</td>
-                  <td className={cn("py-2.5 pl-3 tabular-nums", r.incomeGap >= 0 ? "text-positive" : "text-negative")}>
-                    {formatCurrency(r.incomeGap, locale)}
+      {rows.length === 0 ? (
+        <p className="px-5 py-10 text-center text-sm text-muted-foreground">{t("workspace.compareEmpty")}</p>
+      ) : (
+        <div className="min-h-0 flex-1 overflow-auto">
+          <table className="w-full border-separate border-spacing-0 text-sm">
+            <thead>
+              <tr>
+                <th className="sticky top-0 left-0 z-20 bg-popover" />
+                {rows.map(({ s }) => (
+                  <th
+                    key={s.id}
+                    className={cn(
+                      "sticky top-0 z-10 min-w-36 border-b border-border bg-popover px-4 py-3 text-left align-bottom font-heading text-sm font-semibold whitespace-nowrap",
+                      s.id === selectedId ? "text-primary" : "text-foreground",
+                    )}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      {s.id === selectedId && <span className="size-1.5 rounded-full bg-primary" />}
+                      {s.name}
+                    </span>
+                    {s.id === selectedId && (
+                      <span className="ml-2 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                        {t("workspace.selected")}
+                      </span>
+                    )}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {metrics.map((m, i) => (
+                <tr key={i}>
+                  <td className="sticky left-0 z-10 border-b border-border/50 bg-popover py-2.5 pr-4 pl-5 text-xs whitespace-nowrap text-muted-foreground">
+                    {m.label}
                   </td>
+                  {rows.map((row) => (
+                    <td
+                      key={row.s.id}
+                      className={cn(
+                        "border-b border-border/50 px-4 py-2.5 font-medium tabular-nums whitespace-nowrap",
+                        row.s.id === selectedId ? "bg-primary/[0.04] text-foreground" : "text-foreground/90",
+                      )}
+                    >
+                      {m.value(row)}
+                    </td>
+                  ))}
                 </tr>
-              );
-            })}
-          </tbody>
-        </table>
-      </div>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </DialogContent>
   );
 }

@@ -466,7 +466,7 @@
     }
   },
   "copilot": {
-    "title": "Advisor copilot",
+    "title": "BIA advisor",
     "subtitle": "The advisor of the advisor",
     "placeholder": "Ask about markets, a concept, or draft a client event…",
     "send": "Send",
@@ -520,7 +520,7 @@
     "phaseSimulate": "Simulate",
     "phaseOutput": "Handoff",
     "data": "Data",
-    "copilot": "Copilot"
+    "copilot": "BIA advisor"
   },
   "workspace": {
     "scenarios": "Scenarios",
@@ -540,6 +540,10 @@
     "checkpoint70": "70%",
     "checkpoint100": "100%",
     "run": "Run simulation",
+    "compareTitle": "Compare scenarios",
+    "compareSubtitle": "Parameters and outcomes side by side.",
+    "compareEmpty": "Create at least two scenarios to compare.",
+    "selected": "Selected",
     "running": "Running…",
     "lastsToHorizon": "Funds the full horizon",
     "depletesAt": "Depletes at age {age}",

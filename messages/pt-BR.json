@@ -466,7 +466,7 @@
     }
   },
   "copilot": {
-    "title": "Copiloto do consultor",
+    "title": "BIA advisor",
     "subtitle": "O consultor do consultor",
     "placeholder": "Pergunte sobre mercado, um conceito, ou peça um evento para o cliente…",
     "send": "Enviar",
@@ -520,7 +520,7 @@
     "phaseSimulate": "Simular",
     "phaseOutput": "Entrega",
     "data": "Dados",
-    "copilot": "Copiloto"
+    "copilot": "BIA advisor"
   },
   "workspace": {
     "scenarios": "Cenários",
@@ -540,6 +540,10 @@
     "checkpoint70": "70%",
     "checkpoint100": "100%",
     "run": "Rodar simulação",
+    "compareTitle": "Comparar cenários",
+    "compareSubtitle": "Parâmetros e resultados lado a lado.",
+    "compareEmpty": "Crie ao menos dois cenários para comparar.",
+    "selected": "Selecionado",
     "running": "Rodando…",
     "lastsToHorizon": "Cobre todo o horizonte",
     "depletesAt": "Esgota aos {age} anos",

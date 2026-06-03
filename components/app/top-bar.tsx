@@ -1,6 +1,6 @@
 "use client";
 
-import { BrandMark } from "@/components/app/brand-mark";
+import { BradescoLogo } from "@/components/app/bradesco-logo";
 import { cn } from "@/lib/utils";
 
 /** Sticky top bar: brand on the left, slotted controls on the right. */
@@ -16,7 +16,7 @@ export function TopBar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-40 border-b border-border/80 bg-background/80 backdrop-blur-md",
+        "sticky top-0 z-40 bg-primary text-white",
         className,
       )}
     >
@@ -25,12 +25,12 @@ export function TopBar({
           <button
             type="button"
             onClick={onBrandClick}
-            className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-white/60"
           >
-            <BrandMark />
+            <BradescoLogo />
           </button>
         ) : (
-          <BrandMark />
+          <BradescoLogo />
         )}
         <div className="flex items-center gap-2">{children}</div>
       </div>

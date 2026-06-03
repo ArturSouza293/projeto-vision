@@ -178,7 +178,7 @@ export function Intake() {
   return (
     <div className="flex min-h-screen flex-col">
       <TopBar>
-        <LocaleToggle />
+        <LocaleToggle tone="inverse" />
       </TopBar>
 
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
