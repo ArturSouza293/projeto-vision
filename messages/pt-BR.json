@@ -385,6 +385,16 @@
     "protection": "Proteção",
     "custom": "Objetivo personalizado"
   },
+  "goalDescription": {
+    "retirement": "Capital para manter o padrão de vida depois de parar de trabalhar, considerando a longevidade.",
+    "education": "Reserva para a formação dos dependentes (escola, faculdade, intercâmbio).",
+    "property": "Compra ou troca de imóvel (entrada, quitação ou aquisição à vista).",
+    "travel": "Viagem ou experiência planejada para uma data específica.",
+    "emergency_reserve": "Reserva de liquidez para imprevistos — múltiplo das despesas essenciais.",
+    "legacy": "Liquidez para a sucessão patrimonial (custos de inventário e transmissão).",
+    "protection": "Cobertura de seguro para proteger a família contra riscos.",
+    "custom": "Objetivo personalizado definido pelo advisor."
+  },
   "priority": {
     "high": "Alta",
     "medium": "Média",
@@ -527,6 +537,8 @@
     "retirementAge": "Idade de aposentadoria",
     "expectedReturn": "Retorno real esperado",
     "inflation": "Inflação",
+    "checkpoint70": "70%",
+    "checkpoint100": "100%",
     "run": "Rodar simulação",
     "running": "Rodando…",
     "lastsToHorizon": "Cobre todo o horizonte",
@@ -539,7 +551,18 @@
     "retirementDuration": "Renda dura",
     "probability": "Probabilidade de sucesso",
     "estate": "Patrimônio no horizonte",
-    "incomeGap": "Lacuna de renda mensal"
+    "incomeGap": "Lacuna de renda mensal",
+    "objectives": "Objetivos",
+    "achievable": "atingíveis"
+  },
+  "kpiDetail": {
+    "wealth": { "title": "Patrimônio na aposentadoria", "body": "Quanto você terá acumulado ao se aposentar, somando o investível de hoje, os aportes e o crescimento real." },
+    "duration": { "title": "Por quanto tempo a renda dura", "body": "Quantos anos a carteira sustenta a necessidade de renda na aposentadoria antes de esgotar." },
+    "probability": { "title": "Probabilidade de sucesso", "body": "Chance de o plano financiar a renda desejada por todo o horizonte — capital na aposentadoria vs. capital necessário." },
+    "estate": { "title": "Patrimônio no horizonte", "body": "Quanto deve sobrar no fim do horizonte de planejamento (herança / margem)." },
+    "gap": { "title": "Lacuna de renda mensal", "body": "Diferença entre a renda mensal sustentável e a necessidade na aposentadoria. Negativo = falta; positivo = sobra." },
+    "goals": { "title": "Objetivos", "body": "Quantos objetivos são atingíveis no cenário atual. Toque em cada um para ver o detalhe.", "achievable": "objetivos atingíveis", "ok": "atingível", "partial": "parcial" },
+    "f": { "investableNow": "Investível hoje", "need": "Necessidade mensal", "continuing": "Renda contínua" }
   },
   "chart": {
     "wealthOverTime": "Patrimônio ao longo do tempo",

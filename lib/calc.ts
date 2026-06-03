@@ -14,6 +14,7 @@ import type {
   AssetClass,
   CashFlow,
   Goal,
+  GoalFunding,
   NetWorth,
   ProjectionPoint,
   ProjectionResult,
@@ -243,6 +244,11 @@ export function goalFundedPct(
   return goal.targetAmount > 0
     ? clamp((projected / goal.targetAmount) * 100, 0, 100)
     : 100;
+}
+
+/** How many goals are "achievable" — funded at or above `threshold`% by target year. */
+export function achievableGoalCount(goalFunding: GoalFunding[], threshold = 90): number {
+  return goalFunding.filter((g) => g.fundedPct >= threshold).length;
 }
 
 export function project(input: ProjectionInput): ProjectionResult {

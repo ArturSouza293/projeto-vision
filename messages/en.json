@@ -385,6 +385,16 @@
     "protection": "Protection",
     "custom": "Custom goal"
   },
+  "goalDescription": {
+    "retirement": "Capital to keep the standard of living after stopping work, accounting for longevity.",
+    "education": "Reserve for the dependents' education (school, college, exchange).",
+    "property": "Buying or upgrading a home (down payment, payoff or cash purchase).",
+    "travel": "A trip or experience planned for a specific date.",
+    "emergency_reserve": "Liquidity buffer for the unexpected — a multiple of essential expenses.",
+    "legacy": "Liquidity for succession (probate and transfer costs).",
+    "protection": "Insurance cover to protect the family against risks.",
+    "custom": "A custom goal defined by the advisor."
+  },
   "priority": {
     "high": "High",
     "medium": "Medium",
@@ -527,6 +537,8 @@
     "retirementAge": "Retirement age",
     "expectedReturn": "Expected real return",
     "inflation": "Inflation",
+    "checkpoint70": "70%",
+    "checkpoint100": "100%",
     "run": "Run simulation",
     "running": "Running…",
     "lastsToHorizon": "Funds the full horizon",
@@ -539,7 +551,18 @@
     "retirementDuration": "Income lasts",
     "probability": "Probability of success",
     "estate": "Estate at horizon",
-    "incomeGap": "Monthly income gap"
+    "incomeGap": "Monthly income gap",
+    "objectives": "Goals",
+    "achievable": "achievable"
+  },
+  "kpiDetail": {
+    "wealth": { "title": "Wealth at retirement", "body": "What you'll have accumulated at retirement — today's investable wealth plus contributions and real growth." },
+    "duration": { "title": "How long income lasts", "body": "How many years the portfolio sustains the retirement income need before depleting." },
+    "probability": { "title": "Probability of success", "body": "Chance the plan funds the desired income across the whole horizon — capital at retirement vs. capital needed." },
+    "estate": { "title": "Estate at horizon", "body": "How much should remain at the end of the planning horizon (legacy / margin)." },
+    "gap": { "title": "Monthly income gap", "body": "Difference between sustainable monthly income and the retirement need. Negative = shortfall; positive = surplus." },
+    "goals": { "title": "Goals", "body": "How many goals are achievable in the current scenario. Tap each one for detail.", "achievable": "goals achievable", "ok": "achievable", "partial": "partial" },
+    "f": { "investableNow": "Investable today", "need": "Monthly need", "continuing": "Continuing income" }
   },
   "chart": {
     "wealthOverTime": "Wealth over time",

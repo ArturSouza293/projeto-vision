@@ -10,6 +10,7 @@ import {
   cashFlowTotals,
   continuingMonthlyIncome,
   emergencyReserveTarget,
+  goalFundedPct,
   investableWealth,
   project,
   retirementMonthlyNeed,
@@ -194,6 +195,45 @@ export function buildProjectionRequest(
 /** Synchronous projection for live slider feedback (same math as the engine). */
 export function projectPlan(plan: Plan, a: ScenarioAssumptions): ProjectionResult {
   return project(requestToInput(buildProjectionRequest(plan, a)));
+}
+
+/**
+ * Where the probability checkpoints land on the expected-return axis (%):
+ * - `p70`: smallest real return where probability-of-success ≥ 70% (probabilistic band).
+ * - `full`: smallest real return where the top-3 priority goals are 100% funded (deterministic).
+ * Both via bisection over the slider range [0, 12]%. `null` when unreachable in range.
+ */
+export function returnCheckpoints(
+  plan: Plan,
+  a: ScenarioAssumptions,
+): { p70: number | null; full: number | null } {
+  const thisYear = new Date().getFullYear();
+  const order: Record<string, number> = { high: 0, medium: 1, low: 2 };
+  const top = [...plan.goals]
+    .sort((x, y) => (order[x.priority] ?? 1) - (order[y.priority] ?? 1))
+    .slice(0, 3);
+
+  const probAt = (rPct: number) =>
+    projectPlan(plan, { ...a, expectedRealReturn: rPct, growthScenario: "custom" })
+      .probabilityOfSuccess;
+  const goalsFullAt = (rPct: number) =>
+    top.length > 0 && top.every((g) => goalFundedPct(g, rPct / 100, thisYear) >= 99.5);
+
+  // pred is monotonic non-decreasing in r → find the smallest r where it holds.
+  const bisect = (pred: (r: number) => boolean): number | null => {
+    if (pred(0)) return 0;
+    if (!pred(12)) return null;
+    let lo = 0;
+    let hi = 12;
+    for (let i = 0; i < 22; i++) {
+      const mid = (lo + hi) / 2;
+      if (pred(mid)) hi = mid;
+      else lo = mid;
+    }
+    return Math.round(hi * 4) / 4; // snap to the 0.25 slider step
+  };
+
+  return { p70: bisect((r) => probAt(r) >= 70), full: bisect(goalsFullAt) };
 }
 
 /** A fresh, empty plan for a brand-new client. */

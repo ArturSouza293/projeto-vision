@@ -17,6 +17,7 @@ import { IncomeNeedsChart } from "@/components/charts/income-needs-chart";
 import { ProbabilityGauge } from "@/components/charts/probability-gauge";
 import { WealthArea } from "@/components/charts/wealth-area";
 import { KpiTile } from "@/components/engine/kpi-tile";
+import { KpiDetailDialog, type KpiModalKind } from "@/components/engine/kpi-detail-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -29,12 +30,13 @@ import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import {
   PLANNING_HORIZON_AGE,
+  achievableGoalCount,
   ageFromDob,
   cashFlowTotals,
   netWorthTotals,
 } from "@/lib/calc";
 import { formatCompactCurrency, formatCurrency } from "@/lib/format";
-import { GROWTH_SCENARIO_RETURNS, projectPlan } from "@/lib/plan";
+import { GROWTH_SCENARIO_RETURNS, projectPlan, returnCheckpoints } from "@/lib/plan";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { GrowthScenario, Plan, ScenarioAssumptions } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -49,6 +51,7 @@ function ParamSlider({
   max,
   step,
   onChange,
+  marks,
 }: {
   label: string;
   value: number;
@@ -57,14 +60,37 @@ function ParamSlider({
   max: number;
   step: number;
   onChange: (v: number) => void;
+  marks?: { value: number; label: string; tone: "info" | "primary" }[];
 }) {
+  const pos = (v: number) => Math.max(0, Math.min(100, ((v - min) / (max - min)) * 100));
   return (
     <div>
       <div className="mb-2 flex items-center justify-between text-sm">
         <span className="text-muted-foreground">{label}</span>
         <span className="font-medium text-foreground tabular-nums">{display}</span>
       </div>
-      <Slider value={[value]} min={min} max={max} step={step} onValueChange={([v]) => onChange(v)} />
+      <div className={cn("relative", marks && marks.length > 0 && "pt-5")}>
+        {marks?.map((m, i) => (
+          <div
+            key={i}
+            className="pointer-events-none absolute top-0 z-10 flex -translate-x-1/2 flex-col items-center"
+            style={{ left: `${pos(m.value)}%` }}
+          >
+            <span
+              className={cn(
+                "rounded-full px-1.5 py-0.5 text-[9px] font-semibold whitespace-nowrap",
+                m.tone === "primary" ? "bg-primary/10 text-primary" : "bg-info/10 text-info",
+              )}
+            >
+              {m.label}
+            </span>
+            <span
+              className={cn("h-2 w-px", m.tone === "primary" ? "bg-primary/50" : "bg-info/50")}
+            />
+          </div>
+        ))}
+        <Slider value={[value]} min={min} max={max} step={step} onValueChange={([v]) => onChange(v)} />
+      </div>
     </div>
   );
 }
@@ -120,6 +146,7 @@ export function Workspace() {
   const setDataTab = useVisionStore((s) => s.setDataTab);
   const busy = useVisionStore((s) => s.busy);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [kpiModal, setKpiModal] = useState<KpiModalKind | null>(null);
 
   const scenarios = plan.scenarios;
   const selected = scenarios.find((s) => s.id === plan.selectedScenarioId) ?? scenarios[0];
@@ -147,6 +174,16 @@ export function Workspace() {
   const cf = cashFlowTotals(plan.cashFlow);
   const nw = netWorthTotals(plan.netWorth);
   const goalsById = new Map(plan.goals.map((g) => [g.id, g]));
+
+  const checkpoints = returnCheckpoints(plan, a);
+  const returnMarks = [
+    checkpoints.p70 != null
+      ? { value: checkpoints.p70, label: t("workspace.checkpoint70"), tone: "info" as const }
+      : null,
+    checkpoints.full != null
+      ? { value: checkpoints.full, label: t("workspace.checkpoint100"), tone: "primary" as const }
+      : null,
+  ].filter((m): m is { value: number; label: string; tone: "info" | "primary" } => m != null);
 
   const fmtCompact = (n: number) => formatCompactCurrency(n, locale);
   const fmtCurrency = (n: number) => formatCurrency(n, locale);
@@ -212,29 +249,50 @@ export function Workspace() {
       </div>
 
       {/* KPI row — animated */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-5">
-        <KpiTile label={t("kpi.wealthAtRetirement")} value={result.wealthAtRetirement} format={fmtCompact} tone="brand" />
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+        <KpiTile label={t("kpi.wealthAtRetirement")} value={result.wealthAtRetirement} format={fmtCompact} tone="brand" onClick={() => setKpiModal("wealth")} />
         <KpiTile
           label={t("kpi.retirementDuration")}
           value={result.retirementDurationYears}
           format={(n) => `${Math.round(n)} ${t("common.years")}`}
           sublabel={lastsFull ? t("workspace.lastsToHorizon") : t("workspace.depletesAt", { age: a.retirementAge + result.retirementDurationYears })}
+          onClick={() => setKpiModal("duration")}
         />
         <KpiTile
           label={t("kpi.probability")}
           value={result.probabilityOfSuccess}
           format={(n) => `${Math.round(n)}%`}
           tone={result.probabilityOfSuccess >= 70 ? "positive" : result.probabilityOfSuccess >= 40 ? "default" : "negative"}
+          onClick={() => setKpiModal("probability")}
         />
-        <KpiTile label={t("kpi.estate")} value={result.estateAtDeath} format={fmtCompact} />
+        <KpiTile label={t("kpi.estate")} value={result.estateAtDeath} format={fmtCompact} onClick={() => setKpiModal("estate")} />
         <KpiTile
           label={t("kpi.incomeGap")}
           value={result.incomeGap}
           format={fmtCurrency}
           tone={result.incomeGap >= 0 ? "positive" : "negative"}
           sublabel={t("common.perMonth")}
+          onClick={() => setKpiModal("gap")}
+        />
+        <KpiTile
+          label={t("kpi.objectives")}
+          value={achievableGoalCount(result.goalFunding)}
+          format={(n) => `${Math.round(n)}/${plan.goals.length}`}
+          tone={plan.goals.length > 0 && achievableGoalCount(result.goalFunding) === plan.goals.length ? "positive" : "default"}
+          sublabel={t("kpi.achievable")}
+          onClick={() => setKpiModal("goals")}
         />
       </div>
+
+      <KpiDetailDialog
+        kind={kpiModal}
+        onOpenChange={(open) => {
+          if (!open) setKpiModal(null);
+        }}
+        plan={plan}
+        result={result}
+        assumptions={a}
+      />
 
       {/* Charts + parameters */}
       <div className="grid gap-5 lg:grid-cols-3">
@@ -332,6 +390,7 @@ export function Workspace() {
                 min={0}
                 max={12}
                 step={0.25}
+                marks={returnMarks}
                 onChange={(v) => update({ expectedRealReturn: v, growthScenario: "custom" })}
               />
               <ParamSlider

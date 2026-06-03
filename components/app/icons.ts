@@ -22,6 +22,7 @@ export {
   Check,
   ChevronDown,
   ChevronLeft,
+  ChevronRight,
   CircleCheckBig,
   Code2,
   Columns3,
