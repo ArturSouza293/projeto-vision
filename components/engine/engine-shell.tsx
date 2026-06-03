@@ -3,13 +3,14 @@
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { ChevronLeft, Database, Save, Sparkles } from "@/components/app/icons";
+import { Database, LogOut, Menu, Plus, Save, Sparkles } from "@/components/app/icons";
 
 import { BradescoLogo } from "@/components/app/bradesco-logo";
 import { LocaleToggle } from "@/components/app/locale-toggle";
 import { CopilotPanel } from "@/components/advisor-copilot/copilot-panel";
 import { DataStudio } from "@/components/engine/data-studio";
 import { Output } from "@/components/engine/output";
+import { PersonaSidebar } from "@/components/engine/persona-sidebar";
 import { Workspace } from "@/components/engine/workspace";
 import { Button } from "@/components/ui/button";
 import {
@@ -61,6 +62,34 @@ function PhaseNav() {
   );
 }
 
+/** Empty state shown in the centre when no plan is open. */
+function Welcome() {
+  const t = useTranslations();
+  const advisorName = useVisionStore((s) => s.advisorName);
+  const startNewClient = useVisionStore((s) => s.startNewClient);
+  const setSidebarOpen = useVisionStore((s) => s.setSidebarOpen);
+  return (
+    <div className="grid place-items-center py-24 text-center">
+      <div className="max-w-md">
+        <h1 className="font-heading text-3xl font-semibold tracking-tight text-foreground">
+          {t("welcome.title", { name: advisorName })}
+        </h1>
+        <p className="mt-2 text-muted-foreground">{t("welcome.subtitle")}</p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <Button size="lg" onClick={startNewClient}>
+            <Plus className="size-4" />
+            {t("sidebar.newPlan")}
+          </Button>
+          <Button size="lg" variant="outline" onClick={() => setSidebarOpen(true)}>
+            <Menu className="size-4" />
+            {t("welcome.openPersonas")}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function EngineShell() {
   const t = useTranslations();
   const plan = useVisionStore((s) => s.activePlan);
@@ -71,6 +100,9 @@ export function EngineShell() {
   const setCopilotOpen = useVisionStore((s) => s.setCopilotOpen);
   const toggleCopilot = useVisionStore((s) => s.toggleCopilot);
   const savePlan = useVisionStore((s) => s.savePlan);
+  const setSidebarOpen = useVisionStore((s) => s.setSidebarOpen);
+  const advisorName = useVisionStore((s) => s.advisorName);
+  const logout = useVisionStore((s) => s.logout);
 
   async function handleSave() {
     try {
@@ -85,75 +117,108 @@ export function EngineShell() {
     }
   }
 
-  if (!plan) return null;
-  const p = plan.clientProfile;
-  const clientName = p.partnerName
-    ? `${p.firstName} & ${p.partnerName}`
-    : `${p.firstName} ${p.lastName}`.trim() || t("intake.newDossier");
+  const clientName = plan
+    ? plan.clientProfile.partnerName
+      ? `${plan.clientProfile.firstName} & ${plan.clientProfile.partnerName}`
+      : `${plan.clientProfile.firstName} ${plan.clientProfile.lastName}`.trim() ||
+        t("intake.newDossier")
+    : "";
 
   return (
     <div className="flex min-h-screen flex-col">
       <header className="sticky top-0 z-40 bg-primary text-white">
-        <div className="mx-auto grid h-14 w-full max-w-[1400px] grid-cols-[1fr_auto_1fr] items-center gap-3 px-4 sm:px-6">
-          <div className="flex min-w-0 items-center gap-3">
+        <div className="mx-auto flex h-14 w-full max-w-[1400px] items-center gap-3 px-4 sm:px-6">
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => setSidebarOpen(true)}
+              aria-label={t("sidebar.open")}
+              className="grid size-8 shrink-0 place-items-center rounded-full text-white/90 transition-colors hover:bg-white/15"
+            >
+              <Menu className="size-5" />
+            </button>
             <button
               type="button"
               onClick={closePlan}
-              className="flex items-center gap-1.5 text-white/90 transition-colors hover:text-white"
+              className="shrink-0 text-white/95 transition-colors hover:text-white"
+              aria-label={t("welcome.home")}
             >
-              <ChevronLeft className="size-4" />
               <BradescoLogo />
             </button>
-            <div className="hidden min-w-0 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-xs sm:flex">
-              <span className="truncate font-medium text-white">{clientName}</span>
-              <span className="size-1 shrink-0 rounded-full bg-white/40" />
-              <span className="shrink-0 text-white/70">{t(`segment.${p.segment}`)}</span>
+            {plan && (
+              <div className="hidden min-w-0 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-2.5 py-1 text-xs sm:flex">
+                <span className="truncate font-medium text-white">{clientName}</span>
+                <span className="size-1 shrink-0 rounded-full bg-white/40" />
+                <span className="shrink-0 text-white/70">{t(`segment.${plan.clientProfile.segment}`)}</span>
+              </div>
+            )}
+          </div>
+
+          {plan && (
+            <div className="flex shrink-0 justify-center">
+              <PhaseNav />
             </div>
-          </div>
+          )}
 
-          <div className="flex justify-center">
-            <PhaseNav />
-          </div>
-
-          <div className="flex items-center justify-end gap-2">
-            <Button variant="outline" size="sm" onClick={() => setDataTab("profile")} className={headerBtn}>
-              <Database className="size-4" />
-              <span className="hidden md:inline">{t("engine.data")}</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleSave} className={headerBtn}>
-              <Save className="size-4" />
-              <span className="hidden md:inline">{t("library.save")}</span>
-            </Button>
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
+            {plan && (
+              <>
+                <Button variant="outline" size="sm" onClick={() => setDataTab("profile")} className={headerBtn}>
+                  <Database className="size-4" />
+                  <span className="hidden md:inline">{t("engine.data")}</span>
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleSave} className={headerBtn}>
+                  <Save className="size-4" />
+                  <span className="hidden md:inline">{t("library.save")}</span>
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleCopilot}
+                  aria-pressed={copilotOpen}
+                  className={
+                    copilotOpen
+                      ? "border-white bg-white text-primary hover:bg-white/90 hover:text-primary"
+                      : headerBtn
+                  }
+                >
+                  <Sparkles className="size-4" />
+                  <span className="hidden lg:inline">{t("engine.copilot")}</span>
+                </Button>
+              </>
+            )}
             <LocaleToggle tone="inverse" />
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={toggleCopilot}
-              aria-pressed={copilotOpen}
-              className={
-                copilotOpen
-                  ? "border-white bg-white text-primary hover:bg-white/90 hover:text-primary"
-                  : headerBtn
-              }
-            >
-              <Sparkles className="size-4" />
-              <span className="hidden lg:inline">{t("engine.copilot")}</span>
-            </Button>
+            <div className="hidden items-center gap-1.5 pl-1 sm:flex">
+              <span className="max-w-28 truncate text-xs font-medium text-white/85">{advisorName}</span>
+              <button
+                type="button"
+                onClick={logout}
+                aria-label={t("login.logout")}
+                className="grid size-8 shrink-0 place-items-center rounded-full text-white/80 transition-colors hover:bg-white/15 hover:text-white"
+              >
+                <LogOut className="size-4" />
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 py-7 sm:px-6 lg:px-8">
-        <motion.div
-          key={phase}
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-        >
-          {phase === "simulate" ? <Workspace /> : <Output />}
-        </motion.div>
+        {plan ? (
+          <motion.div
+            key={phase}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {phase === "simulate" ? <Workspace /> : <Output />}
+          </motion.div>
+        ) : (
+          <Welcome />
+        )}
       </main>
 
+      <PersonaSidebar />
       <DataStudio />
 
       <Sheet open={copilotOpen} onOpenChange={setCopilotOpen}>

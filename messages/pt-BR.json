@@ -573,6 +573,30 @@
     "incomeVsNeeds": "Renda vs. necessidades",
     "goalFunding": "Financiamento dos objetivos"
   },
+  "login": {
+    "title": "Bem-vindo",
+    "subtitle": "Entre com seu nome para iniciar sua sessão.",
+    "nameLabel": "Seu nome",
+    "namePlaceholder": "Ex.: Ana Advisor",
+    "enter": "Entrar",
+    "note": "Sessão local — só para identificar o seu trabalho.",
+    "logout": "Sair"
+  },
+  "sidebar": {
+    "title": "Personas & planos",
+    "subtitle": "Acelere pegando alguém pronto, ou comece do zero.",
+    "newPlan": "Criar novo plano do 0",
+    "recent": "Recentes",
+    "recentEmpty": "Nada recente ainda.",
+    "personas": "Personas",
+    "open": "Abrir menu"
+  },
+  "welcome": {
+    "title": "Olá, {name}",
+    "subtitle": "Crie um novo plano do zero, ou abra o menu para puxar uma persona pronta.",
+    "openPersonas": "Abrir personas",
+    "home": "Início"
+  },
   "library": {
     "title": "Personas do time",
     "you": "Você:",

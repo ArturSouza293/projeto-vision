@@ -573,6 +573,30 @@
     "incomeVsNeeds": "Net income vs. needs",
     "goalFunding": "Goal funding"
   },
+  "login": {
+    "title": "Welcome",
+    "subtitle": "Enter your name to start your session.",
+    "nameLabel": "Your name",
+    "namePlaceholder": "e.g. Ana Advisor",
+    "enter": "Enter",
+    "note": "Local session — just to label your work.",
+    "logout": "Log out"
+  },
+  "sidebar": {
+    "title": "Personas & plans",
+    "subtitle": "Accelerate by grabbing a ready one, or start from scratch.",
+    "newPlan": "Create a new plan from scratch",
+    "recent": "Recent",
+    "recentEmpty": "Nothing recent yet.",
+    "personas": "Personas",
+    "open": "Open menu"
+  },
+  "welcome": {
+    "title": "Hi, {name}",
+    "subtitle": "Create a new plan from scratch, or open the menu to pull a ready persona.",
+    "openPersonas": "Open personas",
+    "home": "Home"
+  },
   "library": {
     "title": "Team personas",
     "you": "You:",

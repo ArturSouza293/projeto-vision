@@ -52,6 +52,12 @@ function uid(prefix = "id"): string {
   return `${prefix}-${Math.floor(Math.random() * 1e9).toString(36)}`;
 }
 
+/** Keep the last 8 named plans the advisor touched, most-recent first. */
+function upsertRecent(list: Plan[], plan: Plan | null): Plan[] {
+  if (!plan || !plan.clientProfile.firstName.trim()) return list;
+  return [plan, ...list.filter((p) => p.clientId !== plan.clientId)].slice(0, 8);
+}
+
 export interface VisionStore {
   _hasHydrated: boolean;
   setHasHydrated: (v: boolean) => void;
@@ -68,6 +74,13 @@ export interface VisionStore {
   savePlan: () => Promise<void>;
   loadSavedPersona: (clientId: string) => Promise<void>;
   deleteSavedPersona: (clientId: string) => Promise<void>;
+
+  // Session + navigation
+  logout: () => void;
+  sidebarOpen: boolean;
+  setSidebarOpen: (v: boolean) => void;
+  recentPlans: Plan[];
+  loadRecentPlan: (clientId: string) => void;
 
   activePlan: Plan | null;
   phase: EnginePhase;
@@ -181,7 +194,14 @@ export const useVisionStore = create<VisionStore>()(
         set({ loadingPlan: true });
         try {
           const plan = await personaLibrary.load(clientId);
-          set({ activePlan: plan, phase: "simulate", outbound: null, loadingPlan: false });
+          set((s) => ({
+            recentPlans: upsertRecent(s.recentPlans, s.activePlan),
+            activePlan: plan,
+            phase: "simulate",
+            outbound: null,
+            loadingPlan: false,
+            sidebarOpen: false,
+          }));
         } catch (e) {
           set({ loadingPlan: false });
           throw e;
@@ -190,6 +210,36 @@ export const useVisionStore = create<VisionStore>()(
       async deleteSavedPersona(clientId) {
         await personaLibrary.remove(clientId);
         void get().fetchSavedPersonas();
+      },
+
+      sidebarOpen: false,
+      setSidebarOpen: (v) => set({ sidebarOpen: v }),
+      recentPlans: [],
+      logout() {
+        set((s) => ({
+          recentPlans: upsertRecent(s.recentPlans, s.activePlan),
+          advisorName: "",
+          activePlan: null,
+          phase: "simulate",
+          outbound: null,
+          copilotOpen: false,
+          dataDrawerOpen: false,
+          sidebarOpen: false,
+        }));
+      },
+      loadRecentPlan(clientId) {
+        set((s) => {
+          const target = s.recentPlans.find((p) => p.clientId === clientId);
+          if (!target) return {};
+          return {
+            recentPlans: upsertRecent(s.recentPlans, s.activePlan),
+            activePlan: target,
+            phase: "simulate",
+            outbound: null,
+            dataDrawerOpen: false,
+            sidebarOpen: false,
+          };
+        });
       },
 
       activePlan: null,
@@ -213,12 +263,14 @@ export const useVisionStore = create<VisionStore>()(
         set({ loadingPlan: true });
         try {
           const plan = await salesforce.inbound.fetchDossier(clientId);
-          set({
+          set((s) => ({
+            recentPlans: upsertRecent(s.recentPlans, s.activePlan),
             activePlan: plan,
             phase: "simulate",
             outbound: null,
             loadingPlan: false,
-          });
+            sidebarOpen: false,
+          }));
         } catch (e) {
           set({ loadingPlan: false });
           throw e;
@@ -226,23 +278,27 @@ export const useVisionStore = create<VisionStore>()(
       },
 
       startNewClient() {
-        set({
+        set((s) => ({
+          recentPlans: upsertRecent(s.recentPlans, s.activePlan),
           activePlan: blankPlan(uid("client")),
           phase: "simulate",
           outbound: null,
           dataTab: "profile",
           dataDrawerOpen: true,
-        });
+          sidebarOpen: false,
+        }));
       },
 
       closePlan() {
-        set({
+        set((s) => ({
+          recentPlans: upsertRecent(s.recentPlans, s.activePlan),
           activePlan: null,
           phase: "simulate",
           outbound: null,
           copilotOpen: false,
           dataDrawerOpen: false,
-        });
+          sidebarOpen: false,
+        }));
       },
 
       async sendToSalesforce(payload) {
@@ -606,6 +662,7 @@ export const useVisionStore = create<VisionStore>()(
         activePlan: s.activePlan,
         phase: s.phase,
         advisorName: s.advisorName,
+        recentPlans: s.recentPlans,
       }),
       onRehydrateStorage: () => (state) => state?.setHasHydrated(true),
     },
