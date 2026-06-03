@@ -14,7 +14,6 @@ export const isSupabaseConfigured = Boolean(url && anonKey);
 
 export const supabase = isSupabaseConfigured
   ? createClient(url as string, anonKey as string, {
-      db: { schema: "vision" },
       auth: { persistSession: false },
     })
   : null;
