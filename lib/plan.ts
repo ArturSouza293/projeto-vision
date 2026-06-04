@@ -111,9 +111,11 @@ export function defaultAssumptions(plan: Plan): ScenarioAssumptions {
   const usufruct = plan.clientProfile.retirementUsufructAge;
   const retirementAge =
     usufruct && usufruct > age ? usufruct : age >= 60 ? Math.min(age + 5, 75) : 65;
+  // The headline contribution is the surplus that remains AFTER any goal-specific
+  // monthly contributions, so the base scenario starts fully but not over-allocated.
+  const goalContributions = plan.goals.reduce((s, g) => s + (g.monthlyContribution ?? 0), 0);
   return {
-    // Contribution is capped at the monthly cash-flow surplus.
-    monthlyContribution: Math.max(0, Math.round(surplus)),
+    monthlyContribution: Math.max(0, Math.round(surplus - goalContributions)),
     retirementAge,
     expectedRealReturn: 4,
     inflation: 5,

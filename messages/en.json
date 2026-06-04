@@ -548,7 +548,18 @@
     "lastsToHorizon": "Funds the full horizon",
     "depletesAt": "Depletes at age {age}",
     "dossier": "Received dossier",
-    "editData": "Edit data"
+    "editData": "Edit data",
+    "scenarioBase": "Base",
+    "preparing": "Fill in the data to open the base scenario.",
+    "freeBalance": "Free balance",
+    "overAllocated": "Over-allocated — you allocated {alloc} of a {surplus} surplus.",
+    "deficit": "Negative cash flow — expenses exceed income by {amount}. Prioritise cutting expenses and debt before contributing.",
+    "dynamicMode": "Dynamic mode",
+    "dynamicOn": "Recalculates live as you adjust.",
+    "dynamicOff": "Frozen — adjust freely, then recompute.",
+    "recompute": "Recompute",
+    "reserveFunded": "funded",
+    "reserveShort": "{amount} short"
   },
   "premises": {
     "open": "Premises & sources",

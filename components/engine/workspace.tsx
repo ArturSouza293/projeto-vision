@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import {
@@ -8,9 +8,10 @@ import {
   Copy,
   Lock,
   PencilLine,
-  Play,
   Plus,
+  RotateCcw,
   SlidersHorizontal,
+  TriangleAlert,
   X,
 } from "@/components/app/icons";
 
@@ -32,6 +33,7 @@ import {
 } from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
+import { Switch } from "@/components/ui/switch";
 import {
   achievableGoalCount,
   ageFromDob,
@@ -43,7 +45,7 @@ import { formatCompactCurrency, formatCurrency } from "@/lib/format";
 import { getPremises } from "@/lib/premises";
 import { GROWTH_SCENARIO_RETURNS, projectPlan, returnCheckpoints } from "@/lib/plan";
 import { useVisionStore } from "@/lib/store/plan-store";
-import type { GrowthScenario, Plan, ScenarioAssumptions } from "@/lib/types";
+import type { GrowthScenario, Plan, ProjectionResult, ScenarioAssumptions } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const GROWTH: GrowthScenario[] = ["base", "cautious", "conservative", "stressed", "custom"];
@@ -211,24 +213,29 @@ export function Workspace() {
   const updateScenarioAssumptions = useVisionStore((s) => s.updateScenarioAssumptions);
   const selectScenario = useVisionStore((s) => s.selectScenario);
   const removeScenario = useVisionStore((s) => s.removeScenario);
-  const runScenario = useVisionStore((s) => s.runScenario);
+  const ensureBaseScenario = useVisionStore((s) => s.ensureBaseScenario);
   const setDataTab = useVisionStore((s) => s.setDataTab);
-  const busy = useVisionStore((s) => s.busy);
   const [compareOpen, setCompareOpen] = useState(false);
   const [premisesOpen, setPremisesOpen] = useState(false);
   const [kpiModal, setKpiModal] = useState<KpiModalKind | null>(null);
+  const [dynamic, setDynamic] = useState(true);
+  const [frozen, setFrozen] = useState<ProjectionResult | null>(null);
 
   const scenarios = plan.scenarios;
   const selected = scenarios.find((s) => s.id === plan.selectedScenarioId) ?? scenarios[0];
 
+  // Open a base scenario automatically once there's data to plan with — the
+  // engine is dynamic, so the advisor lands straight in the live simulation
+  // after the cadastro instead of having to click "create scenario".
+  useEffect(() => {
+    ensureBaseScenario(t("workspace.scenarioBase"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scenarios.length, plan.clientId, plan.cashFlow.incomes.length, plan.netWorth.assets.length]);
+
   if (!selected) {
     return (
-      <div className="grid place-items-center gap-4 rounded-2xl border border-dashed border-border bg-card/30 p-20 text-center">
-        <p className="text-muted-foreground">{t("workspace.createFirst")}</p>
-        <Button size="lg" onClick={() => addScenario(t("workspace.scenarioName", { n: 1 }))}>
-          <Plus className="size-4" />
-          {t("workspace.newScenario")}
-        </Button>
+      <div className="grid place-items-center gap-3 rounded-2xl border border-dashed border-border bg-card/30 p-16 text-center">
+        <p className="text-sm text-muted-foreground">{t("workspace.preparing")}</p>
       </div>
     );
   }
@@ -238,13 +245,22 @@ export function Workspace() {
   const currentAge = ageFromDob(plan.clientProfile.dateOfBirth);
   const thisYear = new Date().getFullYear();
   const retirementYear = thisYear + (a.retirementAge - currentAge);
-  const result = projectPlan(plan, a);
+  const liveResult = projectPlan(plan, a);
+  const result = dynamic ? liveResult : (frozen ?? liveResult);
   const lastsFull = result.retirementDurationYears >= premises.planningHorizonAge - a.retirementAge;
   const update = (patch: Partial<ScenarioAssumptions>) => updateScenarioAssumptions(selected.id, patch);
+  const freezeNow = () => setFrozen(liveResult);
 
   const cf = cashFlowTotals(plan.cashFlow);
   const nw = netWorthTotals(plan.netWorth);
   const reserveFloor = emergencyReserveTarget(plan.cashFlow, premises);
+  const reserveShort = Math.max(0, reserveFloor - nw.liquidAssets);
+  const reserveFunded = reserveShort <= 0;
+  const goalContributions = plan.goals.reduce((s, g) => s + (g.monthlyContribution ?? 0), 0);
+  const allocated = a.monthlyContribution + goalContributions;
+  const freeBalance = cf.surplus - allocated;
+  const deficit = cf.surplus < 0;
+  const overAllocated = !deficit && allocated > 0 && freeBalance < 0;
   const goalsById = new Map(plan.goals.map((g) => [g.id, g]));
 
   const checkpoints = returnCheckpoints(plan, a);
@@ -449,15 +465,28 @@ export function Workspace() {
               </div>
             </div>
             <div className="space-y-5">
-              <ParamSlider
-                label={t("workspace.monthlyContribution")}
-                value={a.monthlyContribution}
-                display={formatCurrency(a.monthlyContribution, locale)}
-                min={0}
-                max={Math.max(0, Math.round(cf.surplus))}
-                step={100}
-                onChange={(v) => update({ monthlyContribution: v })}
-              />
+              <div>
+                <ParamSlider
+                  label={t("workspace.monthlyContribution")}
+                  value={a.monthlyContribution}
+                  display={formatCurrency(a.monthlyContribution, locale)}
+                  min={0}
+                  max={Math.max(0, Math.round(cf.surplus))}
+                  step={100}
+                  onChange={(v) => update({ monthlyContribution: v })}
+                />
+                <div className="mt-1.5 flex items-center justify-between text-xs">
+                  <span className="text-muted-foreground">{t("workspace.freeBalance")}</span>
+                  <span
+                    className={cn(
+                      "font-semibold tabular-nums",
+                      overAllocated || deficit ? "text-negative" : freeBalance > 0 ? "text-positive" : "text-muted-foreground",
+                    )}
+                  >
+                    {fmtCurrency(freeBalance)}
+                  </span>
+                </div>
+              </div>
               <ParamSlider
                 label={t("workspace.retirementAge")}
                 value={a.retirementAge}
@@ -490,10 +519,40 @@ export function Workspace() {
                 onChange={(v) => update({ inflation: v })}
               />
             </div>
-            <Button className="mt-6 w-full glow-primary" disabled={busy} onClick={() => runScenario(selected.id)}>
-              <Play className="size-4" />
-              {busy ? t("workspace.running") : t("workspace.run")}
-            </Button>
+            {(deficit || overAllocated) && (
+              <div className="mt-4 flex items-start gap-2 rounded-xl border border-negative/30 bg-negative/5 p-2.5 text-xs leading-snug text-negative">
+                <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
+                <span>
+                  {deficit
+                    ? t("workspace.deficit", { amount: fmtCurrency(-cf.surplus) })
+                    : t("workspace.overAllocated", { alloc: fmtCurrency(allocated), surplus: fmtCurrency(cf.surplus) })}
+                </span>
+              </div>
+            )}
+
+            <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/30 p-3">
+              <div className="min-w-0">
+                <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground">
+                  <Switch
+                    checked={dynamic}
+                    onCheckedChange={(v) => {
+                      if (!v) freezeNow();
+                      setDynamic(v);
+                    }}
+                  />
+                  {t("workspace.dynamicMode")}
+                </label>
+                <p className="mt-1 text-[11px] leading-snug text-muted-foreground">
+                  {dynamic ? t("workspace.dynamicOn") : t("workspace.dynamicOff")}
+                </p>
+              </div>
+              {!dynamic && (
+                <Button size="sm" variant="outline" onClick={freezeNow}>
+                  <RotateCcw className="size-3.5" />
+                  {t("workspace.recompute")}
+                </Button>
+              )}
+            </div>
           </section>
 
           <section className="surface grid place-items-center rounded-2xl p-5">
@@ -525,7 +584,14 @@ export function Workspace() {
                   <Lock className="size-3.5 text-info" />
                   {t("premises.reserveFloor")}
                 </dt>
-                <dd className="font-medium tabular-nums"><Money value={reserveFloor} compact /></dd>
+                <dd className="text-right">
+                  <div className="font-medium tabular-nums"><Money value={reserveFloor} compact /></div>
+                  <div className={cn("text-[10px] font-semibold", reserveFunded ? "text-positive" : "text-warning")}>
+                    {reserveFunded
+                      ? t("workspace.reserveFunded")
+                      : t("workspace.reserveShort", { amount: fmtCompact(reserveShort) })}
+                  </div>
+                </dd>
               </div>
               <div className="flex items-center justify-between">
                 <dt className="text-muted-foreground">{t("suitability.result")}</dt>

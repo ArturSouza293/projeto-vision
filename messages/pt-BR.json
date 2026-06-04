@@ -548,7 +548,18 @@
     "lastsToHorizon": "Cobre todo o horizonte",
     "depletesAt": "Esgota aos {age} anos",
     "dossier": "Dossiê recebido",
-    "editData": "Editar dados"
+    "editData": "Editar dados",
+    "scenarioBase": "Base",
+    "preparing": "Preencha o cadastro para abrir o cenário base.",
+    "freeBalance": "Saldo livre",
+    "overAllocated": "Superalocação — você alocou {alloc} de um saldo de {surplus}.",
+    "deficit": "Fluxo de caixa negativo — as despesas superam a renda em {amount}. Priorize reduzir despesas e dívidas antes de aportar.",
+    "dynamicMode": "Modo dinâmico",
+    "dynamicOn": "Recalcula ao vivo conforme você ajusta.",
+    "dynamicOff": "Congelado — ajuste à vontade e recalcule.",
+    "recompute": "Recalcular",
+    "reserveFunded": "financiada",
+    "reserveShort": "faltam {amount}"
   },
   "premises": {
     "open": "Premissas e fontes",

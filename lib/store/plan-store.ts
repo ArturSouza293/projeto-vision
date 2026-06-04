@@ -146,6 +146,8 @@ export interface VisionStore {
 
   // Step 6 — scenarios
   addScenario: (name?: string) => string;
+  /** Seed a single base scenario (+ default goals) when none exist and there is data. Atomic. */
+  ensureBaseScenario: (baseName: string) => void;
   updateScenarioAssumptions: (id: string, patch: Partial<ScenarioAssumptions>) => void;
   runScenario: (id: string) => Promise<void>;
   selectScenario: (id: string) => void;
@@ -608,6 +610,24 @@ export const useVisionStore = create<VisionStore>()(
           selectedScenarioId: id,
         }));
         return id;
+      },
+      ensureBaseScenario(baseName) {
+        // Atomic: reads/writes the latest store state so React StrictMode's
+        // double-invoked effect can never seed two base scenarios.
+        const plan = get().activePlan;
+        if (!plan || plan.scenarios.length > 0) return;
+        const hasData =
+          plan.cashFlow.incomes.length > 0 || plan.netWorth.assets.length > 0;
+        if (!hasData) return;
+        const working = plan.goals.length === 0 ? { ...plan, goals: defaultGoals(plan) } : plan;
+        const id = uid("scn");
+        const scenario: Scenario = {
+          id,
+          name: baseName,
+          assumptions: defaultAssumptions(working),
+          createdAt: new Date().toISOString(),
+        };
+        set({ activePlan: { ...working, scenarios: [scenario], selectedScenarioId: id } });
       },
       updateScenarioAssumptions(id, patch) {
         patchPlan(set, (p) => ({
