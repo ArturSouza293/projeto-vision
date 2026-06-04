@@ -383,6 +383,7 @@
     "currentAmount": "Already saved",
     "monthlyContribution": "Monthly contribution",
     "funded": "{pct}% funded",
+    "achieved": "Achieved",
     "horizon": "{years}-year horizon",
     "empty": "No goals yet. Add one to start.",
     "surplus": "Monthly surplus",
@@ -434,7 +435,7 @@
       "retirementDuration": "Income lasts",
       "probability": "Probability of success",
       "estate": "Estate at horizon",
-      "incomeGap": "Monthly income gap",
+      "incomeGap": "Retirement income gap",
       "surplus": "Surplus / month"
     },
     "chart": {
@@ -627,7 +628,7 @@
     "retirementDuration": "Income lasts",
     "probability": "Probability of success",
     "estate": "Estate at horizon",
-    "incomeGap": "Monthly income gap",
+    "incomeGap": "Retirement income gap",
     "objectives": "Goals",
     "achievable": "achievable"
   },
@@ -636,9 +637,11 @@
     "duration": { "title": "How long income lasts", "body": "How many years the portfolio sustains the retirement income need before depleting." },
     "probability": { "title": "Probability of success", "body": "Chance the plan funds the desired income across the whole horizon — capital at retirement vs. capital needed." },
     "estate": { "title": "Estate at horizon", "body": "How much should remain at the end of the planning horizon (legacy / margin)." },
-    "gap": { "title": "Monthly income gap", "body": "Difference between sustainable monthly income and the retirement need. Negative = shortfall; positive = surplus." },
+    "gap": { "title": "Retirement income gap", "body": "The gap between the portfolio's sustainable monthly income IN RETIREMENT and the desired income. Not the same as free balance — today's monthly surplus to invest. Negative = shortfall; positive = surplus." },
     "goals": { "title": "Goals", "body": "How many goals are achievable in the current scenario. Tap each one for detail.", "achievable": "goals achievable", "ok": "achievable", "partial": "partial" },
-    "f": { "investableNow": "Investable today", "need": "Monthly need", "continuing": "Continuing income" }
+    "f": { "investableNow": "Investable today", "need": "Monthly need", "continuing": "Continuing income" },
+    "askBia": "Ask Bia",
+    "askGeneric": "Explain '{topic}' for this client in plain language, using the plan's numbers, and tell me the next step."
   },
   "chart": {
     "wealthOverTime": "Wealth over time",

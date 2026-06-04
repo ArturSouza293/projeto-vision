@@ -27,6 +27,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { cashFlowTotals, goalFundedPct } from "@/lib/calc";
+import { useScrollOnAdd } from "@/lib/use-scroll-on-add";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { Goal, GoalPriority, GoalType } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -154,6 +155,7 @@ export function GoalsStep() {
   const totals = cashFlowTotals(cashFlow, netWorth);
   const allocated = goals.reduce((s, g) => s + (g.monthlyContribution ?? 0), 0);
   const free = totals.surplus - allocated;
+  const listRef = useScrollOnAdd<HTMLDivElement>(goals.length);
 
   function addGoalOfType(type: GoalType) {
     addGoal({
@@ -219,7 +221,7 @@ export function GoalsStep() {
           {t("goals.empty")}
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <div ref={listRef} className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
           {goals.map((g) => (
             <GoalCard key={g.id} goal={g} />
           ))}

@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/select";
 import { cashFlowTotals, monthlyDebtService } from "@/lib/calc";
 import { formatCurrency, formatPercent } from "@/lib/format";
+import { useScrollOnAdd } from "@/lib/use-scroll-on-add";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { ExpenseCategory } from "@/lib/types";
 
@@ -50,6 +51,7 @@ export function ExpenseStep() {
   const totals = cashFlowTotals(cashFlow, netWorth);
   const debtService = monthlyDebtService(netWorth);
   const deficit = totals.surplus < 0;
+  const listRef = useScrollOnAdd<HTMLDivElement>(cashFlow.expenses.length);
   const essential = cashFlow.expenses
     .filter((e) => e.primary !== false)
     .reduce((s, e) => s + e.monthly, 0);
@@ -101,7 +103,7 @@ export function ExpenseStep() {
         {cashFlow.expenses.length === 0 ? (
           <p className="text-xs text-muted-foreground">{t("expense.empty")}</p>
         ) : (
-          <div className="space-y-3">
+          <div ref={listRef} className="space-y-3">
             {cashFlow.expenses.map((item) => {
               const primary = item.primary !== false;
               const commitment = totals.income > 0 ? item.monthly / totals.income : 0;

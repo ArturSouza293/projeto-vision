@@ -16,6 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useScrollOnAdd } from "@/lib/use-scroll-on-add";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { IncomeKind, Periodicity } from "@/lib/types";
 
@@ -43,6 +44,7 @@ export function IncomeStep() {
   const isEvent = (i: (typeof incomes)[number]) => i.recurring === false || isEventKind(i.kind);
   const recurringMonthly = incomes.filter((i) => !isEvent(i)).reduce((s, i) => s + i.monthly, 0);
   const eventsTotal = incomes.filter(isEvent).reduce((s, i) => s + i.monthly, 0);
+  const listRef = useScrollOnAdd<HTMLDivElement>(incomes.length);
 
   return (
     <div className="space-y-5">
@@ -73,7 +75,7 @@ export function IncomeStep() {
         {incomes.length === 0 ? (
           <p className="text-xs text-muted-foreground">{t("income.empty")}</p>
         ) : (
-          <div className="space-y-2">
+          <div ref={listRef} className="space-y-2">
             {incomes.map((item) => {
               const event = isEvent(item);
               return (

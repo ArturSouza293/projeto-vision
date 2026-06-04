@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { CalendarPlus, Send, Sparkles } from "@/components/app/icons";
 
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { buildAdvisorContext } from "@/lib/advisor-context";
 import { formatDate } from "@/lib/format";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { AdvisorEventType } from "@/lib/types";
@@ -52,6 +53,9 @@ export function CopilotPanel() {
   const locale = useVisionStore((s) => s.locale);
   const addEvent = useVisionStore((s) => s.addEvent);
   const events = useVisionStore((s) => s.activePlan?.events ?? []);
+  const plan = useVisionStore((s) => s.activePlan);
+  const copilotPrompt = useVisionStore((s) => s.copilotPrompt);
+  const clearCopilotPrompt = useVisionStore((s) => s.clearCopilotPrompt);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -59,9 +63,20 @@ export function CopilotPanel() {
   const [added, setAdded] = useState<Set<number>>(new Set());
   const scrollRef = useRef<HTMLDivElement>(null);
 
+  const context = useMemo(() => (plan ? buildAdvisorContext(plan, locale) : undefined), [plan, locale]);
+
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight });
   }, [messages]);
+
+  // Consume a pending "ask Bia" prompt (set from a KPI/goal button).
+  useEffect(() => {
+    if (copilotPrompt && !streaming) {
+      void send(copilotPrompt);
+      clearCopilotPrompt();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [copilotPrompt]);
 
   async function send(text: string) {
     const trimmed = text.trim();
@@ -75,7 +90,7 @@ export function CopilotPanel() {
       const res = await fetch("/api/advisor", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: next }),
+        body: JSON.stringify({ messages: next, context }),
       });
 
       if (res.headers.get("x-advisor") === "no-key") {

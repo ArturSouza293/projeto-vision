@@ -96,6 +96,10 @@ export interface VisionStore {
   copilotOpen: boolean;
   setCopilotOpen: (v: boolean) => void;
   toggleCopilot: () => void;
+  /** Open Bia and pre-fill a question to send (e.g. from a KPI/goal "ask Bia" button). */
+  copilotPrompt: string | null;
+  askBia: (prompt: string) => void;
+  clearCopilotPrompt: () => void;
 
   loadingPlan: boolean;
   busy: boolean;
@@ -267,6 +271,9 @@ export const useVisionStore = create<VisionStore>()(
       copilotOpen: false,
       setCopilotOpen: (v) => set({ copilotOpen: v }),
       toggleCopilot: () => set((s) => ({ copilotOpen: !s.copilotOpen })),
+      copilotPrompt: null,
+      askBia: (prompt) => set({ copilotOpen: true, copilotPrompt: prompt }),
+      clearCopilotPrompt: () => set({ copilotPrompt: null }),
 
       loadingPlan: false,
       busy: false,

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { assetValueBRL, netWorthTotals } from "@/lib/calc";
 import { formatPercent } from "@/lib/format";
+import { useScrollOnAdd } from "@/lib/use-scroll-on-add";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type {
   AssetClass,
@@ -64,6 +65,8 @@ export function NetWorthStep() {
     useVisionStore.getState();
 
   const totals = netWorthTotals(netWorth);
+  const assetsRef = useScrollOnAdd<HTMLDivElement>(netWorth.assets.length);
+  const liabRef = useScrollOnAdd<HTMLDivElement>(netWorth.liabilities.length);
   const legend = (Object.entries(totals.byClass) as [AssetClass, number][]).filter(
     ([, v]) => v > 0,
   );
@@ -89,7 +92,7 @@ export function NetWorthStep() {
             {t("networth.addAsset")}
           </Button>
         </div>
-        <div className="space-y-2">
+        <div ref={assetsRef} className="space-y-2">
           {netWorth.assets.map((a) => (
             <div key={a.id} className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">
@@ -221,7 +224,7 @@ export function NetWorthStep() {
             {t("networth.addLiability")}
           </Button>
         </div>
-        <div className="space-y-2">
+        <div ref={liabRef} className="space-y-2">
           {netWorth.liabilities.map((l) => (
             <div key={l.id} className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">

@@ -383,6 +383,7 @@
     "currentAmount": "Já guardado",
     "monthlyContribution": "Aporte mensal",
     "funded": "{pct}% financiado",
+    "achieved": "Conquistado",
     "horizon": "Horizonte de {years} anos",
     "empty": "Nenhum objetivo ainda. Adicione um para começar.",
     "surplus": "Sobra mensal",
@@ -434,7 +435,7 @@
       "retirementDuration": "Renda dura",
       "probability": "Probabilidade de sucesso",
       "estate": "Patrimônio no horizonte",
-      "incomeGap": "Lacuna de renda mensal",
+      "incomeGap": "Lacuna na aposentadoria",
       "surplus": "Sobra / mês"
     },
     "chart": {
@@ -627,7 +628,7 @@
     "retirementDuration": "Renda dura",
     "probability": "Probabilidade de sucesso",
     "estate": "Patrimônio no horizonte",
-    "incomeGap": "Lacuna de renda mensal",
+    "incomeGap": "Lacuna na aposentadoria",
     "objectives": "Objetivos",
     "achievable": "atingíveis"
   },
@@ -636,9 +637,11 @@
     "duration": { "title": "Por quanto tempo a renda dura", "body": "Quantos anos a carteira sustenta a necessidade de renda na aposentadoria antes de esgotar." },
     "probability": { "title": "Probabilidade de sucesso", "body": "Chance de o plano financiar a renda desejada por todo o horizonte — capital na aposentadoria vs. capital necessário." },
     "estate": { "title": "Patrimônio no horizonte", "body": "Quanto deve sobrar no fim do horizonte de planejamento (herança / margem)." },
-    "gap": { "title": "Lacuna de renda mensal", "body": "Diferença entre a renda mensal sustentável e a necessidade na aposentadoria. Negativo = falta; positivo = sobra." },
+    "gap": { "title": "Lacuna na aposentadoria", "body": "Diferença entre a renda mensal sustentável da carteira NA APOSENTADORIA e a renda desejada. Não confunda com o saldo livre, que é a sobra mensal de hoje para aportar. Negativo = falta; positivo = sobra." },
     "goals": { "title": "Objetivos", "body": "Quantos objetivos são atingíveis no cenário atual. Toque em cada um para ver o detalhe.", "achievable": "objetivos atingíveis", "ok": "atingível", "partial": "parcial" },
-    "f": { "investableNow": "Investível hoje", "need": "Necessidade mensal", "continuing": "Renda contínua" }
+    "f": { "investableNow": "Investível hoje", "need": "Necessidade mensal", "continuing": "Renda contínua" },
+    "askBia": "Pergunte à Bia",
+    "askGeneric": "Explique '{topic}' deste cliente em linguagem simples, com base nos números do plano, e diga qual é o próximo passo."
   },
   "chart": {
     "wealthOverTime": "Patrimônio ao longo do tempo",

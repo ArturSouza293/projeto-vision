@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import {
+  CircleCheckBig,
   Columns3,
   Copy,
   Lock,
@@ -283,6 +284,34 @@ export function Workspace() {
 
   return (
     <div className="space-y-6">
+      {/* Client header — who we're planning for */}
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 rounded-2xl border border-border bg-card/60 px-5 py-4">
+        <div className="min-w-0">
+          <h2 className="font-heading text-lg font-semibold text-foreground">
+            {`${plan.clientProfile.firstName} ${plan.clientProfile.lastName ?? ""}`.trim() || t("welcome.home")}
+          </h2>
+          <p className="text-xs text-muted-foreground">
+            {currentAge} {t("common.years")} · {t(`segment.${plan.clientProfile.segment}`)}
+          </p>
+        </div>
+        <dl className="flex flex-wrap gap-x-6 gap-y-1 text-sm">
+          <div className="flex items-baseline gap-1.5">
+            <dt className="text-muted-foreground">{t("networth.netWorth")}</dt>
+            <dd className="font-semibold tabular-nums"><Money value={nw.netWorth} compact /></dd>
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <dt className="text-muted-foreground">{t("cashflow.surplus")}</dt>
+            <dd className={cn("font-semibold tabular-nums", cf.surplus >= 0 ? "text-positive" : "text-negative")}>
+              <Money value={cf.surplus} />
+            </dd>
+          </div>
+          <div className="flex items-baseline gap-1.5">
+            <dt className="text-muted-foreground">{t("suitability.result")}</dt>
+            <dd className="font-semibold">{plan.suitability.profile ? t(`riskProfile.${plan.suitability.profile}`) : "—"}</dd>
+          </div>
+        </dl>
+      </div>
+
       {/* Scenario rail — the loop */}
       <div className="flex flex-wrap items-center gap-2">
         <span className="mr-1 text-xs tracking-wide text-muted-foreground/70 uppercase">
@@ -411,9 +440,16 @@ export function Workspace() {
                   if (!g) return null;
                   return (
                     <li key={gf.goalId}>
-                      <div className="mb-1 flex items-center justify-between text-sm">
+                      <div className="mb-1 flex items-center justify-between gap-2 text-sm">
                         <span className="text-foreground">{g.label ?? t(`goalType.${g.type}`)}</span>
-                        <span className="text-muted-foreground tabular-nums">{t("goals.funded", { pct: gf.fundedPct })}</span>
+                        {gf.fundedPct >= 100 ? (
+                          <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-positive-muted px-2 py-0.5 text-[11px] font-semibold text-positive">
+                            <CircleCheckBig className="size-3" />
+                            {t("goals.achieved")}
+                          </span>
+                        ) : (
+                          <span className="text-muted-foreground tabular-nums">{t("goals.funded", { pct: gf.fundedPct })}</span>
+                        )}
                       </div>
                       <Progress value={gf.fundedPct} className="h-1.5" />
                     </li>

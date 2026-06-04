@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 
 import { Money } from "@/components/app/money";
+import { Sparkles } from "@/components/app/icons";
+import { Button } from "@/components/ui/button";
 import {
   Accordion,
   AccordionContent,
@@ -24,6 +26,7 @@ import {
 } from "@/lib/calc";
 import { getPremises } from "@/lib/premises";
 import { GOAL_COLOR, GOAL_ICON } from "@/lib/goal-meta";
+import { useVisionStore } from "@/lib/store/plan-store";
 import type { Plan, ProjectionResult, ScenarioAssumptions } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
@@ -62,6 +65,7 @@ export function KpiDetailDialog({
   assumptions: ScenarioAssumptions;
 }) {
   const t = useTranslations();
+  const askBia = useVisionStore((s) => s.askBia);
   const goalsById = new Map(plan.goals.map((g) => [g.id, g]));
   const thisYear = new Date().getFullYear();
   const achievable = result.goalFunding.filter((g) => g.fundedPct >= ACHIEVABLE).length;
@@ -149,7 +153,9 @@ export function KpiDetailDialog({
                                   ok ? "bg-positive-muted text-positive" : "bg-warning-muted text-warning",
                                 )}
                               >
-                                {gf.fundedPct}% · {ok ? t("kpiDetail.goals.ok") : t("kpiDetail.goals.partial")}
+                                {gf.fundedPct >= 100
+                                  ? t("goals.achieved")
+                                  : `${gf.fundedPct}% · ${ok ? t("kpiDetail.goals.ok") : t("kpiDetail.goals.partial")}`}
                               </span>
                             </span>
                           </AccordionTrigger>
@@ -178,6 +184,21 @@ export function KpiDetailDialog({
                 ))}
               </div>
             )}
+
+            <div className="border-t border-border pt-3">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={() => {
+                  askBia(t("kpiDetail.askGeneric", { topic: t(`kpiDetail.${kind}.title`) }));
+                  onOpenChange(false);
+                }}
+              >
+                <Sparkles className="size-4" />
+                {t("kpiDetail.askBia")}
+              </Button>
+            </div>
           </>
         )}
       </DialogContent>
