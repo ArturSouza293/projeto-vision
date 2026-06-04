@@ -603,7 +603,7 @@
     "youPlaceholder": "Your name",
     "by": "by {author}",
     "save": "Save",
-    "saved": "Persona saved to the team library",
+    "saved": "Plan saved",
     "saveError": "Couldn't save",
     "notConfigured": "Persona database not configured"
   },

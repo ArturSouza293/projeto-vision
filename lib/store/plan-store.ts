@@ -15,6 +15,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { salesforce } from "@/lib/api/salesforce";
 import { personaLibrary } from "@/lib/api/library";
 import { planningEngine } from "@/lib/api/planning-engine";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { ageFromDob } from "@/lib/calc";
 import { blankPlan, buildProjectionRequest, defaultAssumptions, defaultGoals } from "@/lib/plan";
 import type {
@@ -187,8 +188,13 @@ export const useVisionStore = create<VisionStore>()(
       async savePlan() {
         const { activePlan, advisorName } = get();
         if (!activePlan) return;
-        await personaLibrary.save(activePlan, advisorName);
-        void get().fetchSavedPersonas();
+        // The plan is always persisted locally (Zustand persist) — pin it to recents.
+        set((s) => ({ recentPlans: upsertRecent(s.recentPlans, activePlan) }));
+        // Best-effort sync to the shared team library when the DB is configured.
+        if (isSupabaseConfigured) {
+          await personaLibrary.save(activePlan, advisorName);
+          void get().fetchSavedPersonas();
+        }
       },
       async loadSavedPersona(clientId) {
         set({ loadingPlan: true });

@@ -6,16 +6,18 @@ import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { MoneyTooltip } from "@/components/charts/chart-tooltip";
 import type { AssetClass } from "@/lib/types";
 
+// Solid hex values — SVG `fill` (used for the donut slices) does not support
+// `color-mix()` or reliably resolve `var()`, so the colours are concrete here.
 export const ASSET_CLASS_COLOR: Record<AssetClass, string> = {
-  cash: "var(--chart-2)",
-  investments: "var(--chart-3)",
-  pension: "var(--chart-5)",
-  real_estate: "var(--chart-4)",
-  vehicle: "color-mix(in srgb, var(--chart-1), white 35%)",
-  foreign: "color-mix(in srgb, var(--chart-3), var(--chart-2) 55%)",
-  fgts: "color-mix(in srgb, var(--chart-4), white 28%)",
-  business: "var(--chart-1)",
-  other: "var(--muted-foreground)",
+  cash: "#2c5be2", // blue (chart-2)
+  investments: "#5db7f5", // sky (chart-3)
+  pension: "#f2b53a", // yellow (chart-5)
+  real_estate: "#1ba15b", // green (chart-4)
+  vehicle: "#7c3aed", // violet
+  foreign: "#0e7c86", // teal
+  fgts: "#d97706", // amber
+  business: "#ce2a47", // red (chart-1)
+  other: "#9ca3ad", // gray
 };
 
 export function NetWorthDonut({
