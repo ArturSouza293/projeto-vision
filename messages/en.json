@@ -550,6 +550,52 @@
     "dossier": "Received dossier",
     "editData": "Edit data"
   },
+  "premises": {
+    "open": "Premises & sources",
+    "title": "Plan premises",
+    "subtitle": "The plan's calculation bases — explicit, with source and year. Adjust to the tables in force.",
+    "disclaimer": "Official figures (INSS, IRRF) change every year. The numbers below are an editable reference — confirm the table in force before using with a client.",
+    "adjusted": "adjusted",
+    "heuristic": "estimate",
+    "summary": "Premises: INSS cap {inss} · longevity {longevity} yrs · reserve {reserve} months",
+    "reserveFloor": "Reserve (untouchable)",
+    "section": {
+      "market": "Market",
+      "horizon": "Horizon & longevity",
+      "protection": "Reserve & succession",
+      "inss": "INSS (social security)",
+      "irrf": "Income tax (IRRF)"
+    },
+    "field": {
+      "realReturn": "Reference real return",
+      "inflation": "Reference inflation (IPCA)",
+      "horizonAge": "Age — projection horizon",
+      "longevityAge": "Longevity (life expectancy)",
+      "reserveMonths": "Emergency reserve",
+      "successionPct": "Succession liquidity (% of assets)",
+      "inssCeiling": "INSS benefit ceiling",
+      "inssRate": "Estimated replacement rate (INSS)",
+      "irrfSimplified": "Monthly simplified deduction"
+    },
+    "unit": {
+      "perYear": "%/yr",
+      "pct": "%",
+      "years": "yrs",
+      "months": "months",
+      "perMonth": "R$/mo"
+    },
+    "irrf": {
+      "base": "Monthly base",
+      "rate": "Rate",
+      "deduct": "Deduction",
+      "upTo": "Up to {v}",
+      "above": "Above {v}",
+      "exempt": "Exempt",
+      "preview": "Effective rate at {income}: {rate}"
+    },
+    "reset": "Restore defaults",
+    "close": "Close"
+  },
   "kpi": {
     "wealthAtRetirement": "Wealth at retirement",
     "retirementDuration": "Income lasts",

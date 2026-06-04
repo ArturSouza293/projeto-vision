@@ -16,6 +16,7 @@ import {
   retirementMonthlyNeed,
   successionTarget,
 } from "@/lib/calc";
+import { getPremises } from "@/lib/premises";
 import { requestToInput, type ProjectionRequest } from "@/lib/api/planning-engine";
 import type {
   Goal,
@@ -103,9 +104,6 @@ export function planCompleteness(plan: Plan): number {
   return Math.round((checks.filter(Boolean).length / checks.length) * 100);
 }
 
-/** Longevity age for the "centenary" retirement planning (parametrizable later). */
-export const LONGEVITY_AGE = 100;
-
 /** Sensible starting assumptions derived from the client's own numbers. */
 export function defaultAssumptions(plan: Plan): ScenarioAssumptions {
   const { surplus } = cashFlowTotals(plan.cashFlow);
@@ -129,25 +127,28 @@ export function defaultAssumptions(plan: Plan): ScenarioAssumptions {
  */
 export function defaultGoals(plan: Plan): Goal[] {
   const thisYear = new Date().getFullYear();
+  const premises = getPremises(plan);
   const age = ageFromDob(plan.clientProfile.dateOfBirth);
   const usufruct = plan.clientProfile.retirementUsufructAge ?? (age >= 60 ? age + 5 : 65);
   const retirementYear = thisYear + Math.max(1, usufruct - age);
 
   // Retirement capital: fund the monthly gap (need − continuing income) across the
-  // centenary horizon via a real annuity factor (default 4% real).
+  // longevity horizon, discounted by the real-return premise.
   const monthlyGap = Math.max(
     0,
-    retirementMonthlyNeed(plan.cashFlow) - continuingMonthlyIncome(plan.cashFlow),
+    retirementMonthlyNeed(plan.cashFlow) - continuingMonthlyIncome(plan.cashFlow, premises),
   );
   const retirementCapital = Math.round(
-    monthlyGap * 12 * annuityFactor(Math.max(1, LONGEVITY_AGE - usufruct), 0.04),
+    monthlyGap *
+      12 *
+      annuityFactor(Math.max(1, premises.longevityAge - usufruct), premises.realReturnRef / 100),
   );
 
   return [
     {
       id: "goal-emergency",
       type: "emergency_reserve",
-      targetAmount: emergencyReserveTarget(plan.cashFlow, 6),
+      targetAmount: emergencyReserveTarget(plan.cashFlow, premises),
       targetYear: thisYear + 1,
       priority: "high",
       currentAmount: 0,
@@ -163,7 +164,7 @@ export function defaultGoals(plan: Plan): Goal[] {
     {
       id: "goal-succession",
       type: "legacy",
-      targetAmount: successionTarget(plan.netWorth),
+      targetAmount: successionTarget(plan.netWorth, premises),
       targetYear: thisYear + 20,
       priority: "medium",
       currentAmount: 0,
@@ -177,17 +178,19 @@ export function buildProjectionRequest(
   a: ScenarioAssumptions,
 ): ProjectionRequest {
   const age = ageFromDob(plan.clientProfile.dateOfBirth);
+  const premises = getPremises(plan);
   const { income } = cashFlowTotals(plan.cashFlow);
   return {
     currentAge: age,
     retirementAge: a.retirementAge,
+    lifeExpectancy: premises.planningHorizonAge,
     investableNow: investableWealth(plan.netWorth),
     monthlyContribution: a.monthlyContribution,
     expectedRealReturn: a.expectedRealReturn,
     inflation: a.inflation,
     annualIncomeNow: income * 12,
     annualNeeds: retirementMonthlyNeed(plan.cashFlow) * 12,
-    annualOtherIncome: continuingMonthlyIncome(plan.cashFlow) * 12,
+    annualOtherIncome: continuingMonthlyIncome(plan.cashFlow, premises) * 12,
     goals: plan.goals,
   };
 }

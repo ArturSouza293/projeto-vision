@@ -8,6 +8,8 @@
  * `/lib/api/planning-engine.ts`.
  */
 
+import type { Premises } from "@/lib/premises";
+
 export type Locale = "en" | "pt-BR";
 
 /** Bradesco segmentation (higher of income or invested assets). */
@@ -405,6 +407,8 @@ export interface Plan {
   selectedScenarioId?: string;
   approvalStatus: ApprovalStatus;
   events: AdvisorEvent[];
+  /** Per-plan overrides of the planning premises (falls back to DEFAULT_PREMISES). */
+  premises?: Premises;
 }
 
 /** Lightweight client card used on the entry/overview screen. */

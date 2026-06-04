@@ -22,6 +22,7 @@ import {
   investableWealth,
   retirementMonthlyNeed,
 } from "@/lib/calc";
+import { getPremises } from "@/lib/premises";
 import { GOAL_COLOR, GOAL_ICON } from "@/lib/goal-meta";
 import type { Plan, ProjectionResult, ScenarioAssumptions } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -91,7 +92,7 @@ export function KpiDetailDialog({
             : kind === "gap"
               ? [
                   { label: t("kpiDetail.f.need"), value: <Money value={Math.round(retirementMonthlyNeed(plan.cashFlow))} compact /> },
-                  { label: t("kpiDetail.f.continuing"), value: <Money value={Math.round(continuingMonthlyIncome(plan.cashFlow))} compact /> },
+                  { label: t("kpiDetail.f.continuing"), value: <Money value={Math.round(continuingMonthlyIncome(plan.cashFlow, getPremises(plan)))} compact /> },
                   { label: t("kpi.incomeGap"), value: <Money value={result.incomeGap} /> },
                 ]
               : [];

@@ -550,6 +550,52 @@
     "dossier": "Dossiê recebido",
     "editData": "Editar dados"
   },
+  "premises": {
+    "open": "Premissas e fontes",
+    "title": "Premissas do plano",
+    "subtitle": "As bases de cálculo do plano — explícitas, com fonte e ano. Ajuste conforme as tabelas vigentes.",
+    "disclaimer": "Valores oficiais (INSS, IRRF) mudam todo ano. Os números abaixo são uma referência editável — confirme a tabela em vigor antes de usar com o cliente.",
+    "adjusted": "ajustado",
+    "heuristic": "estimativa",
+    "summary": "Premissas: teto INSS {inss} · longevidade {longevity} anos · reserva {reserve} meses",
+    "reserveFloor": "Reserva (intocável)",
+    "section": {
+      "market": "Mercado",
+      "horizon": "Horizonte & longevidade",
+      "protection": "Reserva & sucessão",
+      "inss": "INSS",
+      "irrf": "Imposto de renda (IRRF)"
+    },
+    "field": {
+      "realReturn": "Retorno real de referência",
+      "inflation": "Inflação (IPCA) de referência",
+      "horizonAge": "Idade — horizonte de projeção",
+      "longevityAge": "Longevidade (expectativa de vida)",
+      "reserveMonths": "Reserva de emergência",
+      "successionPct": "Liquidez sucessória (% dos ativos)",
+      "inssCeiling": "Teto do benefício do INSS",
+      "inssRate": "Taxa de reposição estimada (INSS)",
+      "irrfSimplified": "Desconto simplificado mensal"
+    },
+    "unit": {
+      "perYear": "% a.a.",
+      "pct": "%",
+      "years": "anos",
+      "months": "meses",
+      "perMonth": "R$/mês"
+    },
+    "irrf": {
+      "base": "Base mensal",
+      "rate": "Alíquota",
+      "deduct": "Dedução",
+      "upTo": "Até {v}",
+      "above": "Acima de {v}",
+      "exempt": "Isento",
+      "preview": "Alíquota efetiva em {income}: {rate}"
+    },
+    "reset": "Restaurar padrão",
+    "close": "Fechar"
+  },
   "kpi": {
     "wealthAtRetirement": "Patrimônio na aposentadoria",
     "retirementDuration": "Renda dura",

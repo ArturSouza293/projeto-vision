@@ -6,9 +6,11 @@ import { useTranslations } from "next-intl";
 import {
   Columns3,
   Copy,
+  Lock,
   PencilLine,
   Play,
   Plus,
+  SlidersHorizontal,
   X,
 } from "@/components/app/icons";
 
@@ -18,6 +20,7 @@ import { ProbabilityGauge } from "@/components/charts/probability-gauge";
 import { WealthArea } from "@/components/charts/wealth-area";
 import { KpiTile } from "@/components/engine/kpi-tile";
 import { KpiDetailDialog, type KpiModalKind } from "@/components/engine/kpi-detail-dialog";
+import { PremisesDialog } from "@/components/engine/premises-dialog";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -30,13 +33,14 @@ import {
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
 import {
-  PLANNING_HORIZON_AGE,
   achievableGoalCount,
   ageFromDob,
   cashFlowTotals,
+  emergencyReserveTarget,
   netWorthTotals,
 } from "@/lib/calc";
 import { formatCompactCurrency, formatCurrency } from "@/lib/format";
+import { getPremises } from "@/lib/premises";
 import { GROWTH_SCENARIO_RETURNS, projectPlan, returnCheckpoints } from "@/lib/plan";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { GrowthScenario, Plan, ScenarioAssumptions } from "@/lib/types";
@@ -211,6 +215,7 @@ export function Workspace() {
   const setDataTab = useVisionStore((s) => s.setDataTab);
   const busy = useVisionStore((s) => s.busy);
   const [compareOpen, setCompareOpen] = useState(false);
+  const [premisesOpen, setPremisesOpen] = useState(false);
   const [kpiModal, setKpiModal] = useState<KpiModalKind | null>(null);
 
   const scenarios = plan.scenarios;
@@ -229,15 +234,17 @@ export function Workspace() {
   }
 
   const a = selected.assumptions;
+  const premises = getPremises(plan);
   const currentAge = ageFromDob(plan.clientProfile.dateOfBirth);
   const thisYear = new Date().getFullYear();
   const retirementYear = thisYear + (a.retirementAge - currentAge);
   const result = projectPlan(plan, a);
-  const lastsFull = result.retirementDurationYears >= PLANNING_HORIZON_AGE - a.retirementAge;
+  const lastsFull = result.retirementDurationYears >= premises.planningHorizonAge - a.retirementAge;
   const update = (patch: Partial<ScenarioAssumptions>) => updateScenarioAssumptions(selected.id, patch);
 
   const cf = cashFlowTotals(plan.cashFlow);
   const nw = netWorthTotals(plan.netWorth);
+  const reserveFloor = emergencyReserveTarget(plan.cashFlow, premises);
   const goalsById = new Map(plan.goals.map((g) => [g.id, g]));
 
   const checkpoints = returnCheckpoints(plan, a);
@@ -359,6 +366,8 @@ export function Workspace() {
         assumptions={a}
       />
 
+      <PremisesDialog open={premisesOpen} onOpenChange={setPremisesOpen} plan={plan} />
+
       {/* Charts + parameters */}
       <div className="grid gap-5 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
@@ -401,7 +410,20 @@ export function Workspace() {
 
         <aside className="space-y-5">
           <section className="surface rounded-2xl p-5">
-            <h3 className="mb-4 text-sm font-semibold text-foreground">{t("workspace.parameters")}</h3>
+            <div className="mb-1 flex items-center justify-between gap-2">
+              <h3 className="text-sm font-semibold text-foreground">{t("workspace.parameters")}</h3>
+              <Button variant="ghost" size="xs" onClick={() => setPremisesOpen(true)}>
+                <SlidersHorizontal className="size-3.5" />
+                {t("premises.open")}
+              </Button>
+            </div>
+            <p className="mb-4 text-[11px] leading-snug text-muted-foreground">
+              {t("premises.summary", {
+                inss: fmtCurrency(premises.inssCeiling),
+                longevity: premises.longevityAge,
+                reserve: premises.emergencyReserveMonths,
+              })}
+            </p>
             <div className="mb-5">
               <div className="mb-2 text-[11px] tracking-wide text-muted-foreground/80 uppercase">{t("workspace.growthScenario")}</div>
               <div className="flex flex-wrap gap-1.5">
@@ -497,6 +519,13 @@ export function Workspace() {
                 <dd className={cn("font-medium tabular-nums", cf.surplus >= 0 ? "text-positive" : "text-negative")}>
                   <Money value={cf.surplus} />
                 </dd>
+              </div>
+              <div className="flex items-center justify-between">
+                <dt className="flex items-center gap-1.5 text-muted-foreground">
+                  <Lock className="size-3.5 text-info" />
+                  {t("premises.reserveFloor")}
+                </dt>
+                <dd className="font-medium tabular-nums"><Money value={reserveFloor} compact /></dd>
               </div>
               <div className="flex items-center justify-between">
                 <dt className="text-muted-foreground">{t("suitability.result")}</dt>

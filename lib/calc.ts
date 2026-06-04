@@ -20,8 +20,10 @@ import type {
   ProjectionResult,
   RiskProfile,
 } from "@/lib/types";
+import { DEFAULT_PREMISES, inssRetirementBenefit, type Premises } from "@/lib/premises";
 
-export const PLANNING_HORIZON_AGE = 95;
+/** Fallback projection horizon when no plan premises are supplied. */
+export const PLANNING_HORIZON_AGE = DEFAULT_PREMISES.planningHorizonAge;
 
 /* ------------------------------------------------------------------ */
 /* Small helpers                                                       */
@@ -86,10 +88,9 @@ export function essentialMonthlyExpenses(cf: CashFlow): number {
   return cf.expenses.filter((e) => e.primary !== false).reduce((s, e) => s + e.monthly, 0);
 }
 
-/** Estimated monthly INSS benefit (capped at the ~2024 ceiling). Heuristic for the prototype. */
-export function estimatedInssBenefit(cf: CashFlow): number {
-  const INSS_CEILING = 7786;
-  return Math.min(Math.round(recurringMonthlyIncome(cf) * 0.6), INSS_CEILING);
+/** Estimated monthly INSS benefit (capped at the ceiling premise). Heuristic for the prototype. */
+export function estimatedInssBenefit(cf: CashFlow, p: Premises = DEFAULT_PREMISES): number {
+  return inssRetirementBenefit(recurringMonthlyIncome(cf), p);
 }
 
 /** Target monthly income in retirement, from the client's retirementIncome config (default 70%). */
@@ -100,23 +101,23 @@ export function retirementMonthlyNeed(cf: CashFlow): number {
 }
 
 /** Monthly income continuing into retirement: pension + rent, plus INSS when opted in. */
-export function continuingMonthlyIncome(cf: CashFlow): number {
-  const inss = cf.retirementIncome?.inss ? estimatedInssBenefit(cf) : 0;
+export function continuingMonthlyIncome(cf: CashFlow, p: Premises = DEFAULT_PREMISES): number {
+  const inss = cf.retirementIncome?.inss ? estimatedInssBenefit(cf, p) : 0;
   return monthlyContinuingIncome(cf) + inss;
 }
 
-/** Emergency-reserve target = months × essential monthly expenses. */
-export function emergencyReserveTarget(cf: CashFlow, months: 6 | 12 = 6): number {
-  return months * essentialMonthlyExpenses(cf);
+/** Emergency-reserve target = reserve-months premise × essential monthly expenses. */
+export function emergencyReserveTarget(cf: CashFlow, p: Premises = DEFAULT_PREMISES): number {
+  return p.emergencyReserveMonths * essentialMonthlyExpenses(cf);
 }
 
 /**
- * Succession liquidity target = max(0, 20% of gross assets − previdência − seguros).
+ * Succession liquidity target = max(0, succession% of gross assets − previdência − seguros).
  * Previdência = pension asset class; insurance cover has no field yet, treated as 0.
  */
-export function successionTarget(nw: NetWorth): number {
+export function successionTarget(nw: NetWorth, p: Premises = DEFAULT_PREMISES): number {
   const t = netWorthTotals(nw);
-  return Math.max(0, Math.round(0.2 * t.totalAssets - t.byClass.pension));
+  return Math.max(0, Math.round((p.successionPctOfGross / 100) * t.totalAssets - t.byClass.pension));
 }
 
 /* ------------------------------------------------------------------ */

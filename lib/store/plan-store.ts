@@ -16,6 +16,7 @@ import { salesforce } from "@/lib/api/salesforce";
 import { personaLibrary } from "@/lib/api/library";
 import { planningEngine } from "@/lib/api/planning-engine";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { getPremises, type Premises } from "@/lib/premises";
 import { ageFromDob } from "@/lib/calc";
 import { blankPlan, buildProjectionRequest, defaultAssumptions, defaultGoals } from "@/lib/plan";
 import type {
@@ -112,6 +113,10 @@ export interface VisionStore {
   updateDependent: (id: string, patch: Partial<Dependent>) => void;
   removeDependent: (id: string) => void;
   updateRetirementIncome: (patch: Partial<RetirementIncomeConfig>) => void;
+
+  // Planning premises (FPSB) — per-plan overrides of DEFAULT_PREMISES
+  updatePremises: (patch: Partial<Premises>) => void;
+  resetPremises: () => void;
 
   // Step 2 — cash flow
   addIncome: () => void;
@@ -371,6 +376,13 @@ export const useVisionStore = create<VisionStore>()(
             },
           },
         }));
+      },
+
+      updatePremises(patch) {
+        patchPlan(set, (p) => ({ ...p, premises: { ...getPremises(p), ...patch } }));
+      },
+      resetPremises() {
+        patchPlan(set, (p) => ({ ...p, premises: undefined }));
       },
 
       addIncome() {
