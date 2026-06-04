@@ -11,8 +11,10 @@
  */
 
 import type {
+  Asset,
   AssetClass,
   CashFlow,
+  Dependent,
   Goal,
   GoalFunding,
   NetWorth,
@@ -41,6 +43,11 @@ export function ageFromDob(dob: string, now: Date = new Date()): number {
   return age;
 }
 
+/** A dependent's age — derived from birth date when present, else the typed age. */
+export function dependentAge(d: Dependent): number {
+  return d.birthDate ? ageFromDob(d.birthDate) : d.age;
+}
+
 /* ------------------------------------------------------------------ */
 /* Cash flow                                                           */
 /* ------------------------------------------------------------------ */
@@ -53,12 +60,28 @@ export interface CashFlowTotals {
   savingsRate: number;
 }
 
-export function cashFlowTotals(cf: CashFlow): CashFlowTotals {
+/** Total monthly debt service (parcelas) across all liabilities. */
+export function monthlyDebtService(nw: NetWorth): number {
+  return nw.liabilities.reduce((s, l) => s + (l.monthlyPayment ?? 0), 0);
+}
+
+export function cashFlowTotals(cf: CashFlow, nw?: NetWorth): CashFlowTotals {
   // One-time events (recurring === false) don't count toward monthly income.
   const income = cf.incomes
     .filter((i) => i.recurring !== false)
     .reduce((s, i) => s + i.monthly, 0);
-  const expense = cf.expenses.reduce((s, e) => s + e.monthly, 0);
+  // Debt service comes from the liabilities' installments (single source of
+  // truth) when net worth is supplied — manual "debt" expenses are then ignored
+  // to avoid double counting; otherwise fall back to any manual debt entries.
+  const nonDebt = cf.expenses
+    .filter((e) => e.category !== "debt")
+    .reduce((s, e) => s + e.monthly, 0);
+  const manualDebt = cf.expenses
+    .filter((e) => e.category === "debt")
+    .reduce((s, e) => s + e.monthly, 0);
+  const liabilityDebt = nw ? monthlyDebtService(nw) : 0;
+  const debtService = liabilityDebt > 0 ? liabilityDebt : manualDebt;
+  const expense = nonDebt + debtService;
   const surplus = income - expense;
   const savingsRate = income > 0 ? surplus / income : 0;
   return { income, expense, surplus, savingsRate };
@@ -113,11 +136,18 @@ export function emergencyReserveTarget(cf: CashFlow, p: Premises = DEFAULT_PREMI
 
 /**
  * Succession liquidity target = max(0, succession% of gross assets − previdência − seguros).
- * Previdência = pension asset class; insurance cover has no field yet, treated as 0.
+ * Previdência = pension asset class; `insurance` is the life-insurance coverage.
  */
-export function successionTarget(nw: NetWorth, p: Premises = DEFAULT_PREMISES): number {
+export function successionTarget(
+  nw: NetWorth,
+  p: Premises = DEFAULT_PREMISES,
+  insurance = 0,
+): number {
   const t = netWorthTotals(nw);
-  return Math.max(0, Math.round((p.successionPctOfGross / 100) * t.totalAssets - t.byClass.pension));
+  return Math.max(
+    0,
+    Math.round((p.successionPctOfGross / 100) * t.totalAssets - t.byClass.pension - insurance),
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -141,6 +171,11 @@ const ASSET_CLASSES: AssetClass[] = [
   "other",
 ];
 
+/** An asset's value converted to BRL (foreign holdings × their FX rate). */
+export function assetValueBRL(a: Asset): number {
+  return a.currency && a.currency !== "BRL" ? a.value * (a.fxRate ?? 1) : a.value;
+}
+
 export function netWorthTotals(nw: NetWorth): NetWorthTotals {
   const byClass = Object.fromEntries(
     ASSET_CLASSES.map((c) => [c, 0]),
@@ -149,9 +184,10 @@ export function netWorthTotals(nw: NetWorth): NetWorthTotals {
   let totalAssets = 0;
   let liquidAssets = 0;
   for (const a of nw.assets) {
-    totalAssets += a.value;
-    byClass[a.assetClass] += a.value;
-    if (a.liquid) liquidAssets += a.value;
+    const v = assetValueBRL(a);
+    totalAssets += v;
+    byClass[a.assetClass] += v;
+    if (a.liquid) liquidAssets += v;
   }
   const totalLiabilities = nw.liabilities.reduce((s, l) => s + l.balance, 0);
   return {

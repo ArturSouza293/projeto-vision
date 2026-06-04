@@ -23,7 +23,7 @@ function scoreFor(fit: Fit, estimatedValue: number): number {
 }
 
 export function generateOpportunities(plan: Plan): CrossSellOpportunity[] {
-  const cf = cashFlowTotals(plan.cashFlow);
+  const cf = cashFlowTotals(plan.cashFlow, plan.netWorth);
   const nw = netWorthTotals(plan.netWorth);
   const investable = investableWealth(plan.netWorth);
   const p = plan.clientProfile;

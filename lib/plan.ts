@@ -106,7 +106,7 @@ export function planCompleteness(plan: Plan): number {
 
 /** Sensible starting assumptions derived from the client's own numbers. */
 export function defaultAssumptions(plan: Plan): ScenarioAssumptions {
-  const { surplus } = cashFlowTotals(plan.cashFlow);
+  const { surplus } = cashFlowTotals(plan.cashFlow, plan.netWorth);
   const age = ageFromDob(plan.clientProfile.dateOfBirth);
   const usufruct = plan.clientProfile.retirementUsufructAge;
   const retirementAge =
@@ -166,7 +166,7 @@ export function defaultGoals(plan: Plan): Goal[] {
     {
       id: "goal-succession",
       type: "legacy",
-      targetAmount: successionTarget(plan.netWorth, premises),
+      targetAmount: successionTarget(plan.netWorth, premises, plan.clientProfile.lifeInsurance ?? 0),
       targetYear: thisYear + 20,
       priority: "medium",
       currentAmount: 0,
@@ -181,7 +181,7 @@ export function buildProjectionRequest(
 ): ProjectionRequest {
   const age = ageFromDob(plan.clientProfile.dateOfBirth);
   const premises = getPremises(plan);
-  const { income } = cashFlowTotals(plan.cashFlow);
+  const { income } = cashFlowTotals(plan.cashFlow, plan.netWorth);
   return {
     currentAge: age,
     retirementAge: a.retirementAge,

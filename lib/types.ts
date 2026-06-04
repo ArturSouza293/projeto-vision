@@ -45,6 +45,8 @@ export interface Dependent {
   name: string;
   relation: DependentRelation;
   age: number;
+  /** ISO birth date (yyyy-mm-dd). When set, age is derived from it. */
+  birthDate?: string;
 }
 
 export type EmploymentStatus =
@@ -101,6 +103,9 @@ export interface ClientProfile {
   cpfMasked?: string;
   /** Politically Exposed Person flag. */
   pep: boolean;
+
+  /** Life-insurance coverage (BRL) — reduces the succession liquidity gap. */
+  lifeInsurance?: number;
 
   segment: Segment;
 }
@@ -196,6 +201,12 @@ export type AssetClass =
 /** Real-estate property type (when assetClass = real_estate). */
 export type PropertyType = "farm" | "house" | "apartment" | "land" | "commercial";
 
+/** Asset ownership (titularidade). */
+export type AssetOwnership = "individual" | "joint" | "spouse";
+
+/** Supported holding currencies (multi-currency assets). */
+export type CurrencyCode = "BRL" | "USD" | "EUR" | "GBP";
+
 export type LiabilityKind =
   | "mortgage"
   | "auto"
@@ -207,13 +218,19 @@ export type LiabilityKind =
 export interface Asset {
   id: string;
   label: string;
-  /** Current value in BRL. */
+  /** Current value, expressed in `currency` (BRL when omitted). */
   value: number;
   assetClass: AssetClass;
   /** Counts toward the liquidity / emergency reserve view. */
   liquid: boolean;
   /** For real_estate: the property type. */
   propertyType?: PropertyType;
+  /** Ownership / titularidade. */
+  ownership?: AssetOwnership;
+  /** Holding currency (defaults to BRL). */
+  currency?: CurrencyCode;
+  /** BRL per 1 unit of `currency` (used to convert non-BRL values). */
+  fxRate?: number;
   /** For fgts: planned date of use (ISO). */
   fgtsUseDate?: string;
 }
@@ -232,6 +249,8 @@ export interface Liability {
   monthlyPayment?: number;
   /** Whether the debt is secured by a guarantee/collateral (garantia). */
   hasGuarantee?: boolean;
+  /** The financed asset this debt is tied to (financiamento ↔ bem). */
+  linkedAssetId?: string;
 }
 
 export interface NetWorth {

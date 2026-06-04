@@ -22,7 +22,7 @@ export function buildOutputPayload(args: {
   now: string;
 }): OutputPayload {
   const { plan, scenario, opportunities, resolve, now } = args;
-  const cf = cashFlowTotals(plan.cashFlow);
+  const cf = cashFlowTotals(plan.cashFlow, plan.netWorth);
   const nw = netWorthTotals(plan.netWorth);
   const result = scenario ? projectPlan(plan, scenario.assumptions) : null;
   const realReturn = (scenario?.assumptions.expectedRealReturn ?? 4) / 100;

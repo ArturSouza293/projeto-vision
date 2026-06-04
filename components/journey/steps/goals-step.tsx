@@ -141,6 +141,7 @@ export function GoalsStep() {
   const t = useTranslations();
   const goals = useVisionStore((s) => s.activePlan!.goals);
   const cashFlow = useVisionStore((s) => s.activePlan!.cashFlow);
+  const netWorth = useVisionStore((s) => s.activePlan!.netWorth);
   const addGoal = useVisionStore((s) => s.addGoal);
   const seedDefaultGoals = useVisionStore((s) => s.seedDefaultGoals);
   const thisYear = new Date().getFullYear();
@@ -150,7 +151,7 @@ export function GoalsStep() {
     seedDefaultGoals();
   }, [seedDefaultGoals]);
 
-  const totals = cashFlowTotals(cashFlow);
+  const totals = cashFlowTotals(cashFlow, netWorth);
   const allocated = goals.reduce((s, g) => s + (g.monthlyContribution ?? 0), 0);
   const free = totals.surplus - allocated;
 

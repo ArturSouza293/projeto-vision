@@ -251,7 +251,7 @@ export function Workspace() {
   const update = (patch: Partial<ScenarioAssumptions>) => updateScenarioAssumptions(selected.id, patch);
   const freezeNow = () => setFrozen(liveResult);
 
-  const cf = cashFlowTotals(plan.cashFlow);
+  const cf = cashFlowTotals(plan.cashFlow, plan.netWorth);
   const nw = netWorthTotals(plan.netWorth);
   const reserveFloor = emergencyReserveTarget(plan.cashFlow, premises);
   const reserveShort = Math.max(0, reserveFloor - nw.liquidAssets);

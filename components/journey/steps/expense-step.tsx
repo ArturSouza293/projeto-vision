@@ -17,17 +17,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { cashFlowTotals } from "@/lib/calc";
-import { formatPercent } from "@/lib/format";
+import { cashFlowTotals, monthlyDebtService } from "@/lib/calc";
+import { formatCurrency, formatPercent } from "@/lib/format";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { ExpenseCategory } from "@/lib/types";
 
+// "debt" is intentionally excluded — debt service is derived from the
+// liabilities' installments (Patrimônio) to avoid double counting (FPSB).
 const EXPENSE_CATEGORIES: ExpenseCategory[] = [
   "housing",
   "living",
   "education",
   "health",
-  "debt",
   "card",
   "vehicle",
   "taxes",
@@ -42,10 +43,12 @@ export function ExpenseStep() {
   const t = useTranslations();
   const locale = useVisionStore((s) => s.locale);
   const cashFlow = useVisionStore((s) => s.activePlan!.cashFlow);
+  const netWorth = useVisionStore((s) => s.activePlan!.netWorth);
   const { addExpense, updateExpense, removeExpense, updateRetirementIncome } =
     useVisionStore.getState();
 
-  const totals = cashFlowTotals(cashFlow);
+  const totals = cashFlowTotals(cashFlow, netWorth);
+  const debtService = monthlyDebtService(netWorth);
   const deficit = totals.surplus < 0;
   const essential = cashFlow.expenses
     .filter((e) => e.primary !== false)
@@ -87,6 +90,14 @@ export function ExpenseStep() {
             {t("expense.add")}
           </Button>
         </div>
+        {debtService > 0 && (
+          <div className="mb-3 flex items-start gap-2 rounded-xl border border-info/25 bg-info/5 p-2.5 text-xs leading-snug text-foreground/80">
+            <TriangleAlert className="mt-0.5 size-3.5 shrink-0 text-info" />
+            <span>
+              {t("expense.debtServiceNote", { amount: formatCurrency(debtService, locale) })}
+            </span>
+          </div>
+        )}
         {cashFlow.expenses.length === 0 ? (
           <p className="text-xs text-muted-foreground">{t("expense.empty")}</p>
         ) : (

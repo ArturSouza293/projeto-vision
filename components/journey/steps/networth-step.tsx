@@ -22,9 +22,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { netWorthTotals } from "@/lib/calc";
+import { assetValueBRL, netWorthTotals } from "@/lib/calc";
+import { formatPercent } from "@/lib/format";
 import { useVisionStore } from "@/lib/store/plan-store";
-import type { AssetClass, LiabilityKind, PropertyType } from "@/lib/types";
+import type {
+  AssetClass,
+  AssetOwnership,
+  CurrencyCode,
+  LiabilityKind,
+  PropertyType,
+} from "@/lib/types";
 
 const ASSET_CLASSES: AssetClass[] = [
   "cash",
@@ -38,6 +45,8 @@ const ASSET_CLASSES: AssetClass[] = [
   "other",
 ];
 const PROPERTY_TYPES: PropertyType[] = ["house", "apartment", "farm", "land", "commercial"];
+const OWNERSHIPS: AssetOwnership[] = ["individual", "joint", "spouse"];
+const CURRENCIES: CurrencyCode[] = ["BRL", "USD", "EUR", "GBP"];
 const LIABILITY_KINDS: LiabilityKind[] = [
   "mortgage",
   "auto",
@@ -49,6 +58,7 @@ const LIABILITY_KINDS: LiabilityKind[] = [
 
 export function NetWorthStep() {
   const t = useTranslations();
+  const locale = useVisionStore((s) => s.locale);
   const netWorth = useVisionStore((s) => s.activePlan!.netWorth);
   const { addAsset, updateAsset, removeAsset, addLiability, updateLiability, removeLiability } =
     useVisionStore.getState();
@@ -81,7 +91,8 @@ export function NetWorthStep() {
         </div>
         <div className="space-y-2">
           {netWorth.assets.map((a) => (
-            <div key={a.id} className="flex flex-wrap items-center gap-2">
+            <div key={a.id} className="space-y-1.5">
+              <div className="flex flex-wrap items-center gap-2">
               <Input
                 value={a.label}
                 placeholder={t("common.label")}
@@ -137,6 +148,65 @@ export function NetWorthStep() {
               <Button variant="ghost" size="icon-sm" onClick={() => removeAsset(a.id)}>
                 <Trash2 className="size-4 text-muted-foreground" />
               </Button>
+              </div>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 pl-1 text-xs text-muted-foreground">
+                <label className="flex items-center gap-1.5">
+                  <span>{t("networth.ownership")}</span>
+                  <Select
+                    value={a.ownership ?? "individual"}
+                    onValueChange={(v) => updateAsset(a.id, { ownership: v as AssetOwnership })}
+                  >
+                    <SelectTrigger className="h-7 w-28"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {OWNERSHIPS.map((o) => (
+                        <SelectItem key={o} value={o}>{t(`ownership.${o}`)}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </label>
+                {a.assetClass === "foreign" && (
+                  <>
+                    <label className="flex items-center gap-1.5">
+                      <span>{t("networth.currency")}</span>
+                      <Select
+                        value={a.currency ?? "BRL"}
+                        onValueChange={(v) => updateAsset(a.id, { currency: v as CurrencyCode })}
+                      >
+                        <SelectTrigger className="h-7 w-20"><SelectValue /></SelectTrigger>
+                        <SelectContent>
+                          {CURRENCIES.map((c) => (
+                            <SelectItem key={c} value={c}>{c}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </label>
+                    {a.currency && a.currency !== "BRL" && (
+                      <>
+                        <label className="flex items-center gap-1">
+                          <span>{t("networth.fxRate")}</span>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={a.fxRate ?? ""}
+                            placeholder="—"
+                            aria-label={t("networth.fxRate")}
+                            onChange={(e) =>
+                              updateAsset(a.id, {
+                                fxRate: e.target.value === "" ? undefined : e.target.valueAsNumber,
+                              })
+                            }
+                            className="h-7 w-16 tabular-nums"
+                          />
+                          <span>BRL</span>
+                        </label>
+                        <span className="tabular-nums">
+                          ≈ <Money value={assetValueBRL(a)} compact />
+                        </span>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
             </div>
           ))}
         </div>
@@ -236,6 +306,27 @@ export function NetWorthStep() {
                   />
                   <span>{t("networth.guarantee")}</span>
                 </label>
+                {netWorth.assets.length > 0 && (
+                  <label className="flex items-center gap-1.5">
+                    <span>{t("networth.linkedAsset")}</span>
+                    <Select
+                      value={l.linkedAssetId ?? "none"}
+                      onValueChange={(v) =>
+                        updateLiability(l.id, { linkedAssetId: v === "none" ? undefined : v })
+                      }
+                    >
+                      <SelectTrigger className="h-7 w-40"><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">{t("networth.linkedNone")}</SelectItem>
+                        {netWorth.assets.map((as) => (
+                          <SelectItem key={as.id} value={as.id}>
+                            {as.label || t(`assetClass.${as.assetClass}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </label>
+                )}
               </div>
             </div>
           ))}
@@ -254,7 +345,12 @@ export function NetWorthStep() {
               <li key={cls} className="flex items-center gap-2 text-sm">
                 <span className="size-2.5 shrink-0 rounded-full" style={{ background: ASSET_CLASS_COLOR[cls] }} />
                 <span className="text-muted-foreground">{t(`assetClass.${cls}`)}</span>
-                <Money value={value} compact className="ml-auto font-medium" />
+                <span className="ml-auto flex items-baseline gap-2">
+                  <Money value={value} compact className="font-medium" />
+                  <span className="w-11 text-right text-xs tabular-nums text-muted-foreground">
+                    {totals.totalAssets > 0 ? formatPercent(value / totals.totalAssets, locale) : "—"}
+                  </span>
+                </span>
               </li>
             ))}
           </ul>

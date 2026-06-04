@@ -140,14 +140,18 @@
       "segment": "Segmento",
       "retirementUsufructAge": "Idade prevista de usufruto",
       "partnerCpf": "CPF do cônjuge",
-      "marriageRegime": "Regime de casamento"
+      "marriageRegime": "Regime de casamento",
+      "lifeInsurance": "Seguro de vida (cobertura)",
+      "lifeInsuranceHint": "Capital segurado — abate a necessidade de liquidez sucessória."
     },
     "dependents": {
       "title": "Dependentes",
       "add": "Adicionar dependente",
       "empty": "Nenhum dependente cadastrado.",
       "name": "Nome",
-      "age": "Idade"
+      "age": "Idade",
+      "birthDate": "Nascimento",
+      "ageFromBirth": "Idade calculada da data de nascimento"
     }
   },
   "marriageRegime": {
@@ -162,6 +166,11 @@
     "parent": "Pai/Mãe",
     "sibling": "Irmão(ã)",
     "other": "Outro"
+  },
+  "ownership": {
+    "individual": "Individual",
+    "joint": "Conjunta",
+    "spouse": "Cônjuge"
   },
   "gender": {
     "female": "Feminino",
@@ -249,6 +258,7 @@
     "secondary": "Discricionário",
     "commitment": "{pct} da renda",
     "subcategory": "Subcategoria",
+    "debtServiceNote": "Serviço da dívida de {amount}/mês entra automaticamente pelas parcelas dos passivos (Patrimônio) — não lance dívidas como despesa manual.",
     "retirement": {
       "title": "Renda na aposentadoria",
       "subtitle": "Vincule a renda atual à renda desejada na aposentadoria.",
@@ -277,6 +287,11 @@
     "months": "meses",
     "payment": "Parcela",
     "guarantee": "Garantia",
+    "ownership": "Titularidade",
+    "currency": "Moeda",
+    "fxRate": "Câmbio",
+    "linkedAsset": "Bem vinculado",
+    "linkedNone": "Nenhum",
     "fgtsUseDate": "Data prevista de uso (FGTS)"
   },
   "assetClass": {

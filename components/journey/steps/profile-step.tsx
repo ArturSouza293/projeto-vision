@@ -26,7 +26,7 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2 } from "@/components/app/icons";
-import { ageFromDob } from "@/lib/calc";
+import { ageFromDob, dependentAge } from "@/lib/calc";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type {
   DependentRelation,
@@ -71,6 +71,7 @@ const schema = z.object({
   taxResidency: z.string().min(1),
   cpfMasked: z.string().optional(),
   pep: z.boolean(),
+  lifeInsurance: z.number().min(0),
   segment: z.enum(["retail", "prime", "principal", "private"]),
 });
 
@@ -178,7 +179,7 @@ function DependentsEditor() {
                 className="min-w-0 flex-1"
               />
               <Select value={d.relation} onValueChange={(v) => updateDependent(d.id, { relation: v as DependentRelation })}>
-                <SelectTrigger className="w-32 shrink-0">
+                <SelectTrigger className="w-28 shrink-0">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -190,17 +191,26 @@ function DependentsEditor() {
                 </SelectContent>
               </Select>
               <Input
+                type="date"
+                aria-label={t("profile.dependents.birthDate")}
+                value={d.birthDate ?? ""}
+                onChange={(e) => updateDependent(d.id, { birthDate: e.target.value || undefined })}
+                className="w-36 shrink-0"
+              />
+              <Input
                 type="number"
                 min={0}
                 max={120}
                 aria-label={t("profile.dependents.age")}
-                value={Number.isFinite(d.age) ? d.age : 0}
+                value={d.birthDate ? dependentAge(d) : Number.isFinite(d.age) ? d.age : 0}
+                disabled={!!d.birthDate}
+                title={d.birthDate ? t("profile.dependents.ageFromBirth") : undefined}
                 onChange={(e) =>
                   updateDependent(d.id, {
                     age: Number.isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber,
                   })
                 }
-                className="w-16 shrink-0 tabular-nums"
+                className="w-14 shrink-0 tabular-nums"
               />
               <Button type="button" variant="ghost" size="icon-sm" onClick={() => removeDependent(d.id)}>
                 <Trash2 className="size-4 text-muted-foreground" />
@@ -244,6 +254,7 @@ export function ProfileStep() {
       taxResidency: initial.taxResidency,
       cpfMasked: initial.cpfMasked ?? "",
       pep: initial.pep,
+      lifeInsurance: initial.lifeInsurance ?? 0,
       segment: initial.segment,
     },
   });
@@ -278,6 +289,7 @@ export function ProfileStep() {
         taxResidency: v.taxResidency || "BR",
         cpfMasked: v.cpfMasked || undefined,
         pep: !!v.pep,
+        lifeInsurance: Number(v.lifeInsurance ?? 0) || undefined,
         segment: v.segment as Segment,
       });
     });
@@ -415,6 +427,34 @@ export function ProfileStep() {
                 )}
                 <div className="border-t border-border pt-4">
                   <DependentsEditor />
+                </div>
+                <div className="border-t border-border pt-4">
+                  <FormField
+                    control={control}
+                    name="lifeInsurance"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("profile.field.lifeInsurance")}</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="number"
+                            min={0}
+                            step={1000}
+                            placeholder="0"
+                            value={Number.isFinite(field.value) ? field.value : 0}
+                            onChange={(e) =>
+                              field.onChange(
+                                Number.isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber,
+                              )
+                            }
+                            className="tabular-nums"
+                          />
+                        </FormControl>
+                        <p className="text-xs text-muted-foreground">{t("profile.field.lifeInsuranceHint")}</p>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
             </section>

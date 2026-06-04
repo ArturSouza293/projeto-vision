@@ -140,14 +140,18 @@
       "segment": "Segment",
       "retirementUsufructAge": "Planned retirement age",
       "partnerCpf": "Spouse CPF",
-      "marriageRegime": "Marriage regime"
+      "marriageRegime": "Marriage regime",
+      "lifeInsurance": "Life insurance (coverage)",
+      "lifeInsuranceHint": "Sum assured — reduces the succession liquidity need."
     },
     "dependents": {
       "title": "Dependents",
       "add": "Add dependent",
       "empty": "No dependents added.",
       "name": "Name",
-      "age": "Age"
+      "age": "Age",
+      "birthDate": "Birth date",
+      "ageFromBirth": "Age derived from the birth date"
     }
   },
   "marriageRegime": {
@@ -162,6 +166,11 @@
     "parent": "Parent",
     "sibling": "Sibling",
     "other": "Other"
+  },
+  "ownership": {
+    "individual": "Individual",
+    "joint": "Joint",
+    "spouse": "Spouse"
   },
   "gender": {
     "female": "Female",
@@ -249,6 +258,7 @@
     "secondary": "Discretionary",
     "commitment": "{pct} of income",
     "subcategory": "Sub-category",
+    "debtServiceNote": "Debt service of {amount}/mo flows in automatically from the liabilities' installments (Net worth) — don't enter debt as a manual expense.",
     "retirement": {
       "title": "Retirement income",
       "subtitle": "Link current income to the desired retirement income.",
@@ -277,6 +287,11 @@
     "months": "months",
     "payment": "Payment",
     "guarantee": "Guarantee",
+    "ownership": "Ownership",
+    "currency": "Currency",
+    "fxRate": "FX rate",
+    "linkedAsset": "Linked asset",
+    "linkedNone": "None",
     "fgtsUseDate": "Planned FGTS use date"
   },
   "assetClass": {
