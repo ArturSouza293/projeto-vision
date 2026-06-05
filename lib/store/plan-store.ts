@@ -243,8 +243,11 @@ export const useVisionStore = create<VisionStore>()(
       setSidebarOpen: (v) => set({ sidebarOpen: v }),
       recentPlans: [],
       logout() {
-        set((s) => ({
-          recentPlans: upsertRecent(s.recentPlans, s.activePlan),
+        // Wipe per-user state so the next advisor on the same machine starts
+        // clean — recents (localStorage) and the saved list are NOT shared.
+        set({
+          recentPlans: [],
+          savedPersonas: [],
           advisorName: "",
           activePlan: null,
           phase: "simulate",
@@ -252,7 +255,7 @@ export const useVisionStore = create<VisionStore>()(
           copilotOpen: false,
           dataDrawerOpen: false,
           sidebarOpen: false,
-        }));
+        });
       },
       loadRecentPlan(clientId) {
         set((s) => {

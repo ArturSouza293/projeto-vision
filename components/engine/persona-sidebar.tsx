@@ -150,7 +150,7 @@ export function PersonaSidebar() {
                     key={sp.clientId}
                     name={sp.name}
                     segment={sp.segment}
-                    meta={sp.author ? t("library.by", { author: sp.author }) : undefined}
+                    meta={t(`segment.${sp.segment}`)}
                     active={sp.clientId === activeId}
                     onClick={() => loadSavedPersona(sp.clientId)}
                   />
