@@ -105,15 +105,16 @@ export function EngineShell() {
   const logout = useVisionStore((s) => s.logout);
 
   async function handleSave() {
-    try {
-      await savePlan();
+    const res = await savePlan();
+    if (res.synced) {
       toast.success(t("library.saved"));
-    } catch (e) {
-      toast.error(
-        e instanceof Error && e.message === "not-configured"
-          ? t("library.notConfigured")
-          : t("library.saveError"),
-      );
+    } else if (res.error === "no-plan") {
+      // nothing to save
+    } else if (res.error === "db-not-configured") {
+      toast.success(t("library.savedLocal"));
+    } else {
+      // Saved locally; surface the DB's REAL cause instead of a generic message.
+      toast.warning(t("library.syncError", { cause: res.error ?? "?" }));
     }
   }
 

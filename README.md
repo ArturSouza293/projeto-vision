@@ -66,6 +66,41 @@ the key instead of crashing. With a key it streams answers and can suggest a str
 
 ---
 
+## Scenario persistence (Neon Postgres)
+
+Saved personas/scenarios are stored in **Neon Postgres**, accessed **server-side only**.
+The browser never touches the database or sees credentials — every read/write goes through
+the route handler at [`app/api/scenarios/route.ts`](app/api/scenarios/route.ts), which calls
+the data layer in [`lib/db/scenarios.ts`](lib/db/scenarios.ts) (raw SQL over the Neon
+serverless driver). The layer is swappable: reimplement those five functions to move to
+another backend without touching the app. Without `DATABASE_URL` the app still runs on
+`localStorage` only and a save reports "saved locally" instead of failing.
+
+**Schema** (`migrations/0001_init.sql`): `users (id, identifier, …)` + `scenarios (id, user_id,
+client_id, name, is_base, payload jsonb, …)` — the full Plan lives in `payload`, one row per
+persona per user (`unique(user_id, client_id)` → idempotent upsert). Identity is the advisor's
+name/funcional (no OAuth).
+
+### Provision on Vercel (one-time, ~2 min)
+
+1. Vercel → your project → **Storage** → **Create Database** → **Marketplace** → **Neon** → connect.
+   It injects `DATABASE_URL` automatically into all environments.
+2. **Redeploy** so the deployment picks up the new env var.
+
+### Run the migration
+
+`DATABASE_URL` points at the same Neon DB for local and prod, so migrate once from your machine:
+
+```bash
+# paste Neon's pooled connection string into .env.local as DATABASE_URL, then:
+npm run db:migrate
+```
+
+The runner (`scripts/migrate.mjs`) applies `migrations/*.sql` in order, tracks what's applied in
+`schema_migrations`, and is safe to re-run.
+
+---
+
 ## The flow
 
 **Intake** (dossiers received from the bank) → **Simulate** (the scenario loop — create

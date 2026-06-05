@@ -680,7 +680,9 @@
     "save": "Salvar",
     "saved": "Plano salvo",
     "saveError": "Não foi possível salvar",
-    "notConfigured": "Banco de personas não configurado"
+    "notConfigured": "Banco de personas não configurado",
+    "savedLocal": "Salvo localmente (banco não configurado).",
+    "syncError": "Salvo localmente. Falha ao sincronizar: {cause}"
   },
   "dataDrawer": {
     "title": "Dados do cliente",

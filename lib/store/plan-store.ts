@@ -15,7 +15,6 @@ import { createJSONStorage, persist } from "zustand/middleware";
 import { salesforce } from "@/lib/api/salesforce";
 import { personaLibrary } from "@/lib/api/library";
 import { planningEngine } from "@/lib/api/planning-engine";
-import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { getPremises, type Premises } from "@/lib/premises";
 import { ageFromDob } from "@/lib/calc";
 import { blankPlan, buildProjectionRequest, defaultAssumptions, defaultGoals } from "@/lib/plan";
@@ -47,6 +46,13 @@ export type DataTab =
   | "suitability"
   | "goals";
 
+/** Outcome of a save: local persist always succeeds; `synced` reflects the DB. */
+export interface SaveResult {
+  synced: boolean;
+  /** Server's real error message when the DB sync failed. */
+  error?: string;
+}
+
 function uid(prefix = "id"): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
     return `${prefix}-${crypto.randomUUID().slice(0, 8)}`;
@@ -67,13 +73,13 @@ export interface VisionStore {
   locale: Locale;
   setLocale: (l: Locale) => void;
 
-  // Shared persona library (Supabase)
+  // Saved persona library (Neon, server-side via /api/scenarios)
   advisorName: string;
   setAdvisorName: (name: string) => void;
   savedPersonas: SavedPersona[];
   savedLoading: boolean;
   fetchSavedPersonas: () => Promise<void>;
-  savePlan: () => Promise<void>;
+  savePlan: () => Promise<SaveResult>;
   loadSavedPersona: (clientId: string) => Promise<void>;
   deleteSavedPersona: (clientId: string) => Promise<void>;
 
@@ -190,7 +196,7 @@ export const useVisionStore = create<VisionStore>()(
       async fetchSavedPersonas() {
         set({ savedLoading: true });
         try {
-          const savedPersonas = await personaLibrary.list();
+          const savedPersonas = await personaLibrary.list(get().advisorName);
           set({ savedPersonas, savedLoading: false });
         } catch {
           set({ savedPersonas: [], savedLoading: false });
@@ -198,19 +204,23 @@ export const useVisionStore = create<VisionStore>()(
       },
       async savePlan() {
         const { activePlan, advisorName } = get();
-        if (!activePlan) return;
-        // The plan is always persisted locally (Zustand persist) — pin it to recents.
+        if (!activePlan) return { synced: false, error: "no-plan" };
+        // The plan is always persisted locally (Zustand persist) — pin it to recents,
+        // so a save never silently loses work even if the DB is down.
         set((s) => ({ recentPlans: upsertRecent(s.recentPlans, activePlan) }));
-        // Best-effort sync to the shared team library when the DB is configured.
-        if (isSupabaseConfigured) {
+        // Then sync to Neon (server-side) and surface the REAL cause on failure.
+        try {
           await personaLibrary.save(activePlan, advisorName);
           void get().fetchSavedPersonas();
+          return { synced: true };
+        } catch (e) {
+          return { synced: false, error: e instanceof Error ? e.message : "error" };
         }
       },
       async loadSavedPersona(clientId) {
         set({ loadingPlan: true });
         try {
-          const plan = await personaLibrary.load(clientId);
+          const plan = await personaLibrary.load(get().advisorName, clientId);
           set((s) => ({
             recentPlans: upsertRecent(s.recentPlans, s.activePlan),
             activePlan: plan,
@@ -225,7 +235,7 @@ export const useVisionStore = create<VisionStore>()(
         }
       },
       async deleteSavedPersona(clientId) {
-        await personaLibrary.remove(clientId);
+        await personaLibrary.remove(get().advisorName, clientId);
         void get().fetchSavedPersonas();
       },
 

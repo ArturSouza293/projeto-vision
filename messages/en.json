@@ -680,7 +680,9 @@
     "save": "Save",
     "saved": "Plan saved",
     "saveError": "Couldn't save",
-    "notConfigured": "Persona database not configured"
+    "notConfigured": "Persona database not configured",
+    "savedLocal": "Saved locally (database not configured).",
+    "syncError": "Saved locally. Sync failed: {cause}"
   },
   "dataDrawer": {
     "title": "Client data",
