@@ -2,9 +2,10 @@
  * Dataset curado de peer insights (v5 — mock honesto para protótipo).
  *
  * ⚠️ ESTATÍSTICAS ILUSTRATIVAS — fontes a validar com compliance antes de
- * qualquer uso externo. Valores típicos por segmento a validar com o
- * comercial. Trocar por uma fonte real = implementar outro
- * PeerInsightsProvider (a UI não muda).
+ * qualquer uso externo. Decisão de produto (jun/2026): por ora os casos são
+ * FICTÍCIOS (referências genéricas de web); no futuro uma ÁREA DEDICADA DE
+ * INTELIGÊNCIA do banco alimenta estes dados — trocar a fonte = implementar
+ * outro PeerInsightsProvider (a UI não muda).
  *
  * Títulos/textos vêm do i18n (`peer.cards.<id>.*`); aqui ficam os DADOS.
  */
