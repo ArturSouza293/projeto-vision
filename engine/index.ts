@@ -48,6 +48,7 @@ export {
   patrimonioBruto,
 } from "./rules";
 export { project } from "./projection";
+export { summarize, compare, deltaKPIs, type PlanSummaryKPIs, type PlanSummaryDelta } from "./summary";
 export { solveGoal, resolveAlvo, resolveAnoAlvo, pmtParaAlvo } from "./solve";
 export { idealPlan, ensureMandatoryGoals } from "./ideal";
 export { validateBiaProposal, type ValidationResult } from "./validator";
