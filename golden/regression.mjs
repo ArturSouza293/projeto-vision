@@ -149,8 +149,9 @@ for (const id of ["camila-diego", "fernanda", "marcos", "jose-carlos"]) {
     const ghostRet = await dragChip(page, "timeline-retire", -250);
     check("B3: drag da aposentadoria recalcula ao vivo", ghostRet);
 
-    // B4 — timeline lotada: 24 eventos
-    const palette = await page.locator('[data-testid^="palette-"]').all();
+    // B4 — timeline lotada: 24 eventos (v5: o botão "custom" abre o modal de
+    // peers, então o loop usa só os presets diretos)
+    const palette = await page.locator('[data-testid^="palette-"]:not([data-testid="palette-custom"])').all();
     for (let round = 0; round < 2; round++) {
       for (const b of palette) {
         await b.click();

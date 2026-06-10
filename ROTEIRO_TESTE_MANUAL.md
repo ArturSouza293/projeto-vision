@@ -68,6 +68,28 @@
 18. Troque **EN ↔ PT** no topo. ✅ *Tudo traduzido, incluindo o racional da BIA
     (é template — regenerar no outro idioma).*
 
+## Bloco 6 — v5: Peer insights + Comparação de planos
+
+19. Com a **Camila** aberta, clique **"+ Evento customizado"** na paleta.
+    ✅ *Abre um modal grande na aba "Sugestões para você", com chips do SEU
+    caso (30–40 anos, renda ≈ R$ 16,8 mil/mês, casal, Prime) e um carrossel de
+    cards com estatística-âncora ("1 em 8"…) e valores personalizados.*
+20. Selecione **2 cards** e clique **"Adicionar ao plano (2)"**. ✅ *Dois
+    eventos pré-preenchidos surgem na timeline e a curva reage na hora; os
+    eventos são editáveis como qualquer outro.*
+21. Abra **Dados → Renda** e aumente o salário em R$ 5.000; reabra o modal de
+    evento customizado. ✅ *Os valores sugeridos dos cards MUDARAM (cálculo
+    local sobre a renda do caso).* Na aba **"Criar do zero"**, crie um evento
+    com mês específico e duração. ✅ *Entra na timeline normalmente.*
+22. Clique **"Duplicar como plano"** (cria A + B), arraste a aposentadoria do
+    plano B uns 10 anos para a esquerda e duplique de novo (C). Alterne entre
+    A/B/C pelos chips coloridos. ✅ *Cada plano guarda seu próprio estado.*
+23. Clique **"Comparar planos"**. ✅ *Modal "Resumo dos Planos" com colunas
+    lado a lado: patrimônio na aposentadoria (com "esgota em YYYY" em vermelho
+    quando aplicável), renda média/mês e gap essencial com deltas ▲/▼ vs a
+    referência (A ★), herança, e "Próximos passos" derivados do conteúdo de
+    cada plano (+ adição manual). Selo de valores ilustrativos no rodapé.*
+
 ## Se algo falhar
 
 Anote o passo + o que apareceu (print ajuda) e me mande. **Nenhum push ou

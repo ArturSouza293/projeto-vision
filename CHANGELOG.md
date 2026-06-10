@@ -1,5 +1,46 @@
 # Changelog
 
+## v5 — Peer insights + Comparação de planos (branch `feature/v5-peers-cenarios` — em validação, sem deploy)
+
+### Feature 1 — Modal de evento customizado com sugestões de peers
+- "+ Evento customizado" agora abre um modal grande com duas abas (padrão ALTO):
+  **Sugestões para você** (default) — "O que pessoas como você estão
+  planejando?", chips derivados do caso real (faixa etária, renda, composição,
+  segmento), carrossel de cards com estatística-âncora ILUSTRATIVA, proposta
+  personalizada calculada LOCALMENTE sobre a renda do caso (65% do salário
+  anual, 4× renda anual, valor típico do segmento), prova social do dataset e
+  seleção múltipla → eventos pré-preenchidos na timeline (curva reage na hora);
+  **Criar do zero** — formulário completo (nome, categoria, fluxo, valor com
+  steppers e eco do total, único/recorrente, **ano + mês**, duração, vínculo a
+  objetivo) com dica de peer por categoria, dismissível.
+- Arquitetura honesta: `PeerInsightsProvider` atrás de interface;
+  `MockPeerInsightsProvider` lê um dataset JSON curado (10 insights × valores
+  por segmento) — trocar pela base anonimizada real não toca a UI. Tudo local;
+  nenhum dado sai do app; **nenhuma chamada de IA nesta versão** (Regra Zero).
+- Motor: eventos com `month` explícito fluem até o loop mensal (C1); default
+  continua dezembro (paridade v2 — golden inalterado).
+
+### Feature 2 — Planos A/B/C + modal "Resumo dos Planos"
+- **Variantes de caso**: duplicar o caso vivo como plano colorido (A azul ★
+  referência, B verde, C laranja, D roxo; limite 4), alternar pelos chips,
+  editar cada um de forma independente (deep copy; sessão local — o save no
+  banco continua levando só o plano ativo).
+- **Motor**: `summarize(case)` → KPIs comparáveis (ano/patrimônio na
+  aposentadoria, ano de esgotamento, renda média mensal no usufruto, gap anual
+  vs despesas essenciais, herança na longevidade) e `compare(ref, outros)` com
+  deltas — funções puras derivadas de `project()`, 7 testes novos.
+- **Modal de comparação** (padrão Plan Summary da ALTO): colunas lado a lado
+  com chip colorido e badge de referência; número grande do patrimônio com
+  alerta vermelho "esgota em YYYY"; renda média e gap (verde "Sem gap" /
+  vermelho) com deltas ▲/▼ vs referência; herança; **próximos passos derivados
+  deterministicamente por templates de regra** (recebimento futuro,
+  compromisso recorrente, gap, esgotamento, objetivo em risco + stress test
+  padrão) com adição manual e checkboxes visuais; "definir como referência";
+  selo de valores ilustrativos.
+- QA: 17/17 checks novos de aceitação (incl. personalização provada: mesmo
+  card → R$ 131k para Camila vs R$ 162k para Fernanda) + regressão 33/33 +
+  137 testes + golden de paridade inalterado.
+
 ## Vision Engine + integração (branch `feature/vision-engine` — em validação, sem deploy)
 
 ### Fase A — motor de cálculo padrão CFP (`engine/`)
