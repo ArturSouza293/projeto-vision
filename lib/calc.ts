@@ -167,6 +167,9 @@ const ASSET_CLASSES: AssetClass[] = [
   "investments",
   "pension",
   "real_estate",
+  "vehicle",
+  "foreign",
+  "fgts",
   "business",
   "other",
 ];

@@ -45,8 +45,10 @@ export function ExpenseStep() {
   const locale = useVisionStore((s) => s.locale);
   const cashFlow = useVisionStore((s) => s.activePlan!.cashFlow);
   const netWorth = useVisionStore((s) => s.activePlan!.netWorth);
-  const { addExpense, updateExpense, removeExpense, updateRetirementIncome } =
-    useVisionStore.getState();
+  const addExpense = useVisionStore((s) => s.addExpense);
+  const updateExpense = useVisionStore((s) => s.updateExpense);
+  const removeExpense = useVisionStore((s) => s.removeExpense);
+  const updateRetirementIncome = useVisionStore((s) => s.updateRetirementIncome);
 
   const totals = cashFlowTotals(cashFlow, netWorth);
   const debtService = monthlyDebtService(netWorth);

@@ -20,12 +20,21 @@ import { getPremises } from "@/lib/premises";
 import { requestToInput, type ProjectionRequest } from "@/lib/api/planning-engine";
 import type {
   Goal,
+  GoalType,
   GrowthScenario,
   Plan,
   ProjectionResult,
   ScenarioAssumptions,
   SuitabilityQuestion,
 } from "@/lib/types";
+
+/** The 3 goals every client must always have — never removable, only parameterizable. */
+export const MANDATORY_GOAL_TYPES: GoalType[] = ["emergency_reserve", "retirement", "legacy"];
+
+/** Whether a goal is one of the mandatory three (matched by type, not id). */
+export function isMandatoryGoal(goal: { type: GoalType }): boolean {
+  return MANDATORY_GOAL_TYPES.includes(goal.type);
+}
 
 /** Real-return preset (%) per growth scenario; `custom` uses the slider value. */
 export const GROWTH_SCENARIO_RETURNS: Record<GrowthScenario, number> = {
@@ -172,6 +181,17 @@ export function defaultGoals(plan: Plan): Goal[] {
       currentAmount: 0,
     },
   ];
+}
+
+/**
+ * The plan's goals plus any MISSING mandatory goals merged in (front), so the 3
+ * obligatory goals are self-healing — deleting one and revisiting re-adds it,
+ * without duplicating existing goals or wiping custom ones.
+ */
+export function withMandatoryGoals(plan: Plan): Goal[] {
+  const present = new Set(plan.goals.map((g) => g.type));
+  const missing = defaultGoals(plan).filter((g) => !present.has(g.type));
+  return missing.length > 0 ? [...missing, ...plan.goals] : plan.goals;
 }
 
 /** Map a plan + scenario assumptions into a projection-engine request. */

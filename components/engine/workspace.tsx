@@ -264,6 +264,13 @@ export function Workspace() {
   const overAllocated = !deficit && allocated > 0 && freeBalance < 0;
   const goalsById = new Map(plan.goals.map((g) => [g.id, g]));
 
+  // Retirement-age slider bounds. An invalid usufruct (≤ current age) must NOT
+  // collapse the slider — treat it as "no cap" and keep max strictly above min.
+  const retMin = Math.max(currentAge + 1, 45);
+  const usufruct = plan.clientProfile.retirementUsufructAge;
+  const retMax = Math.max(retMin + 1, Math.min(80, usufruct && usufruct > retMin ? usufruct : 80));
+  const retAge = Math.min(Math.max(a.retirementAge, retMin), retMax);
+
   const checkpoints = returnCheckpoints(plan, a);
   const returnMarks = [
     checkpoints.p70 != null
@@ -525,13 +532,10 @@ export function Workspace() {
               </div>
               <ParamSlider
                 label={t("workspace.retirementAge")}
-                value={a.retirementAge}
-                display={`${a.retirementAge}`}
-                min={Math.max(currentAge + 1, 45)}
-                max={Math.max(
-                  Math.max(currentAge + 1, 45),
-                  Math.min(80, plan.clientProfile.retirementUsufructAge ?? 80),
-                )}
+                value={retAge}
+                display={`${retAge}`}
+                min={retMin}
+                max={retMax}
                 step={1}
                 onChange={(v) => update({ retirementAge: v })}
               />

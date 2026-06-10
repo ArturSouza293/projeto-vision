@@ -17,7 +17,13 @@ import { personaLibrary } from "@/lib/api/library";
 import { planningEngine } from "@/lib/api/planning-engine";
 import { getPremises, type Premises } from "@/lib/premises";
 import { ageFromDob } from "@/lib/calc";
-import { blankPlan, buildProjectionRequest, defaultAssumptions, defaultGoals } from "@/lib/plan";
+import {
+  blankPlan,
+  buildProjectionRequest,
+  defaultAssumptions,
+  isMandatoryGoal,
+  withMandatoryGoals,
+} from "@/lib/plan";
 import type {
   AdvisorEvent,
   Asset,
@@ -538,11 +544,16 @@ export const useVisionStore = create<VisionStore>()(
       },
 
       setSuitabilityAnswer(questionId, value) {
+        // Changing an answer invalidates the computed result — clear it so the UI
+        // prompts a recompute instead of showing a stale profile/score/flags.
         patchPlan(set, (p) => ({
           ...p,
           suitability: {
             ...p.suitability,
             answers: { ...p.suitability.answers, [questionId]: value },
+            score: undefined,
+            profile: undefined,
+            flags: [],
           },
         }));
       },
@@ -573,6 +584,9 @@ export const useVisionStore = create<VisionStore>()(
               flags: res.flags,
             },
           }));
+        } catch (e) {
+          // Engine failure — keep the previous result, never crash the UI.
+          console.error("suitability engine error", e);
         } finally {
           set({ busy: false });
         }
@@ -602,16 +616,20 @@ export const useVisionStore = create<VisionStore>()(
         }));
       },
       removeGoal(id) {
-        patchPlan(set, (p) => ({
-          ...p,
-          goals: p.goals.filter((g) => g.id !== id),
-        }));
+        patchPlan(set, (p) => {
+          const target = p.goals.find((g) => g.id === id);
+          if (target && isMandatoryGoal(target)) return p; // never remove the mandatory 3
+          return { ...p, goals: p.goals.filter((g) => g.id !== id) };
+        });
       },
       seedDefaultGoals() {
-        const plan = get().activePlan;
-        if (!plan || plan.goals.length > 0) return;
-        const goals = defaultGoals(plan);
-        patchPlan(set, (p) => ({ ...p, goals }));
+        if (!get().activePlan) return;
+        // Merge any MISSING mandatory goals (self-heals a deleted one) without
+        // duplicating existing goals or wiping custom ones.
+        patchPlan(set, (p) => {
+          const goals = withMandatoryGoals(p);
+          return goals === p.goals ? p : { ...p, goals };
+        });
       },
 
       addScenario(name) {
@@ -639,7 +657,7 @@ export const useVisionStore = create<VisionStore>()(
         const hasData =
           plan.cashFlow.incomes.length > 0 || plan.netWorth.assets.length > 0;
         if (!hasData) return;
-        const working = plan.goals.length === 0 ? { ...plan, goals: defaultGoals(plan) } : plan;
+        const working = { ...plan, goals: withMandatoryGoals(plan) };
         const id = uid("scn");
         const scenario: Scenario = {
           id,
@@ -673,6 +691,8 @@ export const useVisionStore = create<VisionStore>()(
             ...p,
             scenarios: p.scenarios.map((s) => (s.id === id ? { ...s, result } : s)),
           }));
+        } catch (e) {
+          console.error("projection engine error", e);
         } finally {
           set({ busy: false });
         }

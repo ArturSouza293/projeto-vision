@@ -39,7 +39,9 @@ const isEventKind = (k: IncomeKind) => EVENT_KINDS.includes(k);
 export function IncomeStep() {
   const t = useTranslations();
   const incomes = useVisionStore((s) => s.activePlan!.cashFlow.incomes);
-  const { addIncome, updateIncome, removeIncome } = useVisionStore.getState();
+  const addIncome = useVisionStore((s) => s.addIncome);
+  const updateIncome = useVisionStore((s) => s.updateIncome);
+  const removeIncome = useVisionStore((s) => s.removeIncome);
 
   const isEvent = (i: (typeof incomes)[number]) => i.recurring === false || isEventKind(i.kind);
   const recurringMonthly = incomes.filter((i) => !isEvent(i)).reduce((s, i) => s + i.monthly, 0);

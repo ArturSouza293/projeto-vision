@@ -61,8 +61,12 @@ export function NetWorthStep() {
   const t = useTranslations();
   const locale = useVisionStore((s) => s.locale);
   const netWorth = useVisionStore((s) => s.activePlan!.netWorth);
-  const { addAsset, updateAsset, removeAsset, addLiability, updateLiability, removeLiability } =
-    useVisionStore.getState();
+  const addAsset = useVisionStore((s) => s.addAsset);
+  const updateAsset = useVisionStore((s) => s.updateAsset);
+  const removeAsset = useVisionStore((s) => s.removeAsset);
+  const addLiability = useVisionStore((s) => s.addLiability);
+  const updateLiability = useVisionStore((s) => s.updateLiability);
+  const removeLiability = useVisionStore((s) => s.removeLiability);
 
   const totals = netWorthTotals(netWorth);
   const assetsRef = useScrollOnAdd<HTMLDivElement>(netWorth.assets.length);
@@ -93,6 +97,9 @@ export function NetWorthStep() {
           </Button>
         </div>
         <div ref={assetsRef} className="space-y-2">
+          {netWorth.assets.length === 0 && (
+            <p className="px-1 py-2 text-xs text-muted-foreground">{t("networth.assetsEmpty")}</p>
+          )}
           {netWorth.assets.map((a) => (
             <div key={a.id} className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">
@@ -225,6 +232,9 @@ export function NetWorthStep() {
           </Button>
         </div>
         <div ref={liabRef} className="space-y-2">
+          {netWorth.liabilities.length === 0 && (
+            <p className="px-1 py-2 text-xs text-muted-foreground">{t("networth.liabilitiesEmpty")}</p>
+          )}
           {netWorth.liabilities.map((l) => (
             <div key={l.id} className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-2">

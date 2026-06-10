@@ -2,8 +2,9 @@
 
 import { useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { ChevronDown, Plus, Trash2 } from "@/components/app/icons";
+import { ChevronDown, Lock, Plus, Trash2 } from "@/components/app/icons";
 import { GOAL_COLOR, GOAL_ICON, GOAL_TYPES } from "@/lib/goal-meta";
+import { isMandatoryGoal, MANDATORY_GOAL_TYPES } from "@/lib/plan";
 
 import { Money } from "@/components/app/money";
 import { MoneyInput } from "@/components/app/number-field";
@@ -71,9 +72,18 @@ function GoalCard({ goal }: { goal: Goal }) {
             {t(`goalType.${goal.type}`)} · {t("goals.horizon", { years })}
           </div>
         </div>
-        <Button variant="ghost" size="icon-sm" onClick={() => removeGoal(goal.id)}>
-          <Trash2 className="size-4 text-muted-foreground" />
-        </Button>
+        {isMandatoryGoal(goal) ? (
+          <span
+            className="grid size-8 shrink-0 place-items-center text-muted-foreground/50"
+            title={t("goals.mandatory")}
+          >
+            <Lock className="size-3.5" />
+          </span>
+        ) : (
+          <Button variant="ghost" size="icon-sm" onClick={() => removeGoal(goal.id)} title={t("common.remove")}>
+            <Trash2 className="size-4 text-muted-foreground" />
+          </Button>
+        )}
       </div>
 
       <div className="mt-4">
@@ -203,7 +213,7 @@ export function GoalsStep() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {GOAL_TYPES.map((type) => {
+            {GOAL_TYPES.filter((type) => !MANDATORY_GOAL_TYPES.includes(type)).map((type) => {
               const Icon = GOAL_ICON[type];
               return (
                 <DropdownMenuItem key={type} onClick={() => addGoalOfType(type)}>
