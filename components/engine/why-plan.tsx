@@ -11,6 +11,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { monthlyPmtForTarget } from "@/lib/engine/adapter";
 import { formatCurrency } from "@/lib/format";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { Segment } from "@/lib/types";
@@ -29,11 +30,9 @@ const START_EARLY = 35;
 const START_LATE = 45;
 const TARGET_AGE = 65;
 
-/** Monthly contribution to reach `target` in `years` at annual real return `r`. */
+/** Monthly contribution to reach `target` by 65 — arithmetic via the engine (Regra Zero). */
 function monthlyFor(target: number, startAge: number, r: number): number {
-  const years = TARGET_AGE - startAge;
-  if (years <= 0) return target;
-  return Math.round((target * r) / (12 * (Math.pow(1 + r, years) - 1)));
+  return Math.round(monthlyPmtForTarget(target, TARGET_AGE - startAge, r));
 }
 
 const CARD_KEYS = ["c1", "c2", "c3", "c4"] as const;

@@ -626,6 +626,7 @@
     "step3": "Otimizando aportes dentro da sua sobra…",
     "racionalTitle": "Racional da BIA",
     "offline": "modo offline",
+    "racionalTemplate": "Da sua sobra de {sobra}, direcionei {aporte} por mês de aporte livre — e o motor alocou {alocReserva} para a reserva, {alocApos} para a aposentadoria e {alocSucessao} para a sucessão. Mirei IPCA+{retorno}% (o menor retorno que financia seus objetivos) com aposentadoria aos {idade} anos, sem nunca comprometer mais do que a sua sobra mensal.",
     "offlineRacional": "Plano gerado localmente (sem IA): aporte = todo o seu excedente mensal, e retorno-alvo no ponto em que seus 3 objetivos ficam financiados — sempre dentro da sua sobra. Conecte a chave da API para um plano explicado pela Bia.",
     "regenerate": "Gerar novamente",
     "applied": "Plano aplicado"

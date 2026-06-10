@@ -1,0 +1,37 @@
+[
+  {
+    "path": "$.simples.kpis.wealthAtRetirement",
+    "novo": 1254547,
+    "causa": "capitalização mensal dos aportes (PARITY_NOTES.md §1)"
+  },
+  {
+    "path": "$.simples.kpis.incomeGap",
+    "novo": -5714,
+    "causa": "derivado do patrimônio na aposentadoria (PARITY_NOTES.md §1)"
+  },
+  {
+    "path": "$.simples.curve.y5.wealth",
+    "novo": 317900,
+    "causa": "capitalização mensal dos aportes (PARITY_NOTES.md §1)"
+  },
+  {
+    "path": "$.simples.curve.y10.wealth",
+    "novo": 439717,
+    "causa": "capitalização mensal dos aportes (PARITY_NOTES.md §1)"
+  },
+  {
+    "path": "$.simples.curve.atRetirement.wealth",
+    "novo": 1161040,
+    "causa": "capitalização mensal dos aportes (PARITY_NOTES.md §1)"
+  },
+  {
+    "path": "$.completo.curve.atRetirement.wealth",
+    "novo": 118148,
+    "causa": "saques mensais na desacumulação (PARITY_NOTES.md §2)"
+  },
+  {
+    "path": "$.sobra-negativa.curve.atRetirement.income",
+    "novo": 868,
+    "causa": "saques mensais na desacumulação (PARITY_NOTES.md §2)"
+  }
+]

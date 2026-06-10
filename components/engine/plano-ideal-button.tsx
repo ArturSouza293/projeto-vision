@@ -6,20 +6,23 @@ import { toast } from "sonner";
 
 import { RotateCcw, Sparkles } from "@/components/app/icons";
 import { Button } from "@/components/ui/button";
-import {
-  buildPlanoIdealPayload,
-  clampParams,
-  heuristicParams,
-  idealBounds,
-  type IdealParams,
-} from "@/lib/plano-ideal";
+import { idealViaEngine } from "@/lib/engine/plano-ideal-flow";
+import { formatCurrency } from "@/lib/format";
+import { buildPlanoIdealPayload, type IdealParams } from "@/lib/plano-ideal";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { Plan, ScenarioAssumptions } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 type Result = { racional: string; offline: boolean };
 
-async function requestIdeal(payload: unknown): Promise<{ parametros: Partial<IdealParams>; racional: string }> {
+/**
+ * REGRA ZERO: the API returns a STRUCTURAL proposal only (priority order,
+ * target years, reserve multiplier, retirement method, flags). It is
+ * whitelist-validated and fed to the deterministic engine — every number on
+ * screen comes from the engine, and the rationale is an i18n template
+ * interpolated with engine outputs.
+ */
+async function requestProposal(payload: unknown): Promise<unknown> {
   const res = await fetch("/api/plano-ideal", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -28,13 +31,8 @@ async function requestIdeal(payload: unknown): Promise<{ parametros: Partial<Ide
   if (res.headers.get("x-plano") === "no-key") throw new Error("no-key");
   const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
   if (!res.ok || body.error) throw new Error(typeof body.error === "string" ? body.error : `http-${res.status}`);
-  if (!body.parametros || typeof body.parametros !== "object") throw new Error("bad-shape");
-  const parametros = body.parametros as Record<string, unknown>;
-  // Some models nest racional inside parametros — accept either location.
-  const racional =
-    (typeof body.racional === "string" && body.racional) ||
-    (typeof parametros.racional === "string" ? (parametros.racional as string) : "");
-  return { parametros: parametros as Partial<IdealParams>, racional };
+  if (body.proposta === undefined || body.proposta === null) throw new Error("bad-shape");
+  return body.proposta;
 }
 
 export function PlanoIdealButton({
@@ -47,6 +45,7 @@ export function PlanoIdealButton({
   scenarioId: string;
 }) {
   const t = useTranslations();
+  const locale = useVisionStore((s) => s.locale);
   const updateScenarioAssumptions = useVisionStore((s) => s.updateScenarioAssumptions);
   const [loading, setLoading] = useState(false);
   const [step, setStep] = useState(0);
@@ -91,47 +90,44 @@ export function PlanoIdealButton({
     setStep(0);
     stepTimer.current = setInterval(() => setStep((s) => (s + 1) % 3), 1100);
 
+    // 1) Ask the BIA for a STRUCTURAL proposal (one retry; none when key absent).
     const payload = buildPlanoIdealPayload(plan, assumptions);
-    const bounds = idealBounds(plan);
-    const attempt = async (): Promise<Result & { params: IdealParams }> => {
-      const out = await requestIdeal(payload);
-      return {
-        params: clampParams(out.parametros, bounds),
-        racional: out.racional || t("planoIdeal.offlineRacional"),
-        offline: false,
-      };
-    };
-
-    let params: IdealParams;
-    let res: Result;
+    let proposta: unknown;
+    let offline = false;
     try {
-      const ok = await attempt();
-      params = ok.params;
-      res = { racional: ok.racional, offline: false };
+      proposta = await requestProposal(payload);
     } catch (err) {
-      // No point retrying when the API key is absent — go straight to offline.
       const noKey = err instanceof Error && err.message === "no-key";
-      let ok: (Result & { params: IdealParams }) | null = null;
       if (!noKey) {
         try {
-          ok = await attempt();
+          proposta = await requestProposal(payload);
         } catch {
-          ok = null;
+          proposta = undefined;
         }
       }
-      if (ok) {
-        params = ok.params;
-        res = { racional: ok.racional, offline: false };
-      } else {
-        params = heuristicParams(plan, assumptions); // deterministic offline
-        res = { racional: t("planoIdeal.offlineRacional"), offline: true };
-      }
+      if (proposta === undefined) offline = true;
     }
+
+    // 2) The engine computes EVERYTHING (validates the proposal, allocates the
+    //    surplus, clamps to the sliders). Works identically with no proposal.
+    const flow = idealViaEngine(plan, assumptions, proposta);
+
+    // 3) Rationale = app template interpolated with engine numbers (Regra Zero).
+    const cur = (n: number) => formatCurrency(n, locale);
+    const racional = t("planoIdeal.racionalTemplate", {
+      sobra: cur(flow.slots.sobra),
+      aporte: cur(flow.slots.aporte),
+      alocReserva: cur(flow.slots.alocReserva),
+      alocApos: cur(flow.slots.alocApos),
+      alocSucessao: cur(flow.slots.alocSucessao),
+      idade: flow.slots.idade,
+      retorno: flow.slots.retorno,
+    });
 
     if (stepTimer.current) clearInterval(stepTimer.current);
     setLoading(false);
-    applyAnimated(params);
-    setResult(res);
+    applyAnimated(flow.params);
+    setResult({ racional, offline });
     toast.success(t("planoIdeal.applied"));
   }
 

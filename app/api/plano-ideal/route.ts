@@ -8,20 +8,31 @@ export const dynamic = "force-dynamic";
 // that string. Override with PLANO_IDEAL_MODEL if needed.
 const MODEL = process.env.PLANO_IDEAL_MODEL || "claude-opus-4-8";
 
+/**
+ * REGRA ZERO: the LLM proposes STRUCTURE only — never a monetary value, never
+ * a percentage, never a computed number. The deterministic engine
+ * (engine/idealPlan) turns the proposal into parameters; a whitelist
+ * validator client-side rejects anything outside the schema below.
+ */
 function systemPrompt(): string {
-  return `You are **Bia**, the planning copilot for a Bradesco (Brazil) wealth advisor. Given an ANONYMIZED financial snapshot (numbers only — no identity), set the four plan parameters that best fund the client's goals, then explain why.
+  return `You are **Bia**, the planning copilot for a Bradesco (Brazil) wealth advisor. You will receive an ANONYMIZED financial snapshot (numbers only — no identity). You do NOT calculate anything: a deterministic planning engine computes every number. Your job is ONLY to propose the plan STRUCTURE.
 
-Hard rules (never violate):
-- monthlyContribution must NEVER exceed the monthly surplus (bounds.contribMax). Never propose more than the client can save.
-- Always cover the 3 mandatory goals — emergency reserve, retirement, succession. Default priority: reserve → retirement → succession → others.
-- Emergency reserve target = premises.emergencyReserveMonths × cashFlow.essentialExpenses.
-- Succession liquidity target ≈ premises.successionPctOfGross% of netWorth.totalAssets − netWorth.pension − netWorth.lifeInsurance.
-- Retirement uses a centenary horizon (premises.longevityAge); target income coherent with cashFlow.retirementMonthlyNeed; INSS/rent continue when cashFlow.considersInss is true.
-- expectedRealReturn is a REAL return (IPCA+x%), realistic for the horizon, within [0, bounds.returnMax]. No guarantees. retirementAge within [bounds.retMin, bounds.retMax]. inflation within [0, 12].
-- If the goals are infeasible within the surplus, return the BEST feasible parameters and explain the shortfall in racional (never emit impossible values).
+Respond with ONLY a JSON object — no prose, no markdown code fences — exactly this shape (every field optional; omit what you would not change):
+{"proposta":{
+  "ordemPrioridade": [<goal ids from the snapshot's goals[].id, highest priority first>],
+  "datasAlvo": {"<goalId>": <target YEAR as an integer>},
+  "multiplicadorReserva": 6 | 12,
+  "metodoAposentadoria": "depletion" | "preservation" | "perpetuity",
+  "flags": {"considerarINSS": <bool>, "aposentadoriaAntecipada": <bool>, "priorizarLiquidez": <bool>}
+}}
 
-Respond with ONLY a JSON object — no prose, no markdown code fences — exactly:
-{"parametros":{"monthlyContribution":<number BRL/month>,"retirementAge":<integer>,"expectedRealReturn":<number percent>,"inflation":<number percent>},"racional":"<3 to 6 sentences in Brazilian Portuguese, Bia's encouraging tone, why this is the ideal plan for THIS client; frame any gap as the next step>"}`;
+Hard rules (a validator rejects violations):
+- NEVER include monetary amounts, percentages, rates or any computed number. Years in datasAlvo are the ONLY numbers allowed.
+- ordemPrioridade may only contain ids that exist in the snapshot's goals.
+- The 3 mandatory goals (emergency reserve, retirement, succession) should normally lead the priority order.
+- Prefer multiplicadorReserva 12 for unstable income or dependents; 6 otherwise.
+- Prefer "preservation" when the client wants to leave an estate; "depletion" (centenary) is the default.
+- Choose datasAlvo years that are realistic given the snapshot (e.g. don't anticipate retirement when the surplus is negative).`;
 }
 
 export async function POST(req: Request) {
@@ -41,7 +52,7 @@ export async function POST(req: Request) {
   try {
     const msg = await client.messages.create({
       model: MODEL,
-      max_tokens: 1500,
+      max_tokens: 800,
       system: systemPrompt(),
       messages: [
         { role: "user", content: `Anonymized plan snapshot:\n${JSON.stringify(payload)}` },
@@ -53,10 +64,12 @@ export async function POST(req: Request) {
       .trim();
     const match = text.match(/\{[\s\S]*\}/);
     const json = match ? JSON.parse(match[0]) : null;
-    if (!json || typeof json.parametros !== "object") {
+    // Structural proposal only — the client-side whitelist validator is the
+    // real Regra Zero gate; here we just require the envelope shape.
+    if (!json || typeof json.proposta !== "object" || json.proposta === null) {
       return Response.json({ error: "bad-shape" }, { status: 422 });
     }
-    return Response.json(json);
+    return Response.json({ proposta: json.proposta });
   } catch (e) {
     return Response.json({ error: e instanceof Error ? e.message : "error" }, { status: 502 });
   }

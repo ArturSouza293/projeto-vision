@@ -90,6 +90,7 @@ export function buildPlanoIdealPayload(plan: Plan, a: ScenarioAssumptions) {
       lifeInsurance: Math.round(plan.clientProfile.lifeInsurance ?? 0),
     },
     goals: plan.goals.map((g) => ({
+      id: g.id, // non-identifying — lets the BIA reference goals in its STRUCTURAL proposal
       type: g.type,
       target: Math.round(g.targetAmount),
       year: g.targetYear,

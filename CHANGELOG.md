@@ -1,5 +1,39 @@
 # Changelog
 
+## Vision Engine + integração (branch `feature/vision-engine` — em validação, sem deploy)
+
+### Fase A — motor de cálculo padrão CFP (`engine/`)
+- Pacote TypeScript puro, zero dependência de UI: TVM 5 variáveis (BEG/END,
+  bisseção robusta), conversões geométricas (BR — nunca nominal/12), Fisher
+  exato, growing annuities (incl. g = r), projeção MENSAL com saída anual
+  (eventos com ano+mês, 13º via `mesesPorAno`), regras Vision (reserva,
+  sucessão, aposentadoria em 3 métodos com INSS abatendo a renda-alvo),
+  `solveGoal` (PMT + ano viável), `idealPlan` determinístico, Price/SAC com
+  taxa efetiva mensal, `CaseStore`. Premissas ilustrativas concentradas em
+  `engine/assumptions.ts`.
+- **Regra Zero**: a LLM não calcula nada. `engine/validator.ts` (whitelist,
+  endurecido contra TOCTOU/prototype-poisoning/números em strings) só admite
+  proposta ESTRUTURAL da BIA; 100% dos números exibidos saem do motor.
+- 129 testes (âncoras HP-12C tol. 1e-6, invariantes, property-based 50 cases,
+  validador com payloads maliciosos, regressões da revisão adversarial
+  multi-agente — incl. 2 P0 reais corrigidos: serviço de dívida na
+  desacumulação agora é sacado do patrimônio, e `mesesPorAno < 12` honrado).
+  Bench: ~0,36 ms/projeção de 65 anos (gate < 5 ms).
+
+### Fase B — integração invisível
+- Toda aritmética de juros/projeção do front migrou para o engine via
+  `lib/engine/adapter.ts` — os componentes seguem chamando as MESMAS funções
+  (`projectPlan`, `goalFundedPct`, `annuityFactor`…), agora engine-backed.
+- Paridade auditada por golden values (3 cases de referência): tudo dentro de
+  ±R$1/±0,1% exceto 7 deltas legítimos da capitalização mensal, documentados
+  (PARITY_NOTES.md) e pinados contra regressão (golden/accepted-deltas.json).
+- "Plano Ideal com a BIA" agora cumpre a Regra Zero de ponta a ponta: a API
+  devolve só estrutura → validador whitelist → `engine.idealPlan` → sliders; o
+  racional virou template i18n interpolado com os números do motor (a única
+  mudança de comportamento visível — exigida pelo spec).
+- Entregues: INVENTORY.md, PARITY_NOTES.md, BACKLOG.md, golden/ (captura +
+  paridade + smoke). Produção intocada — tudo local na branch.
+
 ## Demo-video pipeline (~36s, silent, PowerPoint-ready)
 - `npm run demo` records the six storyboard scenes with Playwright (fresh context per
   scene seeded from localStorage fixtures, fake cursor overlay, slow human-like drags so

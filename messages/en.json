@@ -626,6 +626,7 @@
     "step3": "Optimizing contributions within your surplus…",
     "racionalTitle": "BIA's rationale",
     "offline": "offline mode",
+    "racionalTemplate": "From your {sobra} surplus I set {aporte}/month of free contribution — and the engine allocated {alocReserva} to the reserve, {alocApos} to retirement and {alocSucessao} to succession. I targeted IPCA+{retorno}% (the smallest return that funds your goals) with retirement at {idade}, never committing more than your monthly surplus.",
     "offlineRacional": "Plan generated locally (no AI): contribution = your full monthly surplus, and a target return at the point where your 3 goals get funded — always within your surplus. Add the API key for a plan explained by Bia.",
     "regenerate": "Regenerate",
     "applied": "Plan applied"
