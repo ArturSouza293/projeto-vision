@@ -7,7 +7,7 @@
  * written to read like a real API contract.
  */
 
-import type { Goal, ProjectionResult, RiskProfile } from "@/lib/types";
+import type { Goal, LifeEvent, ProjectionResult, RiskProfile } from "@/lib/types";
 import {
   PLANNING_HORIZON_AGE,
   project,
@@ -37,6 +37,8 @@ export interface ProjectionRequest {
   /** Annual income continuing into retirement — INSS, rent, pension (real BRL). */
   annualOtherIncome: number;
   goals: Goal[];
+  /** Financial life events on the timeline. */
+  lifeEvents?: LifeEvent[];
 }
 
 /* ---------------------------- Suitability ----------------------------- */
@@ -79,6 +81,7 @@ export function requestToInput(input: ProjectionRequest): ProjectionInput {
     annualNeeds: input.annualNeeds,
     annualOtherIncome: input.annualOtherIncome,
     goals: input.goals,
+    lifeEvents: input.lifeEvents,
   };
 }
 

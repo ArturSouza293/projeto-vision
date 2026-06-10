@@ -21,18 +21,26 @@ export function WealthArea({
   points,
   retirementYear,
   events = [],
+  ghostPoints,
 }: {
   points: ProjectionPoint[];
   retirementYear: number;
   events?: { year: number; title: string }[];
+  /** A second, dimmed "what-if" curve overlaid during a timeline drag. */
+  ghostPoints?: ProjectionPoint[] | null;
 }) {
   const t = useTranslations();
   const locale = useVisionStore((s) => s.locale);
 
+  // Merge the ghost series by index so both render on the same year axis.
+  const data = ghostPoints
+    ? points.map((p, i) => ({ ...p, ghost: ghostPoints[i]?.wealth }))
+    : points;
+
   return (
     <div className="h-72 w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={points} margin={{ top: 12, right: 8, left: 8, bottom: 0 }}>
+        <AreaChart data={data} margin={{ top: 12, right: 8, left: 8, bottom: 0 }}>
           <defs>
             <linearGradient id="wealthFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.35} />
@@ -74,6 +82,18 @@ export function WealthArea({
             strokeWidth={2}
             fill="url(#wealthFill)"
           />
+          {ghostPoints && (
+            <Area
+              type="monotone"
+              dataKey="ghost"
+              stroke="var(--info)"
+              strokeWidth={2}
+              strokeDasharray="5 4"
+              fill="none"
+              dot={false}
+              isAnimationActive={false}
+            />
+          )}
           {events.map((ev, i) => (
             <ReferenceLine
               key={`ev-${i}`}

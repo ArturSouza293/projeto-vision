@@ -214,6 +214,7 @@ export function buildProjectionRequest(
     annualNeeds: retirementMonthlyNeed(plan.cashFlow) * 12,
     annualOtherIncome: continuingMonthlyIncome(plan.cashFlow, premises) * 12,
     goals: plan.goals,
+    lifeEvents: plan.lifeEvents ?? [],
   };
 }
 
@@ -286,5 +287,6 @@ export function blankPlan(clientId: string): Plan {
     scenarios: [],
     approvalStatus: "draft",
     events: [],
+    lifeEvents: [],
   };
 }

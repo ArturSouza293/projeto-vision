@@ -19,7 +19,7 @@ import {
 import { Money } from "@/components/app/money";
 import { IncomeNeedsChart } from "@/components/charts/income-needs-chart";
 import { ProbabilityGauge } from "@/components/charts/probability-gauge";
-import { WealthArea } from "@/components/charts/wealth-area";
+import { WealthTimeline } from "@/components/charts/wealth-timeline";
 import { KpiTile } from "@/components/engine/kpi-tile";
 import { KpiDetailDialog, type KpiModalKind } from "@/components/engine/kpi-detail-dialog";
 import { PremisesDialog } from "@/components/engine/premises-dialog";
@@ -425,13 +425,15 @@ export function Workspace() {
         <div className="space-y-5 lg:col-span-2">
           <section className="surface rounded-2xl p-5">
             <h3 className="mb-1 text-sm font-semibold text-foreground">{t("chart.wealthOverTime")}</h3>
-            <WealthArea
+            <WealthTimeline
+              plan={plan}
+              assumptions={a}
+              scenarioId={selected.id}
               points={result.points}
               retirementYear={retirementYear}
-              events={plan.events.map((e) => ({
-                year: new Date(e.date).getFullYear(),
-                title: e.title,
-              }))}
+              currentAge={currentAge}
+              retMin={retMin}
+              retMax={retMax}
             />
           </section>
           <section className="surface rounded-2xl p-5">

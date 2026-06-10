@@ -18,8 +18,13 @@
 export {
   ArrowLeft,
   ArrowRight,
+  Baby,
+  Briefcase,
   CalendarPlus,
+  Car,
   Check,
+  Heart,
+  Wrench,
   ChevronDown,
   ChevronLeft,
   ChevronRight,

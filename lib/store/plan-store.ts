@@ -32,6 +32,7 @@ import type {
   Goal,
   IncomeItem,
   Liability,
+  LifeEvent,
   Locale,
   Plan,
   RetirementIncomeConfig,
@@ -176,6 +177,11 @@ export interface VisionStore {
   // Copilot events
   addEvent: (event: Omit<AdvisorEvent, "id">) => void;
   removeEvent: (id: string) => void;
+
+  // Life events (dynamic timeline)
+  addLifeEvent: (e: Omit<LifeEvent, "id">) => string;
+  updateLifeEvent: (id: string, patch: Partial<LifeEvent>) => void;
+  removeLifeEvent: (id: string) => void;
 }
 
 /** Apply an immutable update to the active plan, if one is loaded. */
@@ -729,6 +735,24 @@ export const useVisionStore = create<VisionStore>()(
         patchPlan(set, (p) => ({
           ...p,
           events: p.events.filter((e) => e.id !== id),
+        }));
+      },
+
+      addLifeEvent(e) {
+        const id = uid("life");
+        patchPlan(set, (p) => ({ ...p, lifeEvents: [...(p.lifeEvents ?? []), { ...e, id }] }));
+        return id;
+      },
+      updateLifeEvent(id, patch) {
+        patchPlan(set, (p) => ({
+          ...p,
+          lifeEvents: (p.lifeEvents ?? []).map((ev) => (ev.id === id ? { ...ev, ...patch } : ev)),
+        }));
+      },
+      removeLifeEvent(id) {
+        patchPlan(set, (p) => ({
+          ...p,
+          lifeEvents: (p.lifeEvents ?? []).filter((ev) => ev.id !== id),
         }));
       },
     }),

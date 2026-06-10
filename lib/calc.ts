@@ -17,6 +17,7 @@ import type {
   Dependent,
   Goal,
   GoalFunding,
+  LifeEvent,
   NetWorth,
   ProjectionPoint,
   ProjectionResult,
@@ -254,6 +255,8 @@ export interface ProjectionInput {
   /** Annual income continuing into retirement: INSS, rent, pension (real BRL). */
   annualOtherIncome: number;
   goals: Goal[];
+  /** Financial life events applied as one-time/recurring inflows/outflows. */
+  lifeEvents?: LifeEvent[];
 }
 
 /** Future value of a series of monthly contributions over `years`, real terms. */
@@ -309,6 +312,16 @@ export function project(input: ProjectionInput): ProjectionResult {
   const points: ProjectionPoint[] = [];
   const thisYear = new Date().getFullYear();
 
+  // Net cash impact per calendar year from life events (one-time or recurring).
+  const eventByYear = new Map<number, number>();
+  for (const ev of input.lifeEvents ?? []) {
+    const sign = ev.kind === "inflow" ? 1 : -1;
+    const last = ev.recurring && ev.endYear ? Math.max(ev.year, ev.endYear) : ev.year;
+    for (let y = ev.year; y <= last; y++) {
+      eventByYear.set(y, (eventByYear.get(y) ?? 0) + sign * ev.amount);
+    }
+  }
+
   let wealth = Math.max(0, investableNow);
   let contributionsCum = 0;
   let wealthAtRetirement = wealth;
@@ -325,13 +338,20 @@ export function project(input: ProjectionInput): ProjectionResult {
       wealth = wealth * (1 + r) + annualContribution;
       contributionsCum += annualContribution;
       income = annualIncomeNow;
-      if (age + 1 === retirementAge || age === retirementAge - 1) {
-        wealthAtRetirement = wealth;
-      }
     } else {
-      if (age === retirementAge) wealthAtRetirement = wealth;
-      // Decumulation: grow, then draw the gap between needs and other income.
+      // Decumulation: grow (draw applied after life events below).
       wealth = wealth * (1 + r);
+      income = annualOtherIncome;
+    }
+
+    // Apply this year's life events.
+    const delta = eventByYear.get(year);
+    if (delta) wealth = Math.max(0, wealth + delta);
+
+    // Wealth at retirement = end of the last accumulation year (post-events).
+    if (age === retirementAge - 1) wealthAtRetirement = wealth;
+
+    if (retired) {
       const gap = Math.max(0, annualNeeds - annualOtherIncome);
       const draw = Math.min(gap, Math.max(0, wealth));
       wealth -= draw;

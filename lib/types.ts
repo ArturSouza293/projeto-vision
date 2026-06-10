@@ -386,6 +386,34 @@ export type ApprovalStatus = "draft" | "in_review" | "approved";
 /* Advisor copilot events                                              */
 /* ------------------------------------------------------------------ */
 
+/* ------------------------------------------------------------------ */
+/* Life events — financial cashflow events on the dynamic timeline       */
+/* ------------------------------------------------------------------ */
+
+/** Direction of a life event's cash impact (distinct from advisor events). */
+export type LifeEventKind = "outflow" | "inflow";
+
+/**
+ * A financial life event placed on the wealth/cash-flow timeline. The `year` is
+ * the drag target; the projection consumes these as one-time (or recurring)
+ * inflows/outflows. Separate from `AdvisorEvent` (advisor agenda).
+ */
+export interface LifeEvent {
+  id: string;
+  /** Preset key for icon/label/category ("custom" for ad-hoc events). */
+  presetKey: string;
+  /** Optional label override (falls back to the preset's localized label). */
+  label?: string;
+  kind: LifeEventKind;
+  /** Calendar year the event lands on (or starts, for recurring). */
+  year: number;
+  /** Amount in BRL (always positive; sign comes from `kind`). */
+  amount: number;
+  /** When true, applies annually over [year, endYear] instead of once. */
+  recurring?: boolean;
+  endYear?: number;
+}
+
 export type AdvisorEventType =
   | "review"
   | "rebalancing"
@@ -426,6 +454,8 @@ export interface Plan {
   selectedScenarioId?: string;
   approvalStatus: ApprovalStatus;
   events: AdvisorEvent[];
+  /** Financial life events on the dynamic timeline (feed the projection). */
+  lifeEvents?: LifeEvent[];
   /** Per-plan overrides of the planning premises (falls back to DEFAULT_PREMISES). */
   premises?: Premises;
 }

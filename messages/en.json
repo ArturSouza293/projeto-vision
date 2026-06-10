@@ -580,6 +580,31 @@
     "reserveFunded": "funded",
     "reserveShort": "{amount} short"
   },
+  "lifeEvents": {
+    "title": "Life events",
+    "hint": "Drag events and retirement — the curve recalculates live.",
+    "palette": "Add event",
+    "retirement": "Retirement",
+    "year": "Year",
+    "amount": "Amount",
+    "remove": "Remove",
+    "outflow": "Outflow",
+    "inflow": "Inflow",
+    "preset": {
+      "property_buy": "Buy property",
+      "car": "New car",
+      "travel": "International trip",
+      "education": "Children's education",
+      "wedding": "Wedding",
+      "child": "New child",
+      "renovation": "Home renovation",
+      "business": "Start a business",
+      "property_sell": "Sell property",
+      "inheritance": "Inheritance",
+      "bonus": "Extraordinary bonus",
+      "custom": "Custom event"
+    }
+  },
   "premises": {
     "open": "Premises & sources",
     "title": "Plan premises",

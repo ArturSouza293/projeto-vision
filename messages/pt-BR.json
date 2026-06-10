@@ -580,6 +580,31 @@
     "reserveFunded": "financiada",
     "reserveShort": "faltam {amount}"
   },
+  "lifeEvents": {
+    "title": "Eventos de vida",
+    "hint": "Arraste os eventos e a aposentadoria — a curva recalcula ao vivo.",
+    "palette": "Adicionar evento",
+    "retirement": "Aposentadoria",
+    "year": "Ano",
+    "amount": "Valor",
+    "remove": "Remover",
+    "outflow": "Saída",
+    "inflow": "Entrada",
+    "preset": {
+      "property_buy": "Compra de imóvel",
+      "car": "Troca de carro",
+      "travel": "Viagem internacional",
+      "education": "Educação dos filhos",
+      "wedding": "Casamento",
+      "child": "Nascimento de filho",
+      "renovation": "Reforma da casa",
+      "business": "Abrir negócio",
+      "property_sell": "Venda de imóvel",
+      "inheritance": "Herança",
+      "bonus": "Bônus extraordinário",
+      "custom": "Evento customizado"
+    }
+  },
   "premises": {
     "open": "Premissas e fontes",
     "title": "Premissas do plano",
