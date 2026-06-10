@@ -1,7 +1,7 @@
 # DEMO_COVERAGE — vídeo narrado v3 (demo_vision_v3_narrado.mp4)
 
 > Gerado por `demo/narrate.mjs` — NÃO editar à mão; regenere com `npm run demo:narrate`.
-> Duração final: **103.0s** (alvo ~90s, teto 120s) · voz pt-BR-ThalitaMultilingualNeural -4% · loudness -16.03 LUFS.
+> Duração final: **103.2s** (alvo ~90s, teto 120s) · voz pt-BR-ThalitaMultilingualNeural -2% · loudness -16.04 LUFS.
 
 | Feature | Nome | Capítulo | Timestamp | O que foi mostrado |
 |---|---|---|---|---|

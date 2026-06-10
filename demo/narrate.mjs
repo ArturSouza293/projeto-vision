@@ -110,17 +110,27 @@ async function main() {
     }
   }
 
-  /* 1 — TTS por frase (cache por hash) + durações */
+  /* 1 — TTS por frase (cache por hash) + durações.
+   * Cada item da narração pode ser string OU objeto:
+   *   { texto, falar?, gapAfterMs? }
+   * "texto" = legenda queimada (sempre o texto oficial);
+   * "falar" = o que vai ao TTS — respelling fonético de palavras que fazem a
+   *   voz Multilingual trocar de idioma ("Vision"→"Víjon", "BIA"→"Bia") e
+   *   pontuação de prosódia (… = pausa real onde a voz atropela a vírgula);
+   * "gapAfterMs" = respiro após a frase (default gaps.sentenceMs). */
   console.log("• TTS (edge-tts, " + N.voice.name + ")…");
-  const sentences = []; // {chapter, idx, text, mp3, wav, dur}
+  const sentences = []; // {chapter, idx, texto, falar, gapAfter, mp3, wav, dur}
   for (const ch of N.chapters) {
-    ch.narracao.forEach((text, idx) => {
-      const h = sha1(`${N.voice.name}|${N.voice.rate}|${N.voice.pitch ?? ""}|${text}`);
-      sentences.push({ chapter: ch.id, idx, text, mp3: path.join(TTS, `${h}.mp3`), wav: path.join(TTS, `${h}.wav`) });
+    ch.narracao.forEach((entry, idx) => {
+      const texto = typeof entry === "string" ? entry : entry.texto;
+      const falar = typeof entry === "string" ? entry : (entry.falar ?? entry.texto);
+      const gapAfter = ((typeof entry === "object" && entry.gapAfterMs != null) ? entry.gapAfterMs : N.gaps.sentenceMs) / 1000;
+      const h = sha1(`${N.voice.name}|${N.voice.rate}|${N.voice.pitch ?? ""}|${falar}`);
+      sentences.push({ chapter: ch.id, idx, texto, falar, gapAfter, mp3: path.join(TTS, `${h}.mp3`), wav: path.join(TTS, `${h}.wav`) });
     });
   }
   const runTts = () => {
-    const ttsPlan = { voice: N.voice.name, rate: N.voice.rate, pitch: N.voice.pitch ?? "", items: sentences.map((s) => ({ text: s.text, mp3: s.mp3 })) };
+    const ttsPlan = { voice: N.voice.name, rate: N.voice.rate, pitch: N.voice.pitch ?? "", items: sentences.map((s) => ({ text: s.falar, mp3: s.mp3 })) };
     fs.writeFileSync(path.join(TMP, "tts_plan.json"), JSON.stringify(ttsPlan));
     const res = python([path.join(ND, "voice.py"), "tts", path.join(TMP, "tts_plan.json")]);
     if (!res.ok) throw new Error(`edge-tts indisponível: ${res.error} — PARANDO (sem fallback robótico).`);
@@ -146,7 +156,7 @@ async function main() {
   let cursor = 0;
   for (const ch of N.chapters) {
     const sents = sentences.filter((s) => s.chapter === ch.id);
-    const audioBlock = sents.reduce((a, s) => a + s.dur, 0) + SGAP * (sents.length - 1);
+    const audioBlock = sents.reduce((a, s, i) => a + s.dur + (i < sents.length - 1 ? s.gapAfter : 0), 0);
     const minDur = LEAD + audioBlock + TAIL;
 
     let cuts = [], videoNatural = 0;
@@ -183,7 +193,7 @@ async function main() {
     let t = cursor + LEAD;
     for (const s of sents) {
       sentTimes.push({ ...s, start: t, end: t + s.dur });
-      t += s.dur + SGAP;
+      t += s.dur + s.gapAfter;
     }
     chapters.push({ ...ch, cuts, videoNatural, speed, dur, start: cursor, sents: sentTimes });
     cursor += dur;
@@ -236,12 +246,12 @@ async function main() {
   const pg = await browser.newPage({ viewport: { width: W, height: 130 } });
   const capFiles = {};
   for (const s of sentences) {
-    const f = path.join(TMP, `cap_${sha1(s.text)}.png`);
+    const f = path.join(TMP, `cap_${sha1(s.texto)}.png`);
     if (!fs.existsSync(f)) {
-      await pg.setContent(capHtml(s.text));
+      await pg.setContent(capHtml(s.texto));
       await pg.screenshot({ path: f, omitBackground: true, clip: { x: 0, y: 0, width: W, height: 130 } });
     }
-    capFiles[s.text] = f;
+    capFiles[s.texto] = f;
   }
   /* card do cap11 (fechamento com logo) */
   const cardFile = path.join(TMP, "card_cap11.png");
@@ -295,7 +305,7 @@ async function main() {
     let cur = "vb";
     let inIdx = ch.card ? 1 : [...new Set(ch.cuts.map((c) => c.file))].length;
     for (const s of ch.sents) {
-      inputs.push("-i", capFiles[s.text]);
+      inputs.push("-i", capFiles[s.texto]);
       const a = (s.start - ch.start - 0.15).toFixed(3);
       const b = (s.end - ch.start + 0.35).toFixed(3);
       fc.push(`[${cur}][${inIdx}:v]overlay=(W-w)/2:${H - 150}:enable='between(t,${a},${b})'[v${inIdx}]`);
@@ -354,7 +364,7 @@ Cobertura: **${covered.size}/14** features.${missing.length ? ` FALTANDO: ${miss
 F14 (Motor) é coberto na narração do fechamento — é fundação, não tela.
 
 ## Narração por capítulo
-${chapters.map((c) => `- **${c.id}** [${mmss(c.start)}–${mmss(c.start + c.dur)}] (${c.features.join(", ")}): ${c.narracao.map((s) => `"${s}"`).join(" ")}`).join("\n")}
+${chapters.map((c) => `- **${c.id}** [${mmss(c.start)}–${mmss(c.start + c.dur)}] (${c.features.join(", ")}): ${c.sents.map((s) => `"${s.texto}"`).join(" ")}`).join("\n")}
 `;
   fs.writeFileSync(path.join(__dirname, "..", "docs", "DEMO_COVERAGE.md"), cov);
 

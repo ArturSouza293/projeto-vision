@@ -129,7 +129,7 @@
       "$comment": "Thalita Multilingual = geração nova (prosódia humana, timbre calmo); rate -4% para presença executiva. Alternativas testadas em OneDrive\\voz_A/B/C.mp3. pitch só funciona nas vozes clássicas (ex.: Francisca).",
       "engine": "edge-tts",
       "name": "pt-BR-ThalitaMultilingualNeural",
-      "rate": "-4%",
+      "rate": "-2%",
       "pitch": ""
     },
     "gaps": { "sentenceMs": 400, "chapterLeadMs": 300, "chapterTailMs": 400 },
@@ -206,7 +206,10 @@
         "cuts": [{ "scene": "why", "from": "action-0.3", "to": "end+0.25" }],
         "narracao": [
           "Todo grande plano começa com uma pergunta simples: o que você quer da vida?",
-          "O Vision começa por aí — antes de qualquer número."
+          {
+            "texto": "O Vision começa por aí — antes de qualquer número.",
+            "falar": "O Víjon começa por aí... antes de qualquer número."
+          }
         ],
         "acaoEmTela": "Aba 'Por que planejar?', um card expandido",
         "avatar": "br"
@@ -216,7 +219,10 @@
         "features": ["F01"],
         "cuts": [{ "scene": "cap2_perfil", "from": "action-0.3", "to": "end+0.3" }],
         "narracao": [
-          "Em minutos, o consultor conhece quem importa: você, sua família — e o tempo que vocês têm pela frente."
+          {
+            "texto": "Em minutos, o consultor conhece quem importa: você, sua família — e o tempo que vocês têm pela frente.",
+            "falar": "Em minutos, o consultor conhece quem importa: você, sua família... e o tempo que vocês têm pela frente."
+          }
         ],
         "acaoEmTela": "Perfil preenchido com cônjuge e dependentes",
         "avatar": "br"
@@ -226,8 +232,15 @@
         "features": ["F02", "F03", "F04"],
         "cuts": [{ "scene": "cap3_vida", "from": "action-0.3", "to": "end+0.3" }],
         "narracao": [
-          "Renda, despesas, patrimônio, dívidas.",
-          "A vida financeira inteira, organizada num só lugar — sem planilhas, sem retrabalho."
+          {
+            "texto": "Renda, despesas, patrimônio, dívidas.",
+            "falar": "Renda. Despesas. Patrimônio. Dívidas.",
+            "gapAfterMs": 450
+          },
+          {
+            "texto": "A vida financeira inteira, organizada num só lugar — sem planilhas, sem retrabalho.",
+            "falar": "A vida financeira inteira, organizada num só lugar... sem planilhas, sem retrabalho."
+          }
         ],
         "acaoEmTela": "Passeio pelas abas Renda, Despesas e Patrimônio do caso pré-carregado",
         "avatar": "br"
@@ -237,8 +250,14 @@
         "features": ["F05"],
         "cuts": [{ "scene": "goals", "from": "action-0.3", "to": "end+0.25" }],
         "narracao": [
-          "E todo plano já nasce protegido: reserva, aposentadoria e sucessão vêm de fábrica.",
-          "Os sonhos, você adiciona."
+          {
+            "texto": "E todo plano já nasce protegido: reserva, aposentadoria e sucessão vêm de fábrica.",
+            "gapAfterMs": 500
+          },
+          {
+            "texto": "Os sonhos, você adiciona.",
+            "falar": "Os sonhos... você adiciona."
+          }
         ],
         "acaoEmTela": "Tela de objetivos: 3 obrigatórios travados + adição de objetivo personalizado",
         "avatar": "br"
@@ -251,8 +270,15 @@
           { "scene": "retire", "from": "action-0.3", "to": "end-0.6" }
         ],
         "narracao": [
-          "Esta é a assinatura do Vision: a sua vida numa linha do tempo viva.",
-          "Arraste um sonho — e veja o plano inteiro reagir, no mesmo instante."
+          {
+            "texto": "Esta é a assinatura do Vision: a sua vida numa linha do tempo viva.",
+            "falar": "Esta é a assinatura do Víjon: a sua vida numa linha do tempo viva.",
+            "gapAfterMs": 500
+          },
+          {
+            "texto": "Arraste um sonho — e veja o plano inteiro reagir, no mesmo instante.",
+            "falar": "Arraste um sonho... e veja o plano inteiro reagir, no mesmo instante."
+          }
         ],
         "acaoEmTela": "Drop de evento + drag com a curva reagindo DURANTE o arrasto; marco de aposentadoria arrastado",
         "avatar": "tr",
@@ -263,7 +289,10 @@
         "features": ["F07"],
         "cuts": [{ "scene": "cap6_kpis", "from": "action-0.3", "to": "end+0.3" }],
         "narracao": [
-          "Sinais vitais financeiros mostram, de relance, a saúde do plano: hoje, na aposentadoria — e até os cem anos."
+          {
+            "texto": "Sinais vitais financeiros mostram, de relance, a saúde do plano: hoje, na aposentadoria — e até os cem anos.",
+            "falar": "Sinais vitais financeiros mostram, de relance, a saúde do plano: hoje, na aposentadoria... e até os cem anos."
+          }
         ],
         "acaoEmTela": "Painel de KPIs + clique num KPI abrindo o modal de detalhe + curva com fases",
         "avatar": "br"
@@ -273,8 +302,12 @@
         "features": ["F08", "F12"],
         "cuts": [{ "scene": "cap7_premissas", "from": "action-0.3", "to": "end+0.3" }],
         "narracao": [
-          "Cada premissa é visível.",
-          "Cada cenário, testável.",
+          { "texto": "Cada premissa é visível.", "gapAfterMs": 500 },
+          {
+            "texto": "Cada cenário, testável.",
+            "falar": "Cada cenário... testável.",
+            "gapAfterMs": 550
+          },
           "Transparência aqui não é promessa: é arquitetura."
         ],
         "acaoEmTela": "Troca de cenário Base→Estressado + diálogo de premissas com fonte/ano",
@@ -285,9 +318,20 @@
         "features": ["F09"],
         "cuts": [{ "scene": "ideal", "segments": true }],
         "narracao": [
-          "Com um clique, a BIA desenha o plano ideal.",
-          "A inteligência propõe; o motor calcula.",
-          "Cada número, auditável."
+          {
+            "texto": "Com um clique, a BIA desenha o plano ideal.",
+            "falar": "Com um clique, a Bia desenha o plano ideal.",
+            "gapAfterMs": 500
+          },
+          {
+            "texto": "A inteligência propõe; o motor calcula.",
+            "falar": "A inteligência propõe... o motor calcula.",
+            "gapAfterMs": 500
+          },
+          {
+            "texto": "Cada número, auditável.",
+            "falar": "Cada número... auditável."
+          }
         ],
         "acaoEmTela": "Botão Plano Ideal → sliders animando → card do racional da BIA",
         "avatar": "bl",
@@ -298,7 +342,11 @@
         "features": ["F11"],
         "cuts": [{ "scene": "cap9_sessao", "from": "action-0.3", "to": "end+0.3" }],
         "narracao": [
-          "Feito para a conversa: nada se perde entre sessões — e a experiência fala a língua do seu cliente.",
+          {
+            "texto": "Feito para a conversa: nada se perde entre sessões — e a experiência fala a língua do seu cliente.",
+            "falar": "Feito para a conversa: nada se perde entre sessões... e a experiência fala a língua do seu cliente.",
+            "gapAfterMs": 550
+          },
           "Literalmente."
         ],
         "acaoEmTela": "Alternância EN↔PT ao vivo + reabertura de um caso salvo nos Recentes",
@@ -309,8 +357,11 @@
         "features": ["F13"],
         "cuts": [{ "scene": "cap10_resultado", "from": "action-0.3", "to": "end+0.3" }],
         "narracao": [
-          "No fim, o cliente leva um plano aprovado.",
-          "E o consultor, as oportunidades certas para realizá-lo."
+          { "texto": "No fim, o cliente leva um plano aprovado.", "gapAfterMs": 500 },
+          {
+            "texto": "E o consultor, as oportunidades certas para realizá-lo.",
+            "falar": "E o consultor... as oportunidades certas para realizá-lo."
+          }
         ],
         "acaoEmTela": "Tela de Entrega: aprovação do plano + oportunidades ranqueadas com origem",
         "avatar": "br"
@@ -320,8 +371,11 @@
         "features": ["F14"],
         "card": { "title": "Vision", "subtitle": "Onde metas de vida viram plano de investimento" },
         "narracao": [
-          "Vision.",
-          "Onde metas de vida viram plano de investimento — com um motor que sustenta cada promessa."
+          { "texto": "Vision.", "falar": "Víjon.", "gapAfterMs": 600 },
+          {
+            "texto": "Onde metas de vida viram plano de investimento — com um motor que sustenta cada promessa.",
+            "falar": "Onde metas de vida viram plano de investimento... com um motor que sustenta cada promessa."
+          }
         ],
         "acaoEmTela": "Card de fechamento com logo (motor coberto na narração — é fundação, não tela)",
         "avatar": "br"
