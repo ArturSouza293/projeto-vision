@@ -22,6 +22,7 @@ import { ProbabilityGauge } from "@/components/charts/probability-gauge";
 import { WealthTimeline } from "@/components/charts/wealth-timeline";
 import { KpiTile } from "@/components/engine/kpi-tile";
 import { KpiDetailDialog, type KpiModalKind } from "@/components/engine/kpi-detail-dialog";
+import { PlanVariantsRail } from "@/components/engine/plan-variants-rail";
 import { PremisesDialog } from "@/components/engine/premises-dialog";
 import { PlanoIdealButton } from "@/components/engine/plano-ideal-button";
 import { Button } from "@/components/ui/button";
@@ -318,6 +319,9 @@ export function Workspace() {
           </div>
         </dl>
       </div>
+
+      {/* v5: Plan variants (A/B/C) — full-case copies for side-by-side comparison */}
+      <PlanVariantsRail />
 
       {/* Scenario rail — the loop */}
       <div className="flex flex-wrap items-center gap-2">

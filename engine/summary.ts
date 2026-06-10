@@ -12,6 +12,8 @@ import type { PlanningCase, Projection } from "./types";
 
 export interface PlanSummaryKPIs {
   anoAposentadoria: number;
+  /** Último ano projetado (horizonte/longevidade) — o ano da herança. */
+  anoLongevidade: number;
   patrimonioNaAposentadoria: number;
   /** Primeiro ano em que o patrimônio líquido zera ANTES da longevidade; null = nunca esgota. */
   anoEsgotamento: number | null;
@@ -51,6 +53,7 @@ export function summarize(c: PlanningCase, proj?: Projection): PlanSummaryKPIs {
 
   return {
     anoAposentadoria: p.resumo.anoAposentadoria,
+    anoLongevidade: p.anos.length ? p.anos[p.anos.length - 1].ano : a.anoBase,
     patrimonioNaAposentadoria: p.resumo.patrimonioNaAposentadoria,
     anoEsgotamento,
     rendaMediaAposentadoriaMensal: rendaMediaMensal,
@@ -73,6 +76,7 @@ export function compare(
 }
 
 export function deltaKPIs(ref: PlanSummaryKPIs, k: PlanSummaryKPIs): PlanSummaryDelta {
+  // anoLongevidade é descritivo (horizonte) — fica fora dos deltas.
   return {
     anoAposentadoria: k.anoAposentadoria - ref.anoAposentadoria,
     patrimonioNaAposentadoria: k.patrimonioNaAposentadoria - ref.patrimonioNaAposentadoria,

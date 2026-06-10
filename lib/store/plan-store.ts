@@ -27,6 +27,7 @@ import {
 import type {
   AdvisorEvent,
   Asset,
+  CaseVariant,
   Dependent,
   ExpenseItem,
   Goal,
@@ -43,6 +44,7 @@ import type {
   EnginePhase,
   OutboundResult,
   OutputPayload,
+  VariantColor,
 } from "@/lib/types";
 
 export type DataTab =
@@ -186,6 +188,17 @@ export interface VisionStore {
   addLifeEvent: (e: Omit<LifeEvent, "id">) => string;
   updateLifeEvent: (id: string, patch: Partial<LifeEvent>) => void;
   removeLifeEvent: (id: string) => void;
+
+  // v5 — case variants ("Planos" A/B/C/D, full deep copies; session-scoped)
+  caseVariants: CaseVariant[];
+  activeVariantId: string | null;
+  /** Duplicate the live case as a new variant (creates A from current on first use). */
+  duplicateAsVariant: () => void;
+  switchVariant: (id: string) => void;
+  setVariantRef: (id: string) => void;
+  removeVariant: (id: string) => void;
+  /** Write the live activePlan back into its variant and return the fresh list. */
+  syncedVariants: () => CaseVariant[];
 }
 
 /** Apply an immutable update to the active plan, if one is loaded. */
@@ -247,6 +260,8 @@ export const useVisionStore = create<VisionStore>()(
             outbound: null,
             loadingPlan: false,
             sidebarOpen: false,
+            caseVariants: [],
+            activeVariantId: null,
           }));
         } catch (e) {
           set({ loadingPlan: false });
@@ -274,6 +289,8 @@ export const useVisionStore = create<VisionStore>()(
           copilotOpen: false,
           dataDrawerOpen: false,
           sidebarOpen: false,
+          caseVariants: [],
+          activeVariantId: null,
         });
       },
       loadRecentPlan(clientId) {
@@ -287,6 +304,8 @@ export const useVisionStore = create<VisionStore>()(
             outbound: null,
             dataDrawerOpen: false,
             sidebarOpen: false,
+            caseVariants: [],
+            activeVariantId: null,
           };
         });
       },
@@ -322,6 +341,8 @@ export const useVisionStore = create<VisionStore>()(
             outbound: null,
             loadingPlan: false,
             sidebarOpen: false,
+            caseVariants: [],
+            activeVariantId: null,
           }));
         } catch (e) {
           set({ loadingPlan: false });
@@ -338,6 +359,8 @@ export const useVisionStore = create<VisionStore>()(
           dataTab: "profile",
           dataDrawerOpen: true,
           sidebarOpen: false,
+          caseVariants: [],
+          activeVariantId: null,
         }));
       },
 
@@ -350,6 +373,8 @@ export const useVisionStore = create<VisionStore>()(
           copilotOpen: false,
           dataDrawerOpen: false,
           sidebarOpen: false,
+          caseVariants: [],
+          activeVariantId: null,
         }));
       },
 
@@ -745,6 +770,101 @@ export const useVisionStore = create<VisionStore>()(
         }));
       },
 
+      // ----- v5: case variants (Planos A/B/C/D) -----
+      caseVariants: [],
+      activeVariantId: null,
+
+      duplicateAsVariant() {
+        set((s) => {
+          if (!s.activePlan || s.caseVariants.length >= 4) return {};
+          const COLORS: VariantColor[] = ["blue", "green", "orange", "purple"];
+          const LETTERS = ["A", "B", "C", "D"];
+          let variants = s.caseVariants;
+          // First use: snapshot the live case as "Plano A" (the reference).
+          if (variants.length === 0) {
+            variants = [
+              {
+                id: uid("variant"),
+                name: "Plano A",
+                color: COLORS[0],
+                isRef: true,
+                plan: structuredClone(s.activePlan),
+              },
+            ];
+          } else if (s.activeVariantId) {
+            // Keep the active slot in sync before copying from it.
+            variants = variants.map((v) =>
+              v.id === s.activeVariantId ? { ...v, plan: structuredClone(s.activePlan!) } : v,
+            );
+          }
+          const idx = variants.length;
+          const novo: CaseVariant = {
+            id: uid("variant"),
+            name: `Plano ${LETTERS[idx]}`,
+            color: COLORS[idx],
+            isRef: false,
+            plan: structuredClone(s.activePlan),
+          };
+          return {
+            caseVariants: [...variants, novo],
+            activeVariantId: novo.id,
+            // The live plan keeps the same content — edits from here on belong
+            // to the new variant (written back on switch/sync).
+          };
+        });
+      },
+
+      switchVariant(id) {
+        set((s) => {
+          const target = s.caseVariants.find((v) => v.id === id);
+          if (!target || !s.activePlan) return {};
+          const variants = s.activeVariantId
+            ? s.caseVariants.map((v) =>
+                v.id === s.activeVariantId ? { ...v, plan: structuredClone(s.activePlan!) } : v,
+              )
+            : s.caseVariants;
+          const fresh = variants.find((v) => v.id === id)!;
+          return {
+            caseVariants: variants,
+            activeVariantId: id,
+            activePlan: structuredClone(fresh.plan),
+          };
+        });
+      },
+
+      setVariantRef(id) {
+        set((s) => ({
+          caseVariants: s.caseVariants.map((v) => ({ ...v, isRef: v.id === id })),
+        }));
+      },
+
+      removeVariant(id) {
+        set((s) => {
+          const rest = s.caseVariants.filter((v) => v.id !== id);
+          if (rest.length === 0) return { caseVariants: [], activeVariantId: null };
+          if (!rest.some((v) => v.isRef)) rest[0] = { ...rest[0], isRef: true };
+          if (s.activeVariantId === id) {
+            const next = rest.find((v) => v.isRef) ?? rest[0];
+            return {
+              caseVariants: rest,
+              activeVariantId: next.id,
+              activePlan: structuredClone(next.plan),
+            };
+          }
+          return { caseVariants: rest };
+        });
+      },
+
+      syncedVariants() {
+        const s = get();
+        if (!s.activePlan || !s.activeVariantId) return s.caseVariants;
+        const variants = s.caseVariants.map((v) =>
+          v.id === s.activeVariantId ? { ...v, plan: structuredClone(s.activePlan!) } : v,
+        );
+        set({ caseVariants: variants });
+        return variants;
+      },
+
       addLifeEvent(e) {
         const id = uid("life");
         patchPlan(set, (p) => ({ ...p, lifeEvents: [...(p.lifeEvents ?? []), { ...e, id }] }));
@@ -772,6 +892,10 @@ export const useVisionStore = create<VisionStore>()(
         phase: s.phase,
         advisorName: s.advisorName,
         recentPlans: s.recentPlans,
+        // v5: variants survive a reload locally (session-scoped — NOT synced
+        // to the team library; the Neon payload keeps saving only activePlan).
+        caseVariants: s.caseVariants,
+        activeVariantId: s.activeVariantId,
       }),
       onRehydrateStorage: () => (state) => state?.setHasHydrated(true),
     },
