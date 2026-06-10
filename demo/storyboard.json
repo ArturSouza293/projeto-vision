@@ -1,12 +1,9 @@
 {
-  "$comment": "Demo video storyboard — ALL timings, selectors and scene params live here. Edit + `npm run demo` to re-record. Times in ms unless noted.",
+  "$comment": "Demo video storyboard v8 — jornada completa (gate → porquê → cadastro → objetivos → timeline v6 → aposentadoria → peers → planos A/B/C → Plano Ideal → Entrega/cross-sell). Tudo editável aqui + npm run demo.",
   "baseUrl": "http://localhost:3010",
-  "viewport": {
-    "width": 1920,
-    "height": 1080
-  },
+  "viewport": { "width": 1920, "height": 1080 },
   "output": "demo_vision.mp4",
-  "targetSeconds": 37,
+  "targetSeconds": 64,
   "fadeSeconds": 0.3,
   "fps": 30,
   "crf": 20,
@@ -14,49 +11,46 @@
   "locale": "pt-BR",
   "personaId": "camila-diego",
   "cards": {
-    "open": {
-      "title": "Projeto Vision",
-      "subtitle": "Financial Planning",
-      "seconds": 1.8
-    },
-    "close": {
-      "title": "Vision",
-      "subtitle": "powered by IA",
-      "seconds": 1.8
-    }
+    "open": { "title": "Projeto Vision", "subtitle": "Financial Planning", "seconds": 1.8 },
+    "close": { "title": "Vision", "subtitle": "powered by IA", "seconds": 1.8 }
   },
   "scenes": [
+    {
+      "id": "gate",
+      "title": "Gate de acesso",
+      "fixture": "none",
+      "speed": 1.3,
+      "caption": "0 · Acesso restrito — gate de demonstração antes de tudo",
+      "params": { "typeDelay": 95, "afterEnter": 1100 }
+    },
     {
       "id": "why",
       "title": "O porquê",
       "fixture": "intro",
       "speed": 1,
-      "params": {
-        "expandCard": "why-card-c2",
-        "readPause": 1100,
-        "driftMs": 450
-      },
-      "caption": "1 · Engajamento — por que planejar, antes do produto"
+      "caption": "1 · Engajamento — por que planejar, antes do produto",
+      "params": { "expandCard": "why-card-c2", "readPause": 1100, "driftMs": 450 }
     },
     {
       "id": "wizard",
       "title": "A base (wizard preenchido)",
       "fixture": "workspace",
       "speed": 2.1,
+      "caption": "2 · Base do plano — perfil, renda, despesas e patrimônio",
       "params": {
         "openSelector": "open-data",
         "nextSelector": "wizard-next",
         "firstTabSelector": "wizard-tab-profile",
         "tabCount": 3,
         "tabPause": 700
-      },
-      "caption": "2 · Base do plano — perfil, renda, despesas e patrimônio"
+      }
     },
     {
       "id": "goals",
-      "title": "Cadastro de objetivos (3 obrigatórios + adicionar)",
+      "title": "Cadastro de objetivos",
       "fixture": "workspace",
       "speed": 1.65,
+      "caption": "3 · Objetivos de vida — 3 obrigatórios + personalizados",
       "params": {
         "openSelector": "open-data",
         "goalsTabSelector": "wizard-tab-goals",
@@ -64,52 +58,64 @@
         "readPause": 800,
         "menuPause": 450,
         "settle": 1000
-      },
-      "caption": "3 · Objetivos de vida — 3 obrigatórios + personalizados"
+      }
     },
     {
       "id": "timeline",
-      "title": "Timeline dinâmica (drag de evento)",
+      "title": "Timeline v6 (lanes + drag ao vivo)",
       "fixture": "workspace",
-      "speed": 1,
+      "speed": 1.12,
+      "caption": "4 · Linha do tempo — eventos em camadas, a curva reage ao vivo",
       "params": {
         "preset": "property_buy",
-        "editorPause": 450,
-        "dragToYear": 2040,
+        "editorPause": 600,
+        "dragPx": 320,
         "dragMs": 1700,
-        "earlierYears": 2,
+        "earlierPx": -120,
         "earlierDragMs": 850,
-        "settleAfterDrop": 550,
-        "trackViewportY": 660
-      },
-      "caption": "4 · Eventos de vida — a projeção reage em tempo real"
+        "settleAfterDrop": 600,
+        "trackViewportY": 500
+      }
     },
     {
       "id": "retire",
-      "title": "Aposentadoria arrastável",
+      "title": "Aposentadoria (marco-âncora)",
       "fixture": "workspace",
       "speed": 1,
-      "params": {
-        "yearsEarlier": 10,
-        "dragMs": 1700,
-        "settleAfterDrop": 450,
-        "scrollTopAfter": true,
-        "kpiPause": 500,
-        "trackViewportY": 660
-      },
-      "caption": "5 · Aposentadoria — arraste e os indicadores recalculam"
+      "caption": "5 · Aposentadoria — arraste o marco e tudo recalcula",
+      "params": { "dragPx": -260, "dragMs": 1700, "settleAfterDrop": 500, "kpiPause": 600, "trackViewportY": 500 }
+    },
+    {
+      "id": "peers",
+      "title": "Peer insights",
+      "fixture": "workspace",
+      "speed": 1.28,
+      "caption": "6 · O que pessoas como você planejam — sugestões viram eventos",
+      "params": { "trackViewportY": 500, "modalPause": 1300, "selectPause": 450, "applySettle": 1100 }
+    },
+    {
+      "id": "planos",
+      "title": "Planos A/B/C + Resumo",
+      "fixture": "workspace",
+      "speed": 1.45,
+      "caption": "7 · Planos A/B/C — cenários completos comparados lado a lado",
+      "params": { "trackViewportY": 500, "dragPx": -250, "dragMs": 1200, "comparePause": 2100 }
     },
     {
       "id": "ideal",
       "title": "Plano Ideal com a BIA",
       "fixture": "workspace",
       "speed": 1,
-      "params": {
-        "loadingKeepSeconds": 1,
-        "resultHold": 1600,
-        "apiTimeout": 60000
-      },
-      "caption": "6 · Plano Ideal com a BIA — a IA otimiza e explica"
+      "caption": "8 · Plano Ideal — a IA propõe, o motor calcula",
+      "params": { "loadingKeepSeconds": 1.0, "resultHold": 1600, "apiTimeout": 60000 }
+    },
+    {
+      "id": "entrega",
+      "title": "Entrega — cross-sell por eventos",
+      "fixture": "workspace",
+      "speed": 1.25,
+      "caption": "9 · Entrega — eventos do plano viram oportunidades explicáveis",
+      "params": { "trackViewportY": 500, "presets": ["property_sell", "business"], "cardsPause": 2400 }
     }
   ]
 }

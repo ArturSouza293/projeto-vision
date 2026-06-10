@@ -1,6 +1,19 @@
 # Changelog
 
-## v7 — Eventos da timeline → Oportunidades de cross-sell (branch `feature/v7-cross-sell-eventos` — em validação, sem deploy)
+## Demo v8 — vídeo atualizado com a jornada completa (somente tooling, sem mudança no app)
+
+- `demo/storyboard.json` + `demo/record.mjs` reescritos: 10 cenas (~63s) cobrindo
+  todas as features do backlog — gate de senha (digitação mascarada ao vivo),
+  "Por que planejar?", wizard de dados, objetivos, timeline v6 (lanes + drag por
+  pixels, a geometria antiga por rótulos de ano não existe mais), marco da
+  aposentadoria, peer insights, planos A/B/C + Resumo dos Planos, Plano Ideal
+  com a BIA e Entrega com cross-sell explicável (origem dos sinais).
+- Cena do gate grava SEM cookie (demonstra o fluxo real); as demais autenticam
+  via `golden/gate-helper.mjs` (senha só em env, nunca no repo).
+- Saída: `demo/out/demo_vision.mp4` (1080p, 63,3s) — cópia em
+  `OneDrive\Desktop\Project Vision`.
+
+## v7 — Eventos da timeline → Oportunidades de cross-sell (merged em `main`, em produção)
 
 - **Auditoria primeiro** (`docs/AUDIT_CROSS_SELL.md`): a matriz provou que a
   timeline era invisível para o cross-sell (14 fontes ausentes, 4 parciais);

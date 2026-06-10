@@ -1,20 +1,21 @@
 /**
  * demo/record.mjs — records each storyboard scene as a separate Playwright clip.
  *
- * Flow: 1) prepare localStorage fixtures by driving the real app once (login /
- * load persona) in a non-recorded context; 2) record every scene in a FRESH
- * context seeded from its fixture, with a fake cursor overlay injected (the
- * Playwright video never shows the real pointer); 3) write raw/<scene>.webm +
- * raw/<scene>.meta.json (timing marks → cut segments) for build.mjs.
+ * v8: jornada completa (gate → porquê → cadastro → objetivos → timeline v6 →
+ * aposentadoria → peers → planos A/B/C → Plano Ideal → Entrega/cross-sell).
+ * Cada cena roda num contexto NOVO seedado por fixture de localStorage, com
+ * cursor fake injetado (o vídeo do Playwright não mostra o ponteiro) e gate
+ * autenticado via cookie (exceto a própria cena do gate, que o demonstra).
+ * Drags da timeline v6 são por DELTA DE PIXELS (a faixa tem geometria própria).
  *
- * All timings/selectors/params come from storyboard.json — iterate there.
+ * Tudo de ritmo/seletor vem do storyboard.json — itere lá.
  */
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
-import { passGate } from "../golden/gate-helper.mjs";
+import { gatePassword, passGate } from "../golden/gate-helper.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SB = JSON.parse(fs.readFileSync(path.join(__dirname, "storyboard.json"), "utf8"));
@@ -25,9 +26,6 @@ const STORE_KEY = "vision-store";
 fs.mkdirSync(FIXTURES, { recursive: true });
 
 /* ---------------------------------------------------------------- cursor */
-/** Fake cursor: Playwright videos don't capture the pointer, so we draw one.
- *  Pointer events (not mouse) — the timeline calls preventDefault() on
- *  pointerdown, which suppresses compatibility mouse events mid-drag. */
 const CURSOR_SCRIPT = `(() => {
   if (window.__demoCursor) return; window.__demoCursor = true;
   function ensure() {
@@ -70,9 +68,6 @@ const CURSOR_SCRIPT = `(() => {
 const sleep = (page, ms) => page.waitForTimeout(ms);
 const easeInOut = (k) => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
 
-/** Move the (virtual) mouse along an eased path over ~ms milliseconds.
- *  Per-step dispatch latency is real (~8-12ms), so the explicit wait is
- *  shortened to keep total time close to the nominal duration. */
 async function humanMove(page, from, to, ms) {
   const steps = Math.max(6, Math.round(ms / 28));
   for (let i = 1; i <= steps; i++) {
@@ -99,8 +94,6 @@ async function clickTestId(page, id, ms = 450) {
   if (!box) throw new Error(`No bounding box for [data-testid=${id}]`);
   await clickAt(page, box.x + box.width / 2, box.y + box.height / 2, ms);
 }
-/** Press at the cursor, drag with easing to (x,y), release. Slow enough for
- *  the live ghost curve to visibly track the movement. */
 async function humanDrag(page, to, ms) {
   await page.mouse.down();
   await page.waitForTimeout(120);
@@ -110,18 +103,15 @@ async function humanDrag(page, to, ms) {
   await page.mouse.up();
 }
 
-/** Timeline geometry: track box + [minYear, maxYear] from its corner labels. */
-async function trackGeometry(page) {
-  const track = page.getByTestId("timeline-track");
-  const box = await track.boundingBox();
-  const [minYear, maxYear] = await track.evaluate((el) => {
-    const spans = el.querySelectorAll(":scope > span");
-    return [parseInt(spans[0].textContent, 10), parseInt(spans[spans.length - 1].textContent, 10)];
-  });
-  return { box, minYear, maxYear, xFor: (y) => box.x + ((y - minYear) / (maxYear - minYear)) * box.width };
+/** Arrasta um elemento (chip/marco da timeline v6) por um delta de pixels. */
+async function dragByPx(page, testId, deltaPx, ms) {
+  const box = await page.getByTestId(testId).boundingBox();
+  const cx = box.x + box.width / 2;
+  const cy = box.y + box.height / 2;
+  await moveTo(page, cx, cy, 420);
+  await humanDrag(page, { x: cx + deltaPx, y: cy }, ms);
 }
 
-/** Scroll so the timeline track sits at ~targetY in the viewport. */
 async function scrollTrackTo(page, targetY) {
   await page.getByTestId("timeline-track").evaluate((el, ty) => {
     window.scrollBy({ top: el.getBoundingClientRect().top - ty, behavior: "instant" });
@@ -129,15 +119,23 @@ async function scrollTrackTo(page, targetY) {
   await page.waitForTimeout(450);
 }
 
+/** Fecha o painel de edição se estiver aberto (clique em chip = toggle). */
+async function closeEditorIfOpen(page) {
+  const btn = page.getByTestId("event-editor-close");
+  if (await btn.isVisible().catch(() => false)) {
+    await clickTestId(page, "event-editor-close", 300);
+    await page.waitForTimeout(200);
+  }
+}
+
 /* -------------------------------------------------------------- fixtures */
 async function prepareFixtures(browser) {
   console.log("• preparing localStorage fixtures (non-recorded pass)…");
   const ctx = await browser.newContext({ viewport: SB.viewport });
-  await passGate(ctx, SB.baseUrl); // v6: gate de demonstração
+  await passGate(ctx, SB.baseUrl);
   const page = await ctx.newPage();
   await page.goto(SB.baseUrl, { waitUntil: "domcontentloaded" });
 
-  // Login (name-only gate)
   await page.locator("input").first().fill(SB.advisorName);
   await page.keyboard.press("Enter");
   await page.waitForSelector('[data-testid="why-card-c1"]', { timeout: 15000 });
@@ -145,28 +143,38 @@ async function prepareFixtures(browser) {
   const dump = async () => {
     const raw = await page.evaluate((k) => localStorage.getItem(k), STORE_KEY);
     const obj = JSON.parse(raw);
-    obj.state.locale = SB.locale; // demo always runs in pt-BR
+    obj.state.locale = SB.locale;
     return obj;
   };
 
-  const intro = await dump();
-  fs.writeFileSync(path.join(FIXTURES, "intro.json"), JSON.stringify(intro));
+  fs.writeFileSync(path.join(FIXTURES, "intro.json"), JSON.stringify(await dump()));
 
-  // Load the demo persona → workspace (base scenario auto-created)
   await page.getByTestId("open-sidebar").click();
   await page.getByTestId(`persona-${SB.personaId}`).click();
   await page.waitForSelector('[data-testid="timeline-track"]', { timeout: 20000 });
-  await page.waitForTimeout(1500); // ensureBaseScenario + projections settle
+  await page.waitForTimeout(1500);
 
-  const workspace = await dump();
-  fs.writeFileSync(path.join(FIXTURES, "workspace.json"), JSON.stringify(workspace));
+  fs.writeFileSync(path.join(FIXTURES, "workspace.json"), JSON.stringify(await dump()));
   await ctx.close();
   console.log("  fixtures ready: intro, workspace");
 }
 
 /* ---------------------------------------------------------------- scenes */
 const SCENE_FNS = {
-  /** Scene 1 — "Por que planejar?": expand one accordion card, reading pause. */
+  /** Cena 0 — gate: digita a senha (mascarada) e entra. */
+  async gate(page, p, mark) {
+    await page.waitForSelector("input[type=password]", { timeout: 15000 });
+    await sleep(page, 500);
+    mark("action");
+    const box = await page.locator("input[type=password]").boundingBox();
+    await clickAt(page, box.x + box.width / 2, box.y + box.height / 2, 500);
+    await page.keyboard.type(gatePassword() ?? "", { delay: p.typeDelay });
+    await sleep(page, 250);
+    await page.keyboard.press("Enter");
+    await sleep(page, p.afterEnter); // recarrega → login do advisor aparece
+    mark("end");
+  },
+
   async why(page, p, mark) {
     await page.waitForSelector('[data-testid="why-card-c1"]');
     await sleep(page, 400);
@@ -174,12 +182,11 @@ const SCENE_FNS = {
     await clickTestId(page, p.expandCard, 600);
     await sleep(page, p.readPause);
     const box = await page.getByTestId(p.expandCard).boundingBox();
-    if (box) await moveTo(page, box.x + box.width * 0.5, box.y + box.height + 90, p.driftMs); // drift over the answer
+    if (box) await moveTo(page, box.x + box.width * 0.5, box.y + box.height + 90, p.driftMs);
     await sleep(page, 300);
     mark("end");
   },
 
-  /** Scene 2 — pre-filled wizard tour (sped up in the edit). */
   async wizard(page, p, mark) {
     await page.waitForSelector(`[data-testid="${p.openSelector}"]`);
     await sleep(page, 300);
@@ -194,28 +201,24 @@ const SCENE_FNS = {
     mark("end");
   },
 
-  /** Scene 2b — the goals-registration journey: jump to the "Objetivos" tab
-   *  (3 mandatory locked goals visible), then add a new goal from the menu —
-   *  the new card drops in with the list's auto-scroll. */
   async goals(page, p, mark) {
     await page.waitForSelector(`[data-testid="${p.openSelector}"]`);
     await sleep(page, 300);
     mark("action");
-    await clickTestId(page, p.openSelector, 500); // "Dados"
+    await clickTestId(page, p.openSelector, 500);
     await page.waitForSelector(`[data-testid="${p.goalsTabSelector}"]`);
-    await clickTestId(page, p.goalsTabSelector, 480); // jump to "Objetivos"
+    await clickTestId(page, p.goalsTabSelector, 480);
     await page.waitForSelector('[data-testid="goals-add"]');
-    await sleep(page, p.readPause); // mandatory goals (lock) on screen
+    await sleep(page, p.readPause);
     await clickTestId(page, "goals-add", 480);
     await page.waitForSelector(`[data-testid="goal-add-${p.addType}"]`);
     await sleep(page, p.menuPause);
     await clickTestId(page, `goal-add-${p.addType}`, 420);
-    await sleep(page, p.settle); // new card appears + auto-scroll
+    await sleep(page, p.settle);
     mark("end");
   },
 
-  /** Scene 3 — drop a life event from the palette, drag it on the timeline
-   *  (live ghost), then nudge it N years earlier. */
+  /** Cena 4 — timeline v6: drop de evento + drag por pixels (lanes + ghost). */
   async timeline(page, p, mark) {
     await page.waitForSelector('[data-testid="timeline-track"]');
     await scrollTrackTo(page, p.trackViewportY);
@@ -223,50 +226,77 @@ const SCENE_FNS = {
 
     await clickTestId(page, `palette-${p.preset}`, 480);
     await page.waitForSelector('[data-testid="event-editor-close"]');
-    await sleep(page, p.editorPause); // show the inline editor (label/valor/ano)
+    await sleep(page, p.editorPause); // painel inline (nome/tipo/valor/ano)
     await clickTestId(page, "event-editor-close", 320);
     await sleep(page, 250);
 
-    const geo = await trackGeometry(page);
-    const chip = await page.getByTestId(`timeline-event-${p.preset}`).boundingBox();
-    await moveTo(page, chip.x + chip.width / 2, chip.y + chip.height / 2, 400);
-    await humanDrag(page, { x: geo.xFor(p.dragToYear), y: cursorAt.y }, p.dragMs);
-    await sleep(page, p.settleAfterDrop); // committed curve animates
+    await dragByPx(page, `timeline-event-${p.preset}`, p.dragPx, p.dragMs);
+    await closeEditorIfOpen(page);
+    await sleep(page, p.settleAfterDrop);
     mark("drag2");
-
-    const chip2 = await page.getByTestId(`timeline-event-${p.preset}`).boundingBox();
-    await moveTo(page, chip2.x + chip2.width / 2, chip2.y + chip2.height / 2, 300);
-    await humanDrag(page, { x: geo.xFor(p.dragToYear - p.earlierYears), y: cursorAt.y }, p.earlierDragMs);
+    await dragByPx(page, `timeline-event-${p.preset}`, p.earlierPx, p.earlierDragMs);
+    await closeEditorIfOpen(page);
     await sleep(page, p.settleAfterDrop);
     mark("end");
   },
 
-  /** Scene 4 — drag the retirement anchor N years earlier; show recalc. */
+  /** Cena 5 — marco da aposentadoria (âncora real). */
   async retire(page, p, mark) {
     await page.waitForSelector('[data-testid="timeline-retire"]');
     await scrollTrackTo(page, p.trackViewportY);
-    const label = await page.getByTestId("timeline-retire").innerText();
-    const retYear = parseInt(label.match(/(\d{4})/)?.[1], 10);
-    if (!retYear) throw new Error(`Could not parse retirement year from "${label}"`);
     mark("action");
-
-    const geo = await trackGeometry(page);
-    const anchor = await page.getByTestId("timeline-retire").boundingBox();
-    await moveTo(page, anchor.x + anchor.width / 2, anchor.y + anchor.height / 2, 450);
-    await humanDrag(page, { x: geo.xFor(retYear - p.yearsEarlier), y: cursorAt.y }, p.dragMs);
+    await dragByPx(page, "timeline-retire", p.dragPx, p.dragMs);
+    await closeEditorIfOpen(page);
     await sleep(page, p.settleAfterDrop);
-
-    if (p.scrollTopAfter) {
-      await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
-      await sleep(page, 700);
-    }
-    await sleep(page, p.kpiPause); // recalculated KPIs on screen
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+    await sleep(page, 700);
+    await sleep(page, p.kpiPause);
     mark("end");
   },
 
-  /** Scene 5 — Plano Ideal (BIA): click → loading → sliders tween → racional.
-   *  Raw recording keeps the WHOLE wait; build.mjs cuts the dead middle using
-   *  the clicked/result marks. */
+  /** Cena 6 — peer insights: sugestões → 2 eventos no plano. */
+  async peers(page, p, mark) {
+    await page.waitForSelector('[data-testid="timeline-track"]');
+    await scrollTrackTo(page, p.trackViewportY);
+    mark("action");
+    await clickTestId(page, "palette-custom", 500);
+    await page.waitForSelector('[data-testid="peer-modal"]');
+    await sleep(page, p.modalPause); // chips do perfil + cards
+    const cards = page.locator('[data-testid^="peer-card-"]');
+    for (const i of [0, 1]) {
+      const btn = cards.nth(i).locator("button").last();
+      const bb = await btn.boundingBox();
+      await clickAt(page, bb.x + bb.width / 2, bb.y + bb.height / 2, 420);
+      await sleep(page, p.selectPause);
+    }
+    await clickTestId(page, "peer-apply", 480);
+    await sleep(page, p.applySettle); // eventos pré-preenchidos + curva reage
+    mark("end");
+  },
+
+  /** Cena 7 — planos A/B/C: duplicar, divergir, comparar. */
+  async planos(page, p, mark) {
+    await page.waitForSelector('[data-testid="variant-duplicate"]');
+    await sleep(page, 300);
+    mark("action");
+    await clickTestId(page, "variant-duplicate", 480); // cria A + B (ativa B)
+    await sleep(page, 450);
+    await scrollTrackTo(page, p.trackViewportY);
+    await dragByPx(page, "timeline-retire", p.dragPx, p.dragMs); // B diverge
+    await closeEditorIfOpen(page);
+    await sleep(page, 450);
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await sleep(page, 300);
+    await clickTestId(page, "variant-duplicate", 380); // C a partir de B
+    await sleep(page, 300);
+    await clickTestId(page, "variant-compare", 420);
+    await page.waitForSelector('[data-testid="plan-summary"]');
+    const col = await page.getByTestId("plan-summary").boundingBox();
+    if (col) await moveTo(page, col.x + col.width * 0.5, col.y + col.height * 0.45, 600);
+    await sleep(page, p.comparePause); // colunas, esgota-em, deltas
+    mark("end");
+  },
+
   async ideal(page, p, mark) {
     await page.waitForSelector('[data-testid="plano-ideal"]');
     await page.getByTestId("plano-ideal").evaluate((el) => {
@@ -281,6 +311,29 @@ const SCENE_FNS = {
     const card = await page.getByTestId("plano-ideal-racional").boundingBox();
     if (card) await moveTo(page, card.x + card.width * 0.4, card.y + card.height * 0.6, 550);
     await sleep(page, p.resultHold);
+    mark("end");
+  },
+
+  /** Cena 9 — Entrega: eventos viram oportunidades com origem. */
+  async entrega(page, p, mark) {
+    await page.waitForSelector('[data-testid="timeline-track"]');
+    await scrollTrackTo(page, p.trackViewportY);
+    mark("action");
+    for (const preset of p.presets) {
+      await clickTestId(page, `palette-${preset}`, 380);
+      await sleep(page, 200);
+      await closeEditorIfOpen(page);
+    }
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await sleep(page, 300);
+    const entregaBtn = page.locator("header button", { hasText: /Entrega|Handoff/ }).first();
+    const bb = await entregaBtn.boundingBox();
+    await clickAt(page, bb.x + bb.width / 2, bb.y + bb.height / 2, 500);
+    await sleep(page, 1200); // cards de cross-sell com origem do sinal
+    const origem = page.locator("text=/derivada do evento/i").first();
+    const ob = await origem.boundingBox().catch(() => null);
+    if (ob) await moveTo(page, ob.x + 60, ob.y + 6, 600);
+    await sleep(page, p.cardsPause);
     mark("end");
   },
 };
@@ -300,16 +353,18 @@ function segmentsFor(scene, m) {
 /* ----------------------------------------------------------------- runner */
 async function recordScene(browser, scene) {
   console.log(`• recording scene "${scene.id}"…`);
-  const fixture = fs.readFileSync(path.join(FIXTURES, `${scene.fixture}.json`), "utf8");
   const ctx = await browser.newContext({
     viewport: SB.viewport,
     recordVideo: { dir: RAW, size: SB.viewport },
   });
-  await passGate(ctx, SB.baseUrl); // v6: gate de demonstração
-  await ctx.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
-    key: STORE_KEY,
-    value: fixture,
-  });
+  if (scene.id !== "gate") await passGate(ctx, SB.baseUrl); // a cena do gate o DEMONSTRA
+  if (scene.fixture && scene.fixture !== "none") {
+    const fixture = fs.readFileSync(path.join(FIXTURES, `${scene.fixture}.json`), "utf8");
+    await ctx.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
+      key: STORE_KEY,
+      value: fixture,
+    });
+  }
   await ctx.addInitScript(CURSOR_SCRIPT);
 
   const page = await ctx.newPage();
@@ -330,7 +385,7 @@ async function recordScene(browser, scene) {
   await sleep(page, 300);
 
   const video = page.video();
-  await ctx.close(); // finalizes the video file
+  await ctx.close();
   const file = path.join(RAW, `scene-${scene.id}.webm`);
   await video.saveAs(file);
   await video.delete().catch(() => {});
@@ -341,12 +396,11 @@ async function recordScene(browser, scene) {
 }
 
 async function main() {
-  // Server reachable?
   try {
-    const res = await fetch(SB.baseUrl, { redirect: "manual" });
+    const res = await fetch(`${SB.baseUrl}/gate`, { redirect: "manual" });
     if (res.status >= 500) throw new Error(`HTTP ${res.status}`);
-  } catch (e) {
-    console.error(`✗ App not reachable at ${SB.baseUrl} — start it first (e.g. \`npx next start -p 3010\`).`);
+  } catch {
+    console.error(`✗ App not reachable at ${SB.baseUrl} — start it first (npx next start -p 3010).`);
     process.exit(1);
   }
 
