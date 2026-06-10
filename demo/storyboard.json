@@ -126,11 +126,11 @@
     "fps": 25,
     "crf": 19,
     "voice": {
-      "$comment": "Thalita Multilingual = geração nova (prosódia humana, timbre calmo); rate -4% para presença executiva. Alternativas testadas em OneDrive\\voz_A/B/C.mp3. pitch só funciona nas vozes clássicas (ex.: Francisca).",
+      "$comment": "Thalita Multilingual −2% com pitch −15Hz (F0 ~165Hz, registro quente/médio-grave — referência do usuário: voz da BIA). pitch FUNCIONA na Multilingual (medido: 185→165Hz). Amostras A–H em OneDrive\\voz_*.mp3; Ava/Emma são mais AGUDAS (213/208Hz), não usar.",
       "engine": "edge-tts",
       "name": "pt-BR-ThalitaMultilingualNeural",
       "rate": "-2%",
-      "pitch": ""
+      "pitch": "-15Hz"
     },
     "gaps": { "sentenceMs": 400, "chapterLeadMs": 300, "chapterTailMs": 400 },
     "loudness": { "i": -16, "tp": -1.5, "lra": 11 },
