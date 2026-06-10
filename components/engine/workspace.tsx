@@ -23,6 +23,7 @@ import { WealthTimeline } from "@/components/charts/wealth-timeline";
 import { KpiTile } from "@/components/engine/kpi-tile";
 import { KpiDetailDialog, type KpiModalKind } from "@/components/engine/kpi-detail-dialog";
 import { PremisesDialog } from "@/components/engine/premises-dialog";
+import { PlanoIdealButton } from "@/components/engine/plano-ideal-button";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -560,6 +561,10 @@ export function Workspace() {
                 step={0.25}
                 onChange={(v) => update({ inflation: v })}
               />
+            </div>
+
+            <div className="mt-5">
+              <PlanoIdealButton plan={plan} assumptions={a} scenarioId={selected.id} />
             </div>
             {(deficit || overAllocated) && (
               <div className="mt-4 flex items-start gap-2 rounded-xl border border-negative/30 bg-negative/5 p-2.5 text-xs leading-snug text-negative">

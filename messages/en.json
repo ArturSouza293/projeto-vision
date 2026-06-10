@@ -605,6 +605,17 @@
       "custom": "Custom event"
     }
   },
+  "planoIdeal": {
+    "button": "Ideal plan with BIA",
+    "step1": "Reading your profile…",
+    "step2": "Balancing your 3 goals…",
+    "step3": "Optimizing contributions within your surplus…",
+    "racionalTitle": "BIA's rationale",
+    "offline": "offline mode",
+    "offlineRacional": "Plan generated locally (no AI): contribution = your full monthly surplus, and a target return at the point where your 3 goals get funded — always within your surplus. Add the API key for a plan explained by Bia.",
+    "regenerate": "Regenerate",
+    "applied": "Plan applied"
+  },
   "premises": {
     "open": "Premises & sources",
     "title": "Plan premises",
