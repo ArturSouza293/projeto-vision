@@ -115,12 +115,12 @@ async function main() {
   const sentences = []; // {chapter, idx, text, mp3, wav, dur}
   for (const ch of N.chapters) {
     ch.narracao.forEach((text, idx) => {
-      const h = sha1(`${N.voice.name}|${N.voice.rate}|${text}`);
+      const h = sha1(`${N.voice.name}|${N.voice.rate}|${N.voice.pitch ?? ""}|${text}`);
       sentences.push({ chapter: ch.id, idx, text, mp3: path.join(TTS, `${h}.mp3`), wav: path.join(TTS, `${h}.wav`) });
     });
   }
   const runTts = () => {
-    const ttsPlan = { voice: N.voice.name, rate: N.voice.rate, items: sentences.map((s) => ({ text: s.text, mp3: s.mp3 })) };
+    const ttsPlan = { voice: N.voice.name, rate: N.voice.rate, pitch: N.voice.pitch ?? "", items: sentences.map((s) => ({ text: s.text, mp3: s.mp3 })) };
     fs.writeFileSync(path.join(TMP, "tts_plan.json"), JSON.stringify(ttsPlan));
     const res = python([path.join(ND, "voice.py"), "tts", path.join(TMP, "tts_plan.json")]);
     if (!res.ok) throw new Error(`edge-tts indisponível: ${res.error} — PARANDO (sem fallback robótico).`);

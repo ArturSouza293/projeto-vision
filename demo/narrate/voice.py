@@ -32,11 +32,15 @@ def do_tts(plan_path: str) -> None:
         print(json.dumps({"ok": True, "synthesized": 0}))
         return
 
+    kw = {"rate": plan["rate"]}
+    if plan.get("pitch"):
+        kw["pitch"] = plan["pitch"]
+
     async def synth_one(it: dict) -> None:
         last = None
-        for attempt in range(4):  # rede oscila; 4 tentativas com backoff
+        for attempt in range(6):  # rede oscila; tentativas com backoff
             try:
-                com = edge_tts.Communicate(it["text"], plan["voice"], rate=plan["rate"])
+                com = edge_tts.Communicate(it["text"], plan["voice"], **kw)
                 await com.save(it["mp3"])
                 if os.path.exists(it["mp3"]) and os.path.getsize(it["mp3"]) >= 2048:
                     return

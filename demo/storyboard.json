@@ -125,7 +125,13 @@
     "maxSeconds": 120,
     "fps": 25,
     "crf": 19,
-    "voice": { "engine": "edge-tts", "name": "pt-BR-FranciscaNeural", "rate": "+2%" },
+    "voice": {
+      "$comment": "Thalita Multilingual = geração nova (prosódia humana, timbre calmo); rate -4% para presença executiva. Alternativas testadas em OneDrive\\voz_A/B/C.mp3. pitch só funciona nas vozes clássicas (ex.: Francisca).",
+      "engine": "edge-tts",
+      "name": "pt-BR-ThalitaMultilingualNeural",
+      "rate": "-4%",
+      "pitch": ""
+    },
     "gaps": { "sentenceMs": 400, "chapterLeadMs": 300, "chapterTailMs": 400 },
     "loudness": { "i": -16, "tp": -1.5, "lra": 11 },
     "avatar": {
