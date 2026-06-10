@@ -134,6 +134,7 @@ export function EngineShell() {
           <div className="flex min-w-0 flex-1 items-center gap-2.5">
             <button
               type="button"
+              data-testid="open-sidebar"
               onClick={() => setSidebarOpen(true)}
               aria-label={t("sidebar.open")}
               className="grid size-8 shrink-0 place-items-center rounded-full text-white/90 transition-colors hover:bg-white/15"
@@ -166,7 +167,13 @@ export function EngineShell() {
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
             {plan && (
               <>
-                <Button variant="outline" size="sm" onClick={() => setDataTab("profile")} className={headerBtn}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  data-testid="open-data"
+                  onClick={() => setDataTab("profile")}
+                  className={headerBtn}
+                >
                   <Database className="size-4" />
                   <span className="hidden md:inline">{t("engine.data")}</span>
                 </Button>

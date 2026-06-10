@@ -183,7 +183,12 @@ export function WealthTimeline({
 
       {/* Draggable life-events track, aligned to the chart's plot area */}
       <div style={{ paddingLeft: PLOT_LEFT, paddingRight: PLOT_RIGHT }}>
-        <div ref={trackRef} className="relative h-px rounded-full bg-border" style={{ marginTop: 44, marginBottom: 16 }}>
+        <div
+          ref={trackRef}
+          data-testid="timeline-track"
+          className="relative h-px rounded-full bg-border"
+          style={{ marginTop: 44, marginBottom: 16 }}
+        >
           {/* Retirement anchor */}
           <div
             className="absolute -top-10 bottom-[-0.75rem] z-10 w-px bg-primary/40"
@@ -191,6 +196,7 @@ export function WealthTimeline({
           />
           <button
             type="button"
+            data-testid="timeline-retire"
             onPointerDown={startRetireDrag}
             aria-label={`${t("lifeEvents.retirement")} ${retYearShown}`}
             className="absolute -top-10 z-20 -translate-x-1/2 cursor-grab touch-none rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap text-primary-foreground shadow-sm active:cursor-grabbing"
@@ -213,6 +219,7 @@ export function WealthTimeline({
                 <span className="mx-auto block h-3 w-px bg-border" />
                 <button
                   type="button"
+                  data-testid={`timeline-event-${item.presetKey}`}
                   onPointerDown={(e) => startEventDrag(e, item)}
                   onKeyDown={(e) => {
                     if (e.key === "ArrowLeft") nudge(item, e.shiftKey ? -5 : -1);
@@ -301,7 +308,7 @@ export function WealthTimeline({
             <Trash2 className="size-4" />
             {t("lifeEvents.remove")}
           </Button>
-          <Button variant="ghost" size="sm" onClick={() => setEditId(null)}>
+          <Button variant="ghost" size="sm" data-testid="event-editor-close" onClick={() => setEditId(null)}>
             <X className="size-4" />
           </Button>
         </div>
@@ -319,6 +326,7 @@ export function WealthTimeline({
               <button
                 key={preset.key}
                 type="button"
+                data-testid={`palette-${preset.key}`}
                 onClick={() => addPreset(preset.key)}
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:border-primary/40 hover:bg-muted"
               >

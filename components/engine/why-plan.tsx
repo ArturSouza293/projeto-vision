@@ -92,7 +92,10 @@ export function WhyPlan() {
       <Accordion type="single" collapsible defaultValue="c1" className="mt-6 space-y-2">
         {CARD_KEYS.map((k) => (
           <AccordionItem key={k} value={k} className="rounded-2xl border border-border bg-card px-4">
-            <AccordionTrigger className="py-4 text-left font-heading text-base font-medium hover:no-underline">
+            <AccordionTrigger
+              data-testid={`why-card-${k}`}
+              className="py-4 text-left font-heading text-base font-medium hover:no-underline"
+            >
               {t(`whyPlan.cards.${k}.q`)}
             </AccordionTrigger>
             <AccordionContent className="pb-4 text-sm leading-relaxed text-muted-foreground">
@@ -115,7 +118,7 @@ export function WhyPlan() {
 
       {/* CTAs */}
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-        <Button size="lg" className="glow-primary" onClick={begin}>
+        <Button size="lg" className="glow-primary" data-testid="why-cta" onClick={begin}>
           {t("whyPlan.cta")}
           <ArrowRight className="size-4" />
         </Button>

@@ -1,5 +1,18 @@
 # Changelog
 
+## Demo-video pipeline (~36s, silent, PowerPoint-ready)
+- `npm run demo` records the six storyboard scenes with Playwright (fresh context per
+  scene seeded from localStorage fixtures, fake cursor overlay, slow human-like drags so
+  the curve visibly reacts DURING the drag) and assembles `demo/out/demo_vision.mp4`
+  with ffmpeg (per-scene cuts from timing marks, mild speed-up only on the tour scenes
+  — wizard 2.1×, goals 1.65× — brand cards, 0.3s fades, 1080p H.264 `yuv420p`, no
+  audio). Scenes: why-plan → pre-filled wizard → goals registration (3 mandatory locked
+  goals + adding one from the menu) → live life-event drag → retirement drag → Plano
+  Ideal. Each scene gets an executive caption overlay (texts in the storyboard's
+  `caption` field, rendered to transparent PNGs at build time). All pacing lives in
+  `demo/storyboard.json`. Invisible `data-testid`s were added to the components the
+  script drives.
+
 ## v2 — Live timeline, "Plano Ideal" (BIA) & QA sweep
 
 Evolves the FP prototype with the three demo-defining changes (dynamic event

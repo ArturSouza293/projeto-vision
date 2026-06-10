@@ -1,0 +1,115 @@
+{
+  "$comment": "Demo video storyboard — ALL timings, selectors and scene params live here. Edit + `npm run demo` to re-record. Times in ms unless noted.",
+  "baseUrl": "http://localhost:3010",
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "output": "demo_vision.mp4",
+  "targetSeconds": 37,
+  "fadeSeconds": 0.3,
+  "fps": 30,
+  "crf": 20,
+  "advisorName": "Equipe Vision",
+  "locale": "pt-BR",
+  "personaId": "camila-diego",
+  "cards": {
+    "open": {
+      "title": "Projeto Vision",
+      "subtitle": "Financial Planning",
+      "seconds": 1.8
+    },
+    "close": {
+      "title": "Vision",
+      "subtitle": "powered by IA",
+      "seconds": 1.8
+    }
+  },
+  "scenes": [
+    {
+      "id": "why",
+      "title": "O porquê",
+      "fixture": "intro",
+      "speed": 1,
+      "params": {
+        "expandCard": "why-card-c2",
+        "readPause": 1100,
+        "driftMs": 450
+      },
+      "caption": "1 · Engajamento — por que planejar, antes do produto"
+    },
+    {
+      "id": "wizard",
+      "title": "A base (wizard preenchido)",
+      "fixture": "workspace",
+      "speed": 2.1,
+      "params": {
+        "openSelector": "open-data",
+        "nextSelector": "wizard-next",
+        "firstTabSelector": "wizard-tab-profile",
+        "tabCount": 3,
+        "tabPause": 700
+      },
+      "caption": "2 · Base do plano — perfil, renda, despesas e patrimônio"
+    },
+    {
+      "id": "goals",
+      "title": "Cadastro de objetivos (3 obrigatórios + adicionar)",
+      "fixture": "workspace",
+      "speed": 1.65,
+      "params": {
+        "openSelector": "open-data",
+        "goalsTabSelector": "wizard-tab-goals",
+        "addType": "education",
+        "readPause": 800,
+        "menuPause": 450,
+        "settle": 1000
+      },
+      "caption": "3 · Objetivos de vida — 3 obrigatórios + personalizados"
+    },
+    {
+      "id": "timeline",
+      "title": "Timeline dinâmica (drag de evento)",
+      "fixture": "workspace",
+      "speed": 1,
+      "params": {
+        "preset": "property_buy",
+        "editorPause": 450,
+        "dragToYear": 2040,
+        "dragMs": 1700,
+        "earlierYears": 2,
+        "earlierDragMs": 850,
+        "settleAfterDrop": 550,
+        "trackViewportY": 660
+      },
+      "caption": "4 · Eventos de vida — a projeção reage em tempo real"
+    },
+    {
+      "id": "retire",
+      "title": "Aposentadoria arrastável",
+      "fixture": "workspace",
+      "speed": 1,
+      "params": {
+        "yearsEarlier": 10,
+        "dragMs": 1700,
+        "settleAfterDrop": 450,
+        "scrollTopAfter": true,
+        "kpiPause": 500,
+        "trackViewportY": 660
+      },
+      "caption": "5 · Aposentadoria — arraste e os indicadores recalculam"
+    },
+    {
+      "id": "ideal",
+      "title": "Plano Ideal com a BIA",
+      "fixture": "workspace",
+      "speed": 1,
+      "params": {
+        "loadingKeepSeconds": 1,
+        "resultHold": 1600,
+        "apiTimeout": 60000
+      },
+      "caption": "6 · Plano Ideal com a BIA — a IA otimiza e explica"
+    }
+  ]
+}

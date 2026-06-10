@@ -206,7 +206,7 @@ export function GoalsStep() {
       <div className="mb-4 flex justify-end">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button>
+            <Button data-testid="goals-add">
               <Plus className="size-4" />
               {t("goals.addGoal")}
               <ChevronDown className="size-4" />
@@ -216,7 +216,7 @@ export function GoalsStep() {
             {GOAL_TYPES.filter((type) => !MANDATORY_GOAL_TYPES.includes(type)).map((type) => {
               const Icon = GOAL_ICON[type];
               return (
-                <DropdownMenuItem key={type} onClick={() => addGoalOfType(type)}>
+                <DropdownMenuItem key={type} data-testid={`goal-add-${type}`} onClick={() => addGoalOfType(type)}>
                   <Icon className="size-4" />
                   {t(`goalType.${type}`)}
                 </DropdownMenuItem>

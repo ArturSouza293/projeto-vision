@@ -139,13 +139,13 @@ export function PlanoIdealButton({
 
   return (
     <div className="space-y-3">
-      <Button className="w-full glow-primary" disabled={loading} onClick={generate}>
+      <Button className="w-full glow-primary" data-testid="plano-ideal" disabled={loading} onClick={generate}>
         <Sparkles className="size-4" />
         {loading ? steps[step] : t("planoIdeal.button")}
       </Button>
 
       {result && (
-        <div className="rounded-xl border border-primary/20 bg-primary/[0.03] p-3">
+        <div data-testid="plano-ideal-racional" className="rounded-xl border border-primary/20 bg-primary/[0.03] p-3">
           <div className="mb-1 flex items-center justify-between gap-2">
             <span className="flex items-center gap-1.5 text-xs font-semibold text-primary">
               <Sparkles className="size-3.5" />

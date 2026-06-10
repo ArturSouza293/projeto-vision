@@ -101,6 +101,33 @@ The runner (`scripts/migrate.mjs`) applies `migrations/*.sql` in order, tracks w
 
 ---
 
+## Demo video (~36s, no audio)
+
+A fully automated pipeline records a short product demo of the prototype — Playwright
+drives the scripted scenes (intro tab → pre-filled wizard → goals registration with the
+3 mandatory locked goals → live drag of a life event → draggable retirement → "Plano
+Ideal com a BIA") and ffmpeg assembles the final cut with brand cards and fades.
+Output: `demo/out/demo_vision.mp4` (1080p, H.264, `yuv420p`, silent — drops straight
+into PowerPoint).
+
+```bash
+npx next start -p 3010   # the pipeline records against a production build
+npm run demo             # = demo:record (Playwright) + demo:build (ffmpeg)
+```
+
+Each scene carries an executive caption (a translucent pill at the bottom describing
+what's being demonstrated) — the texts live in `demo/storyboard.json` (`caption` per
+scene) and are overlaid at build time, so editing them only needs `npm run demo:build`.
+Everything about pacing lives in `demo/storyboard.json` (timings, selectors, drag
+years, per-scene speed) — tweak it and re-run; no code changes needed. Raw clips stay
+in `demo/raw/` for re-cuts; `demo/build.mjs` re-assembles without re-recording. To use
+official brand cards, drop `card-open.png` / `card-close.png` (1920×1080) into
+`demo/assets/` — otherwise simple dark cards are generated. The "Plano Ideal" scene
+calls the real API when `ANTHROPIC_API_KEY` is set (the dead waiting time is cut in the
+edit); without a key it shows the offline heuristic.
+
+---
+
 ## The flow
 
 **Intake** (dossiers received from the bank) → **Simulate** (the scenario loop — create

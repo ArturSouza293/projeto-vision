@@ -37,16 +37,19 @@ function PersonaRow({
   meta,
   active,
   onClick,
+  testId,
 }: {
   name: string;
   segment: Segment;
   meta?: string;
   active?: boolean;
   onClick: () => void;
+  testId?: string;
 }) {
   return (
     <button
       type="button"
+      data-testid={testId}
       onClick={onClick}
       className={cn(
         "flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left transition-colors hover:bg-muted",
@@ -131,6 +134,7 @@ export function PersonaSidebar() {
               {seed.map((c) => (
                 <PersonaRow
                   key={c.id}
+                  testId={`persona-${c.id}`}
                   name={c.partnerName ? `${c.firstName} & ${c.partnerName}` : `${c.firstName} ${c.lastName}`}
                   segment={c.segment}
                   meta={t(c.taglineKey)}

@@ -64,6 +64,7 @@ export function DataStudio() {
                 <li key={tb} className="flex shrink-0 items-center gap-1">
                   <button
                     type="button"
+                    data-testid={`wizard-tab-${tb}`}
                     onClick={() => setDataTab(tb)}
                     className="group flex items-center gap-2 rounded-full px-1.5 py-1 outline-none focus-visible:ring-2 focus-visible:ring-ring"
                   >
@@ -120,7 +121,7 @@ export function DataStudio() {
               {t("dataDrawer.finish")}
             </Button>
           ) : (
-            <Button onClick={() => setDataTab(TABS[idx + 1])}>
+            <Button data-testid="wizard-next" onClick={() => setDataTab(TABS[idx + 1])}>
               {t("common.next")}
               <ArrowRight className="size-4" />
             </Button>
