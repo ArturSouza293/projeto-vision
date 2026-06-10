@@ -1,5 +1,5 @@
 {
-  "$comment": "Demo video storyboard v8 — jornada completa (gate → porquê → cadastro → objetivos → timeline v6 → aposentadoria → peers → planos A/B/C → Plano Ideal → Entrega/cross-sell). Tudo editável aqui + npm run demo.",
+  "$comment": "Demo storyboard — v8 (corte mudo, 10 cenas) + narration (v3 narrado: capítulos áudio-first, avatar Vera, cobertura F01–F14). Tudo editável aqui. Corte mudo: npm run demo. Narrado: npm run demo:narrate (sobre takes existentes) ou npm run demo:v3 (ponta a ponta).",
   "baseUrl": "http://localhost:3010",
   "viewport": { "width": 1920, "height": 1080 },
   "output": "demo_vision.mp4",
@@ -117,5 +117,209 @@
       "caption": "9 · Entrega — eventos do plano viram oportunidades explicáveis",
       "params": { "trackViewportY": 500, "presets": ["property_sell", "business"], "cardsPause": 2400 }
     }
-  ]
+  ],
+  "narration": {
+    "$comment": "v3 narrado — a narração rege o corte. Capítulos mapeiam takes (cenas do corte mudo ou takes dedicados abaixo). cuts: janelas 'mark±offset' resolvidas contra os marks do meta.json do take; segments:true usa meta.segments (ideal, corte da espera da API). videoDictates: caps 5 e 8 — NUNCA acelerar; a fala espera a interação.",
+    "output": "demo_vision_v3_narrado.mp4",
+    "targetSeconds": 90,
+    "maxSeconds": 120,
+    "fps": 25,
+    "crf": 19,
+    "voice": { "engine": "edge-tts", "name": "pt-BR-FranciscaNeural", "rate": "+2%" },
+    "gaps": { "sentenceMs": 400, "chapterLeadMs": 300, "chapterTailMs": 400 },
+    "loudness": { "i": -16, "tp": -1.5, "lra": 11 },
+    "avatar": {
+      "name": "Vera",
+      "lowerThird": "Vera · Projeto Vision",
+      "seed": 42,
+      "imagePx": 340,
+      "cardLeftPx": 22,
+      "cardRightPx": 318,
+      "cardTopPx": 2,
+      "cardBottomPx": 338,
+      "marginPx": 24
+    },
+    "featureNames": {
+      "F01": "Perfil & Família",
+      "F02": "Renda",
+      "F03": "Despesas",
+      "F04": "Patrimônio",
+      "F05": "Objetivos",
+      "F06": "Timeline",
+      "F07": "Projeção & Sinais Vitais",
+      "F08": "Parâmetros/Premissas",
+      "F09": "Plano Ideal (BIA)",
+      "F10": "Engajamento",
+      "F11": "Sessão do Advisor",
+      "F12": "Confiança/Transparência",
+      "F13": "Resultado & Oportunidades",
+      "F14": "Motor"
+    },
+    "takes": [
+      {
+        "id": "cap2_perfil",
+        "title": "Take — perfil & família",
+        "fixture": "workspace",
+        "params": { "profilePause": 3000 }
+      },
+      {
+        "id": "cap3_vida",
+        "title": "Take — renda, despesas, patrimônio",
+        "fixture": "workspace",
+        "params": { "tabs": ["income", "expense", "networth"], "tabPause": 1700 }
+      },
+      {
+        "id": "cap6_kpis",
+        "title": "Take — sinais vitais + modal de KPI",
+        "fixture": "workspace",
+        "params": { "kpiLabel": "Patrimônio na aposentadoria", "sweepMs": 1500, "modalPause": 2600, "settle": 800 }
+      },
+      {
+        "id": "cap7_premissas",
+        "title": "Take — cenário estressado + premissas com fonte",
+        "fixture": "workspace",
+        "params": { "scenarioLabel": "Estressado", "scenarioPause": 1500, "premissasLabel": "Premissas e fontes", "dialogPause": 2700, "settle": 600 }
+      },
+      {
+        "id": "cap9_sessao",
+        "title": "Take — EN↔PT ao vivo + reabrir caso",
+        "fixture": "workspace",
+        "params": { "enPause": 1500, "ptPause": 800, "sidebarPause": 1300, "reopenText": "Camila", "reopenSettle": 1700 }
+      },
+      {
+        "id": "cap10_resultado",
+        "title": "Take — aprovação + oportunidades",
+        "fixture": "workspace",
+        "params": { "holdCards": 1400, "approveLabel": "Aprovar plano", "afterApprove": 1300, "payloadHold": 1400 }
+      }
+    ],
+    "chapters": [
+      {
+        "id": "cap01",
+        "features": ["F10"],
+        "cuts": [{ "scene": "why", "from": "action-0.3", "to": "end+0.25" }],
+        "narracao": [
+          "Todo grande plano começa com uma pergunta simples: o que você quer da vida?",
+          "O Vision começa por aí — antes de qualquer número."
+        ],
+        "acaoEmTela": "Aba 'Por que planejar?', um card expandido",
+        "avatar": "br"
+      },
+      {
+        "id": "cap02",
+        "features": ["F01"],
+        "cuts": [{ "scene": "cap2_perfil", "from": "action-0.3", "to": "end+0.3" }],
+        "narracao": [
+          "Em minutos, o consultor conhece quem importa: você, sua família — e o tempo que vocês têm pela frente."
+        ],
+        "acaoEmTela": "Perfil preenchido com cônjuge e dependentes",
+        "avatar": "br"
+      },
+      {
+        "id": "cap03",
+        "features": ["F02", "F03", "F04"],
+        "cuts": [{ "scene": "cap3_vida", "from": "action-0.3", "to": "end+0.3" }],
+        "narracao": [
+          "Renda, despesas, patrimônio, dívidas.",
+          "A vida financeira inteira, organizada num só lugar — sem planilhas, sem retrabalho."
+        ],
+        "acaoEmTela": "Passeio pelas abas Renda, Despesas e Patrimônio do caso pré-carregado",
+        "avatar": "br"
+      },
+      {
+        "id": "cap04",
+        "features": ["F05"],
+        "cuts": [{ "scene": "goals", "from": "action-0.3", "to": "end+0.25" }],
+        "narracao": [
+          "E todo plano já nasce protegido: reserva, aposentadoria e sucessão vêm de fábrica.",
+          "Os sonhos, você adiciona."
+        ],
+        "acaoEmTela": "Tela de objetivos: 3 obrigatórios travados + adição de objetivo personalizado",
+        "avatar": "br"
+      },
+      {
+        "id": "cap05",
+        "features": ["F06"],
+        "cuts": [
+          { "scene": "timeline", "from": "action-0.3", "to": "drag2+0.4" },
+          { "scene": "retire", "from": "action-0.3", "to": "end-0.6" }
+        ],
+        "narracao": [
+          "Esta é a assinatura do Vision: a sua vida numa linha do tempo viva.",
+          "Arraste um sonho — e veja o plano inteiro reagir, no mesmo instante."
+        ],
+        "acaoEmTela": "Drop de evento + drag com a curva reagindo DURANTE o arrasto; marco de aposentadoria arrastado",
+        "avatar": "tr",
+        "videoDictates": true
+      },
+      {
+        "id": "cap06",
+        "features": ["F07"],
+        "cuts": [{ "scene": "cap6_kpis", "from": "action-0.3", "to": "end+0.3" }],
+        "narracao": [
+          "Sinais vitais financeiros mostram, de relance, a saúde do plano: hoje, na aposentadoria — e até os cem anos."
+        ],
+        "acaoEmTela": "Painel de KPIs + clique num KPI abrindo o modal de detalhe + curva com fases",
+        "avatar": "br"
+      },
+      {
+        "id": "cap07",
+        "features": ["F08", "F12"],
+        "cuts": [{ "scene": "cap7_premissas", "from": "action-0.3", "to": "end+0.3" }],
+        "narracao": [
+          "Cada premissa é visível.",
+          "Cada cenário, testável.",
+          "Transparência aqui não é promessa: é arquitetura."
+        ],
+        "acaoEmTela": "Troca de cenário Base→Estressado + diálogo de premissas com fonte/ano",
+        "avatar": "br"
+      },
+      {
+        "id": "cap08",
+        "features": ["F09"],
+        "cuts": [{ "scene": "ideal", "segments": true }],
+        "narracao": [
+          "Com um clique, a BIA desenha o plano ideal.",
+          "A inteligência propõe; o motor calcula.",
+          "Cada número, auditável."
+        ],
+        "acaoEmTela": "Botão Plano Ideal → sliders animando → card do racional da BIA",
+        "avatar": "bl",
+        "videoDictates": true
+      },
+      {
+        "id": "cap09",
+        "features": ["F11"],
+        "cuts": [{ "scene": "cap9_sessao", "from": "action-0.3", "to": "end+0.3" }],
+        "narracao": [
+          "Feito para a conversa: nada se perde entre sessões — e a experiência fala a língua do seu cliente.",
+          "Literalmente."
+        ],
+        "acaoEmTela": "Alternância EN↔PT ao vivo + reabertura de um caso salvo nos Recentes",
+        "avatar": "br"
+      },
+      {
+        "id": "cap10",
+        "features": ["F13"],
+        "cuts": [{ "scene": "cap10_resultado", "from": "action-0.3", "to": "end+0.3" }],
+        "narracao": [
+          "No fim, o cliente leva um plano aprovado.",
+          "E o consultor, as oportunidades certas para realizá-lo."
+        ],
+        "acaoEmTela": "Tela de Entrega: aprovação do plano + oportunidades ranqueadas com origem",
+        "avatar": "br"
+      },
+      {
+        "id": "cap11",
+        "features": ["F14"],
+        "card": { "title": "Vision", "subtitle": "Onde metas de vida viram plano de investimento" },
+        "narracao": [
+          "Vision.",
+          "Onde metas de vida viram plano de investimento — com um motor que sustenta cada promessa."
+        ],
+        "acaoEmTela": "Card de fechamento com logo (motor coberto na narração — é fundação, não tela)",
+        "avatar": "br"
+      }
+    ]
+  }
 }

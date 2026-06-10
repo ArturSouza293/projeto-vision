@@ -128,6 +128,23 @@ async function closeEditorIfOpen(page) {
   }
 }
 
+/** Clique humanizado num Locator arbitrário (para elementos sem testid). */
+async function clickLocator(page, locator, ms = 450) {
+  const box = await locator.boundingBox();
+  if (!box) throw new Error(`No bounding box for locator ${locator}`);
+  await clickAt(page, box.x + box.width / 2, box.y + box.height / 2, ms);
+}
+
+/** Deriva o cursor sobre uma área (leitura), sem clicar. Um movimento curto
+ *  + pausa — humanMove longo infla ~3× o tempo nominal (RTT por passo). */
+async function driftOver(page, locator, ms) {
+  const box = await locator.boundingBox();
+  if (!box) return sleep(page, ms);
+  const moveMs = Math.min(700, ms * 0.3);
+  await moveTo(page, box.x + box.width * 0.58, box.y + box.height * 0.52, moveMs);
+  await sleep(page, Math.max(0, ms - moveMs));
+}
+
 /* -------------------------------------------------------------- fixtures */
 async function prepareFixtures(browser) {
   console.log("• preparing localStorage fixtures (non-recorded pass)…");
@@ -314,6 +331,118 @@ const SCENE_FNS = {
     mark("end");
   },
 
+  /* ------------------------------------------------------------------- *
+   * Takes do v3 narrado (narration.takes) — sempre velocidade 1; o corte
+   * é regido pela narração no narrate.mjs. Marks padrão: action/end.
+   * ------------------------------------------------------------------- */
+
+  /** Take cap2 — perfil & família (wizard aba Perfil, leitura calma). */
+  async cap2_perfil(page, p, mark) {
+    await page.waitForSelector('[data-testid="open-data"]');
+    await sleep(page, 300);
+    mark("action");
+    await clickTestId(page, "open-data", 500);
+    await page.waitForSelector('[data-testid="wizard-tab-profile"]');
+    await clickTestId(page, "wizard-tab-profile", 420);
+    await sleep(page, 400);
+    await driftOver(page, page.locator('[role="dialog"]'), p.profilePause);
+    await sleep(page, 400);
+    mark("end");
+  },
+
+  /** Take cap3 — renda → despesas → patrimônio (passeio pelas abas). */
+  async cap3_vida(page, p, mark) {
+    await page.waitForSelector('[data-testid="open-data"]');
+    await sleep(page, 300);
+    mark("action");
+    await clickTestId(page, "open-data", 500);
+    await page.waitForSelector('[data-testid="wizard-tab-profile"]');
+    for (const tab of p.tabs) {
+      await clickTestId(page, `wizard-tab-${tab}`, 420);
+      await driftOver(page, page.locator('[role="dialog"]'), p.tabPause);
+    }
+    await sleep(page, 300);
+    mark("end");
+  },
+
+  /** Take cap6 — sinais vitais: varredura dos KPIs + modal de detalhe. */
+  async cap6_kpis(page, p, mark) {
+    const kpi = page.getByRole("button", { name: new RegExp(p.kpiLabel, "i") }).first();
+    await kpi.waitFor();
+    await sleep(page, 400);
+    mark("action");
+    const box = await kpi.boundingBox();
+    await moveTo(page, box.x - 240, box.y + box.height / 2, p.sweepMs * 0.4);
+    await moveTo(page, box.x + box.width + 420, box.y + box.height / 2, p.sweepMs * 0.6);
+    await clickLocator(page, kpi, 500);
+    await page.locator('[role="dialog"]').waitFor();
+    await driftOver(page, page.locator('[role="dialog"]'), p.modalPause);
+    await page.keyboard.press("Escape");
+    await sleep(page, p.settle); // curva com fases volta ao foco
+    mark("end");
+  },
+
+  /** Take cap7 — cenário estressado + premissas com fonte/ano. */
+  async cap7_premissas(page, p, mark) {
+    const pill = page.getByRole("button", { name: p.scenarioLabel, exact: true });
+    await pill.waitFor();
+    await sleep(page, 350);
+    mark("action");
+    await clickLocator(page, pill, 500);
+    await sleep(page, p.scenarioPause); // tudo recalcula no cenário novo
+    const trigger = page.getByRole("button", { name: new RegExp(p.premissasLabel, "i") });
+    await clickLocator(page, trigger, 480);
+    await page.locator('[role="dialog"]').waitFor();
+    await driftOver(page, page.locator('[role="dialog"]'), p.dialogPause);
+    await page.keyboard.press("Escape");
+    await sleep(page, p.settle);
+    mark("end");
+  },
+
+  /** Take cap9 — EN↔PT ao vivo + reabrir caso salvo nos Recentes. */
+  async cap9_sessao(page, p, mark) {
+    const en = page.getByRole("button", { name: "EN", exact: true });
+    await en.waitFor();
+    await sleep(page, 350);
+    mark("action");
+    await clickLocator(page, en, 480);
+    await sleep(page, p.enPause); // a interface inteira troca de idioma
+    await clickLocator(page, page.getByRole("button", { name: "PT", exact: true }), 420);
+    await sleep(page, p.ptPause);
+    await clickTestId(page, "open-sidebar", 480);
+    await page.waitForSelector(`[data-testid="persona-${SB.personaId}"]`);
+    await sleep(page, p.sidebarPause); // Recentes + personas visíveis
+    const recent = page.locator("button", { hasText: p.reopenText }).first();
+    await clickLocator(page, recent, 450);
+    await page.waitForSelector('[data-testid="timeline-track"]');
+    await sleep(page, p.reopenSettle);
+    mark("end");
+  },
+
+  /** Take cap10 — Entrega: aprovação + oportunidades ranqueadas. */
+  async cap10_resultado(page, p, mark) {
+    await page.waitForSelector('[data-testid="timeline-track"]');
+    await sleep(page, 300);
+    mark("action");
+    const entregaBtn = page.locator("header button", { hasText: /Entrega|Handoff/ }).first();
+    await clickLocator(page, entregaBtn, 500);
+    const approve = page.getByRole("button", { name: new RegExp(p.approveLabel, "i") });
+    await approve.waitFor();
+    const firstOrigin = page.locator("text=/↳/").first();
+    if (await firstOrigin.isVisible().catch(() => false)) {
+      const ob = await firstOrigin.boundingBox();
+      await moveTo(page, ob.x + 80, ob.y + 6, 700);
+    }
+    await sleep(page, p.holdCards);
+    await clickLocator(page, approve, 480);
+    await sleep(page, p.afterApprove); // status muda, payload reage
+    const payload = page.locator("text=/Pacote de saída/").first();
+    const pb = await payload.boundingBox().catch(() => null);
+    if (pb) await moveTo(page, pb.x + 60, pb.y + 30, 600);
+    await sleep(page, p.payloadHold);
+    mark("end");
+  },
+
   /** Cena 9 — Entrega: eventos viram oportunidades com origem. */
   async entrega(page, p, mark) {
     await page.waitForSelector('[data-testid="timeline-track"]');
@@ -405,10 +534,16 @@ async function main() {
   }
 
   const only = process.argv.includes("--scene") ? process.argv[process.argv.indexOf("--scene") + 1] : null;
+  const takesOnly = process.argv.includes("--takes"); // só os takes do v3 narrado
+  const all = takesOnly
+    ? (SB.narration?.takes ?? [])
+    : [...SB.scenes, ...(SB.narration?.takes ?? [])];
   const browser = await chromium.launch();
   try {
-    if (!only || !fs.existsSync(path.join(FIXTURES, "workspace.json"))) await prepareFixtures(browser);
-    for (const scene of SB.scenes) {
+    if (!fs.existsSync(path.join(FIXTURES, "workspace.json")) || (!only && !takesOnly)) {
+      await prepareFixtures(browser);
+    }
+    for (const scene of all) {
       if (only && scene.id !== only) continue;
       await recordScene(browser, scene);
     }

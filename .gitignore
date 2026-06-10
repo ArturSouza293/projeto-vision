@@ -37,6 +37,12 @@ yarn-error.log*
 # demo video pipeline (raw clips + renders are regenerable)
 /demo/raw/
 /demo/out/
+# demo narrado: artefatos gerados (TTS cache, frames do avatar, temporários)
+/demo/narrate/tts/
+/demo/narrate/frames/
+/demo/narrate/tmp/
+/demo/narrate/chapters/
+/demo/narrate/avatar/
 
 # vercel
 .vercel

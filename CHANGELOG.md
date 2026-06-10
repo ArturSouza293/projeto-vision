@@ -1,5 +1,28 @@
 # Changelog
 
+## Demo v3 narrado — voz neural + avatar Vera + cobertura F01–F14 (somente tooling)
+
+- **Narração executiva PT-BR** (edge-tts `pt-BR-FranciscaNeural` +2%): 11 capítulos,
+  1 TTS por frase (cache por hash), respiros determinísticos 400ms entre frases /
+  700ms entre capítulos, loudnorm 2 passadas −16 LUFS. Áudio-first: o vídeo se
+  ajusta à fala (freeze/cortes; aceleração leve ≤1,35× — NUNCA nos caps 5 e 8,
+  timeline e Plano Ideal, onde o vídeo rege).
+- **Avatar "Vera"** (apresentadora fictícia estilo private banker, 2D vetorial
+  gerada em código — `demo/narrate/avatar_layers.mjs`): 4 bocas com lip-sync por
+  envelope RMS (janela 40ms = 1 frame, média móvel 3, histerese nos limiares),
+  piscadas a cada 3–5s e micro-inclinação por frase com `seed=42`; lower-third
+  "Vera · Projeto Vision"; posição por capítulo (não cobre KPIs/curva/racional).
+- **Legendas queimadas** = a própria frase narrada (o vídeo comunica sem som);
+  card de fechamento com logo; H.264 CRF 19 + AAC 192k + faststart (PowerPoint).
+- **Cobertura provada**: `docs/DEMO_COVERAGE.md` gerado com timestamps reais —
+  14/14 features (F14 Motor coberto na narração do fechamento). 6 takes novos:
+  perfil, vida financeira, KPIs/modal, cenário+premissas, EN↔PT+Recentes,
+  aprovação+oportunidades. Critérios de aceite verificados no fim do build
+  (duração ≤120s, loudness ±1, lip-sync fechado no fim das frases, streams).
+- Scripts: `npm run demo:narrate` (sobre takes existentes) e `npm run demo:v3`
+  (ponta a ponta). Saída: `demo/out/demo_vision_v3_narrado.mp4` (104,8s) — cópia
+  em `OneDrive\Desktop\Project Vision`. O corte mudo v8 continua intacto.
+
 ## Demo v8 — vídeo atualizado com a jornada completa (somente tooling, sem mudança no app)
 
 - `demo/storyboard.json` + `demo/record.mjs` reescritos: 10 cenas (~63s) cobrindo
