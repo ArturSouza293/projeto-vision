@@ -32,10 +32,10 @@ export function WealthArea({
   const t = useTranslations();
   const locale = useVisionStore((s) => s.locale);
 
-  // Merge the ghost series by index so both render on the same year axis.
-  const data = ghostPoints
-    ? points.map((p, i) => ({ ...p, ghost: ghostPoints[i]?.wealth }))
-    : points;
+  // Merge the ghost series by YEAR (not index) so it stays aligned even if the
+  // two series differ in length (e.g. a retirement drag changing the horizon).
+  const ghostByYear = ghostPoints ? new Map(ghostPoints.map((g) => [g.year, g.wealth])) : null;
+  const data = ghostByYear ? points.map((p) => ({ ...p, ghost: ghostByYear.get(p.year) })) : points;
 
   return (
     <div className="h-72 w-full">

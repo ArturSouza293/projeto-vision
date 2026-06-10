@@ -52,11 +52,19 @@ export function PlanoIdealButton({
   const [step, setStep] = useState(0);
   const [result, setResult] = useState<Result | null>(null);
   const stepTimer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const animRef = useRef<number | null>(null);
 
-  useEffect(() => () => { if (stepTimer.current) clearInterval(stepTimer.current); }, []);
+  useEffect(
+    () => () => {
+      if (stepTimer.current) clearInterval(stepTimer.current);
+      if (animRef.current) cancelAnimationFrame(animRef.current);
+    },
+    [],
+  );
 
   /** Tween the four sliders from current → ideal so the curve/KPIs animate. */
   function applyAnimated(target: IdealParams) {
+    if (animRef.current) cancelAnimationFrame(animRef.current); // never race two tweens
     const start = { ...assumptions };
     const t0 = performance.now();
     const dur = 750;
@@ -71,9 +79,9 @@ export function PlanoIdealButton({
         inflation: Math.round(lerp(start.inflation, target.inflation) * 4) / 4,
         growthScenario: "custom",
       });
-      if (k < 1) requestAnimationFrame(frame);
+      animRef.current = k < 1 ? requestAnimationFrame(frame) : null;
     };
-    requestAnimationFrame(frame);
+    animRef.current = requestAnimationFrame(frame);
   }
 
   async function generate() {
@@ -85,18 +93,36 @@ export function PlanoIdealButton({
 
     const payload = buildPlanoIdealPayload(plan, assumptions);
     const bounds = idealBounds(plan);
+    const attempt = async (): Promise<Result & { params: IdealParams }> => {
+      const out = await requestIdeal(payload);
+      return {
+        params: clampParams(out.parametros, bounds),
+        racional: out.racional || t("planoIdeal.offlineRacional"),
+        offline: false,
+      };
+    };
+
     let params: IdealParams;
     let res: Result;
     try {
-      const out = await requestIdeal(payload);
-      params = clampParams(out.parametros, bounds);
-      res = { racional: out.racional || t("planoIdeal.offlineRacional"), offline: false };
-    } catch {
-      try {
-        const out = await requestIdeal(payload); // one retry
-        params = clampParams(out.parametros, bounds);
-        res = { racional: out.racional || t("planoIdeal.offlineRacional"), offline: false };
-      } catch {
+      const ok = await attempt();
+      params = ok.params;
+      res = { racional: ok.racional, offline: false };
+    } catch (err) {
+      // No point retrying when the API key is absent — go straight to offline.
+      const noKey = err instanceof Error && err.message === "no-key";
+      let ok: (Result & { params: IdealParams }) | null = null;
+      if (!noKey) {
+        try {
+          ok = await attempt();
+        } catch {
+          ok = null;
+        }
+      }
+      if (ok) {
+        params = ok.params;
+        res = { racional: ok.racional, offline: false };
+      } else {
         params = heuristicParams(plan, assumptions); // deterministic offline
         res = { racional: t("planoIdeal.offlineRacional"), offline: true };
       }

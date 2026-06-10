@@ -246,7 +246,13 @@ export function Workspace() {
   const premises = getPremises(plan);
   const currentAge = ageFromDob(plan.clientProfile.dateOfBirth);
   const thisYear = new Date().getFullYear();
-  const retirementYear = thisYear + (a.retirementAge - currentAge);
+  // Retirement-age slider bounds (also used for the timeline anchor + marker).
+  // An invalid usufruct (≤ current age) must NOT collapse the slider.
+  const retMin = Math.max(currentAge + 1, 45);
+  const usufruct = plan.clientProfile.retirementUsufructAge;
+  const retMax = Math.max(retMin + 1, Math.min(80, usufruct && usufruct > retMin ? usufruct : 80));
+  const retAge = Math.min(Math.max(a.retirementAge, retMin), retMax);
+  const retirementYear = thisYear + (retAge - currentAge);
   const liveResult = projectPlan(plan, a);
   const result = dynamic ? liveResult : (frozen ?? liveResult);
   const lastsFull = result.retirementDurationYears >= premises.planningHorizonAge - a.retirementAge;
@@ -264,13 +270,6 @@ export function Workspace() {
   const deficit = cf.surplus < 0;
   const overAllocated = !deficit && allocated > 0 && freeBalance < 0;
   const goalsById = new Map(plan.goals.map((g) => [g.id, g]));
-
-  // Retirement-age slider bounds. An invalid usufruct (≤ current age) must NOT
-  // collapse the slider — treat it as "no cap" and keep max strictly above min.
-  const retMin = Math.max(currentAge + 1, 45);
-  const usufruct = plan.clientProfile.retirementUsufructAge;
-  const retMax = Math.max(retMin + 1, Math.min(80, usufruct && usufruct > retMin ? usufruct : 80));
-  const retAge = Math.min(Math.max(a.retirementAge, retMin), retMax);
 
   const checkpoints = returnCheckpoints(plan, a);
   const returnMarks = [

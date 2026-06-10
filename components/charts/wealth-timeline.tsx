@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import { Plus, Trash2, X } from "@/components/app/icons";
@@ -48,9 +48,21 @@ export function WealthTimeline({
   const trackRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const movedRef = useRef(false);
+  const cleanupRef = useRef<(() => void) | null>(null);
   const [ghost, setGhost] = useState<ProjectionPoint[] | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
+
+  // Tear down any in-flight drag listeners + pending frame if we unmount mid-drag
+  // (switching scenario/persona) — otherwise leaked window listeners could mutate
+  // a now-unrelated plan on the next pointerup.
+  useEffect(
+    () => () => {
+      cleanupRef.current?.();
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    },
+    [],
+  );
 
   const thisYear = new Date().getFullYear();
   const minYear = points[0]?.year ?? thisYear;
@@ -83,7 +95,7 @@ export function WealthTimeline({
     e.preventDefault();
     movedRef.current = false;
     const startX = e.clientX;
-    const onMove = (ev: PointerEvent) => {
+    function onMove(ev: PointerEvent) {
       if (Math.abs(ev.clientX - startX) > 3) movedRef.current = true;
       const year = clampEventYear(yearFromClientX(ev.clientX));
       setDrag({ kind: "event", id: item.id, year });
@@ -91,40 +103,57 @@ export function WealthTimeline({
         { ...plan, lifeEvents: events.map((x) => (x.id === item.id ? { ...x, year } : x)) },
         assumptions,
       );
-    };
-    const onUp = (ev: PointerEvent) => {
+    }
+    function onUp(ev: PointerEvent) {
+      const commit = movedRef.current;
+      const year = clampEventYear(yearFromClientX(ev.clientX));
+      finish();
+      if (commit) updateLifeEvent(item.id, { year });
+      else setEditId((cur) => (cur === item.id ? null : item.id)); // tap = toggle editor
+    }
+    function finish() {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
-      if (movedRef.current) {
-        updateLifeEvent(item.id, { year: clampEventYear(yearFromClientX(ev.clientX)) });
-      } else {
-        setEditId((cur) => (cur === item.id ? null : item.id)); // tap = toggle editor
-      }
+      window.removeEventListener("pointercancel", finish);
+      cleanupRef.current = null;
       setDrag(null);
       setGhost(null);
-    };
+    }
+    cleanupRef.current = finish;
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", finish);
   }
 
   function startRetireDrag(e: React.PointerEvent) {
     e.preventDefault();
-    const onMove = (ev: PointerEvent) => {
-      const year = yearFromClientX(ev.clientX);
-      const age = clampRetAge(currentAge + (year - thisYear));
+    movedRef.current = false;
+    const startX = e.clientX;
+    function onMove(ev: PointerEvent) {
+      if (Math.abs(ev.clientX - startX) > 3) movedRef.current = true;
+      const age = clampRetAge(currentAge + (yearFromClientX(ev.clientX) - thisYear));
       setDrag({ kind: "retire", year: thisYear + (age - currentAge) });
       scheduleGhost(plan, { ...assumptions, retirementAge: age, growthScenario: "custom" });
-    };
-    const onUp = (ev: PointerEvent) => {
+    }
+    function onUp(ev: PointerEvent) {
+      const commit = movedRef.current;
+      const age = clampRetAge(currentAge + (yearFromClientX(ev.clientX) - thisYear));
+      finish();
+      // A plain click must NOT force growthScenario:custom / clear the result.
+      if (commit) updateScenarioAssumptions(scenarioId, { retirementAge: age, growthScenario: "custom" });
+    }
+    function finish() {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
-      const age = clampRetAge(currentAge + (yearFromClientX(ev.clientX) - thisYear));
-      updateScenarioAssumptions(scenarioId, { retirementAge: age, growthScenario: "custom" });
+      window.removeEventListener("pointercancel", finish);
+      cleanupRef.current = null;
       setDrag(null);
       setGhost(null);
-    };
+    }
+    cleanupRef.current = finish;
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", finish);
   }
 
   function nudge(item: LifeEvent, delta: number) {
@@ -140,7 +169,7 @@ export function WealthTimeline({
       amount: preset.defaultAmount,
       year,
       recurring: preset.defaultDurationYears ? true : undefined,
-      endYear: preset.defaultDurationYears ? year + preset.defaultDurationYears : undefined,
+      endYear: preset.defaultDurationYears ? clampEventYear(year + preset.defaultDurationYears) : undefined,
     });
     setEditId(id);
   }
