@@ -716,6 +716,16 @@
     "goalNone": "No link",
     "create": "Add event"
   },
+  "timeline": {
+    "planTitle": "Life plan",
+    "title": "Financial timeline",
+    "subtitle": "Drag an event to change the year · click to edit",
+    "addEvent": "Add event",
+    "legendMilestone": "Milestone",
+    "editEvent": "Edit event",
+    "editMilestone": "Edit milestone",
+    "milestoneHint": "Retirement anchors the plan: moving the milestone recalculates contributions, curve and indicators."
+  },
   "variants": {
     "label": "Plans",
     "duplicate": "Duplicate as plan",

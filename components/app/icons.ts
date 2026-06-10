@@ -16,14 +16,19 @@
 // ============================================================
 
 export {
+  ArrowDownLeft,
   ArrowLeft,
   ArrowRight,
+  ArrowUpRight,
   Baby,
   Briefcase,
   CalendarPlus,
   Car,
   Check,
+  CircleDot,
   Compass,
+  Flag,
+  GripVertical,
   Heart,
   Minus,
   ShieldAlert,

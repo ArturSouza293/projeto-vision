@@ -716,6 +716,16 @@
     "goalNone": "Sem vínculo",
     "create": "Adicionar evento"
   },
+  "timeline": {
+    "planTitle": "Plano de vida",
+    "title": "Linha do tempo financeira",
+    "subtitle": "Arraste um evento para mudar o ano · clique para editar",
+    "addEvent": "Adicionar evento",
+    "legendMilestone": "Marco",
+    "editEvent": "Editar evento",
+    "editMilestone": "Editar marco",
+    "milestoneHint": "A aposentadoria é a âncora do plano: mover o marco recalcula aportes, curva e indicadores."
+  },
   "variants": {
     "label": "Planos",
     "duplicate": "Duplicar como plano",

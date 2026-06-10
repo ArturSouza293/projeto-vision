@@ -1,23 +1,85 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+/**
+ * v6 — Linha do tempo financeira (redesign, referência: timeline_vision.jsx).
+ *
+ * Faixa única com empacotamento em LANES (zero sobreposição de labels, com
+ * reorganização ao vivo durante o arraste), chips ricos (ícone temático +
+ * nome + ano + seta de direção), marco vermelho Bradesco arrastável
+ * (Aposentadoria — continua sendo a âncora REAL: clamps retMin/retMax e
+ * propagação preservados), conectores SVG até o eixo, régua adaptativa
+ * (passo 1/2/5/10) e scroll horizontal honesto (MIN_PX_PER_YEAR).
+ *
+ * REGRA ZERO: o JSX de referência é UI; todos os números continuam vindo do
+ * motor — o drag agenda o ghost por rAF exatamente como antes (60fps, <5ms).
+ * VIS-607 habilitado: o horizonte vai até a longevidade do caso e eventos
+ * podem viver na fase de usufruto (o motor já projeta ambas as fases).
+ */
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { Plus, Trash2, X } from "@/components/app/icons";
+import {
+  ArrowDownLeft,
+  ArrowUpRight,
+  CircleDot,
+  Flag,
+  GripVertical,
+  Plus,
+  Trash2,
+  X,
+} from "@/components/app/icons";
 import { MoneyInput } from "@/components/app/number-field";
 import { WealthArea } from "@/components/charts/wealth-area";
 import { CustomEventModal } from "@/components/engine/custom-event-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import { LIFE_EVENT_PRESETS, lifeEventPreset } from "@/lib/life-event-meta";
+import { formatCurrency } from "@/lib/format";
 import { projectPlan } from "@/lib/plan";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { LifeEvent, Plan, ProjectionPoint, ScenarioAssumptions } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-/** Chart plot insets: YAxis width (58) + left margin (8); right margin (8). */
-const PLOT_LEFT = 66;
-const PLOT_RIGHT = 8;
+/* ---- tokens visuais da FAIXA (spec v6 §A.11 — escopo: este componente) ---- */
+const T = {
+  ink: "#14181F",
+  muted: "#5B6472",
+  faint: "#8A93A2",
+  hairline: "#E7EAF0",
+  surface: "#F7F8FA",
+  red: "#CC092F",
+  redFill: "#FCE8EC",
+  in: "#0B7A57",
+  inFill: "#E4F4EC",
+  out: "#B45816",
+  outFill: "#FBEDE2",
+};
+
+/** Preparado para um futuro kind "goal" (VIS-605) — extensibilidade apenas. */
+function colorFor(kind: "milestone" | "inflow" | "outflow" | "goal") {
+  if (kind === "milestone") return { main: T.red, fill: T.redFill };
+  if (kind === "inflow") return { main: T.in, fill: T.inFill };
+  if (kind === "goal") return { main: T.red, fill: T.redFill };
+  return { main: T.out, fill: T.outFill };
+}
+
+const MIN_PX_PER_YEAR = 16;
+const PAD_L = 28;
+const PAD_R = 28;
+const CHIP_H = 32;
+const LANE_GAP = 10;
+const LANE_STEP = CHIP_H + LANE_GAP;
+const TOP_PAD = 38;
+const RULER_GAP = 26;
+const LANE_PACK_GAP = 14;
+
+const clampNum = (v: number, a: number, b: number) => Math.max(a, Math.min(b, v));
+const estimateW = (name: string, year: number) =>
+  Math.max(132, Math.round(60 + `${name} · ${year}`.length * 7.4));
+
+const CHIP_TRANSITION =
+  "transition-[top,box-shadow] duration-[180ms] ease-[cubic-bezier(.2,.7,.3,1)] motion-reduce:transition-none";
 
 type DragState = { kind: "event"; id: string; year: number } | { kind: "retire"; year: number };
 
@@ -41,125 +103,195 @@ export function WealthTimeline({
   retMax: number;
 }) {
   const t = useTranslations();
+  const locale = useVisionStore((s) => s.locale);
   const addLifeEvent = useVisionStore((s) => s.addLifeEvent);
   const updateLifeEvent = useVisionStore((s) => s.updateLifeEvent);
   const removeLifeEvent = useVisionStore((s) => s.removeLifeEvent);
   const updateScenarioAssumptions = useVisionStore((s) => s.updateScenarioAssumptions);
 
-  const trackRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
-  const movedRef = useRef(false);
-  const cleanupRef = useRef<(() => void) | null>(null);
+  const dragRef = useRef<{ id: string; startX: number; startYear: number; moved: boolean } | null>(null);
+  const [width, setWidth] = useState(0);
   const [ghost, setGhost] = useState<ProjectionPoint[] | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
-  const [editId, setEditId] = useState<string | null>(null);
-  const [customOpen, setCustomOpen] = useState(false); // v5: peer-insights modal
+  const [editId, setEditId] = useState<string | null>(null); // event id ou "retire"
+  const [customOpen, setCustomOpen] = useState(false);
 
-  // Tear down any in-flight drag listeners + pending frame if we unmount mid-drag
-  // (switching scenario/persona) — otherwise leaked window listeners could mutate
-  // a now-unrelated plan on the next pointerup.
+  useEffect(() => {
+    if (!wrapRef.current) return;
+    const ro = new ResizeObserver((entries) => {
+      for (const e of entries) setWidth(e.contentRect.width);
+    });
+    ro.observe(wrapRef.current);
+    return () => ro.disconnect();
+  }, []);
   useEffect(
     () => () => {
-      cleanupRef.current?.();
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     },
     [],
   );
 
   const thisYear = new Date().getFullYear();
+  // Horizonte derivado do CASO: hoje → longevidade da projeção (VIS-607).
   const minYear = points[0]?.year ?? thisYear;
   const maxYear = points[points.length - 1]?.year ?? thisYear + 1;
-  const span = Math.max(1, maxYear - minYear);
-  const leftPct = (y: number) => Math.max(0, Math.min(100, ((y - minYear) / span) * 100));
   const events = plan.lifeEvents ?? [];
 
-  /** Map a clientX to a (snapped) calendar year using the track's plot rect. */
-  function yearFromClientX(clientX: number): number {
-    const rect = trackRef.current?.getBoundingClientRect();
-    if (!rect || rect.width === 0) return minYear;
-    const frac = (clientX - rect.left) / rect.width;
-    return Math.round(minYear + frac * span);
-  }
+  const avail = width || 920;
+  const needed = (maxYear - minYear) * MIN_PX_PER_YEAR + PAD_L + PAD_R;
+  const innerW = Math.max(avail, needed);
+  const usableW = innerW - PAD_L - PAD_R;
+  const pxPerYear = usableW / Math.max(1, maxYear - minYear);
+  const xOf = useCallback(
+    (y: number) => PAD_L + ((y - minYear) / Math.max(1, maxYear - minYear)) * usableW,
+    [minYear, maxYear, usableW],
+  );
 
-  /** Accumulation-phase clamp: events live between now and retirement (v1). */
-  const clampEventYear = (y: number) => Math.max(thisYear, Math.min(retirementYear, y));
-  const clampRetAge = (a: number) => Math.max(retMin, Math.min(retMax, a));
+  const clampEventYear = (y: number) => clampNum(y, thisYear, maxYear);
+  const clampRetAge = (a: number) => clampNum(a, retMin, retMax);
+  const retYearShown = drag?.kind === "retire" ? drag.year : retirementYear;
 
-  /** Recompute the dimmed "what-if" curve on the next frame (coalesced). */
+  /* ---------- ghost (Regra Zero: recálculo do motor por rAF, como antes) ---------- */
   function scheduleGhost(modPlan: Plan, a: ScenarioAssumptions) {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
-    rafRef.current = requestAnimationFrame(() => {
-      setGhost(projectPlan(modPlan, a).points);
-    });
+    rafRef.current = requestAnimationFrame(() => setGhost(projectPlan(modPlan, a).points));
   }
 
-  function startEventDrag(e: React.PointerEvent, item: LifeEvent) {
-    e.preventDefault();
-    movedRef.current = false;
-    const startX = e.clientX;
-    function onMove(ev: PointerEvent) {
-      if (Math.abs(ev.clientX - startX) > 3) movedRef.current = true;
-      const year = clampEventYear(yearFromClientX(ev.clientX));
-      setDrag({ kind: "event", id: item.id, year });
-      scheduleGhost(
-        { ...plan, lifeEvents: events.map((x) => (x.id === item.id ? { ...x, year } : x)) },
-        assumptions,
-      );
+  /* ---------- layout: empacotamento em lanes (reorganiza AO VIVO no drag) ---------- */
+  const layout = useMemo(() => {
+    const enriched = events
+      .map((ev) => {
+        const year = drag?.kind === "event" && drag.id === ev.id ? drag.year : ev.year;
+        const label = ev.label || t(`lifeEvents.preset.${ev.presetKey}`);
+        const w = estimateW(label, year);
+        const cx = xOf(year);
+        const left = clampNum(cx - w / 2, 4, innerW - w - 4);
+        return { ev, year, label, w, cx, left, lane: 0, top: 0 };
+      })
+      .sort((a, b) => a.left - b.left);
+
+    const laneEnds: number[] = [];
+    for (const item of enriched) {
+      let lane = laneEnds.findIndex((end) => end <= item.left - LANE_PACK_GAP);
+      if (lane === -1) {
+        lane = laneEnds.length;
+        laneEnds.push(item.left + item.w);
+      } else {
+        laneEnds[lane] = item.left + item.w;
+      }
+      item.lane = lane;
     }
-    function onUp(ev: PointerEvent) {
-      const commit = movedRef.current;
-      const year = clampEventYear(yearFromClientX(ev.clientX));
-      finish();
-      if (commit) updateLifeEvent(item.id, { year });
-      else setEditId((cur) => (cur === item.id ? null : item.id)); // tap = toggle editor
-    }
-    function finish() {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", finish);
-      cleanupRef.current = null;
-      setDrag(null);
-      setGhost(null);
-    }
-    cleanupRef.current = finish;
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", finish);
+    const nLanes = Math.max(1, laneEnds.length);
+    const axisY = TOP_PAD + 12 + CHIP_H + (nLanes - 1) * LANE_STEP;
+    for (const item of enriched) item.top = axisY - 12 - CHIP_H - item.lane * LANE_STEP;
+
+    return { items: enriched, axisY, height: axisY + RULER_GAP + 22 };
+  }, [events, drag, xOf, innerW, t]);
+
+  /* ---------- régua adaptativa ---------- */
+  const ticks = useMemo(() => {
+    const step = [1, 2, 5, 10].find((s) => s * pxPerYear >= 46) ?? 10;
+    const start = Math.ceil(minYear / step) * step;
+    const out: number[] = [];
+    for (let y = start; y <= maxYear; y += step) out.push(y);
+    return out;
+  }, [pxPerYear, minYear, maxYear]);
+
+  /* ---------- drag (pointer capture, snap por ano, tap ≤4px = selecionar) ---------- */
+  function yearFromDx(startYear: number, dx: number) {
+    return Math.round(startYear + dx / pxPerYear);
   }
 
-  function startRetireDrag(e: React.PointerEvent) {
-    e.preventDefault();
-    movedRef.current = false;
-    const startX = e.clientX;
-    function onMove(ev: PointerEvent) {
-      if (Math.abs(ev.clientX - startX) > 3) movedRef.current = true;
-      const age = clampRetAge(currentAge + (yearFromClientX(ev.clientX) - thisYear));
-      setDrag({ kind: "retire", year: thisYear + (age - currentAge) });
-      scheduleGhost(plan, { ...assumptions, retirementAge: age, growthScenario: "custom" });
+  function onEventPointerDown(e: React.PointerEvent, ev: LifeEvent) {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    dragRef.current = { id: ev.id, startX: e.clientX, startYear: ev.year, moved: false };
+    setDrag({ kind: "event", id: ev.id, year: ev.year });
+  }
+  function onEventPointerMove(e: React.PointerEvent, ev: LifeEvent) {
+    const d = dragRef.current;
+    if (!d || d.id !== ev.id) return;
+    const dx = e.clientX - d.startX;
+    if (Math.abs(dx) > 4) d.moved = true;
+    const year = clampEventYear(yearFromDx(d.startYear, dx));
+    setDrag({ kind: "event", id: ev.id, year });
+    scheduleGhost(
+      { ...plan, lifeEvents: events.map((x) => (x.id === ev.id ? { ...x, year } : x)) },
+      assumptions,
+    );
+  }
+  function onEventPointerUp(e: React.PointerEvent, ev: LifeEvent) {
+    const d = dragRef.current;
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    dragRef.current = null;
+    setDrag(null);
+    setGhost(null);
+    if (!d) return;
+    if (d.moved) {
+      const year = clampEventYear(yearFromDx(d.startYear, e.clientX - d.startX));
+      updateLifeEvent(ev.id, { year });
+    } else {
+      setEditId((cur) => (cur === ev.id ? null : ev.id)); // tap = selecionar/editar
     }
-    function onUp(ev: PointerEvent) {
-      const commit = movedRef.current;
-      const age = clampRetAge(currentAge + (yearFromClientX(ev.clientX) - thisYear));
-      finish();
-      // A plain click must NOT force growthScenario:custom / clear the result.
-      if (commit) updateScenarioAssumptions(scenarioId, { retirementAge: age, growthScenario: "custom" });
-    }
-    function finish() {
-      window.removeEventListener("pointermove", onMove);
-      window.removeEventListener("pointerup", onUp);
-      window.removeEventListener("pointercancel", finish);
-      cleanupRef.current = null;
-      setDrag(null);
-      setGhost(null);
-    }
-    cleanupRef.current = finish;
-    window.addEventListener("pointermove", onMove);
-    window.addEventListener("pointerup", onUp);
-    window.addEventListener("pointercancel", finish);
   }
 
-  function nudge(item: LifeEvent, delta: number) {
-    updateLifeEvent(item.id, { year: clampEventYear(item.year + delta) });
+  function onRetirePointerDown(e: React.PointerEvent) {
+    e.stopPropagation();
+    e.currentTarget.setPointerCapture?.(e.pointerId);
+    dragRef.current = { id: "retire", startX: e.clientX, startYear: retirementYear, moved: false };
+    setDrag({ kind: "retire", year: retirementYear });
+  }
+  function onRetirePointerMove(e: React.PointerEvent) {
+    const d = dragRef.current;
+    if (!d || d.id !== "retire") return;
+    const dx = e.clientX - d.startX;
+    if (Math.abs(dx) > 4) d.moved = true;
+    const age = clampRetAge(currentAge + (yearFromDx(d.startYear, dx) - thisYear));
+    setDrag({ kind: "retire", year: thisYear + (age - currentAge) });
+    scheduleGhost(plan, { ...assumptions, retirementAge: age, growthScenario: "custom" });
+  }
+  function onRetirePointerUp(e: React.PointerEvent) {
+    const d = dragRef.current;
+    e.currentTarget.releasePointerCapture?.(e.pointerId);
+    dragRef.current = null;
+    setDrag(null);
+    setGhost(null);
+    if (!d) return;
+    if (d.moved) {
+      // Âncora REAL (VIS-604): commit recalcula tudo; um tap não força custom.
+      const age = clampRetAge(currentAge + (yearFromDx(d.startYear, e.clientX - d.startX) - thisYear));
+      updateScenarioAssumptions(scenarioId, { retirementAge: age, growthScenario: "custom" });
+    } else {
+      setEditId((cur) => (cur === "retire" ? null : "retire"));
+    }
+  }
+
+  function onKeyNudge(e: React.KeyboardEvent, ev: LifeEvent) {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      const step = (e.key === "ArrowRight" ? 1 : -1) * (e.shiftKey ? 5 : 1);
+      updateLifeEvent(ev.id, { year: clampEventYear(ev.year + step) });
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setEditId((c) => (c === ev.id ? null : ev.id));
+    } else if (e.key === "Delete" || e.key === "Backspace") {
+      removeLifeEvent(ev.id);
+    }
+  }
+  function onRetireKey(e: React.KeyboardEvent) {
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      const step = (e.key === "ArrowRight" ? 1 : -1) * (e.shiftKey ? 5 : 1);
+      updateScenarioAssumptions(scenarioId, {
+        retirementAge: clampRetAge(assumptions.retirementAge + step),
+        growthScenario: "custom",
+      });
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      setEditId((c) => (c === "retire" ? null : "retire"));
+    }
   }
 
   function addPreset(presetKey: string) {
@@ -176,147 +308,239 @@ export function WealthTimeline({
     setEditId(id);
   }
 
-  const retYearShown = drag?.kind === "retire" ? drag.year : retirementYear;
-  const editing = editId ? events.find((e) => e.id === editId) : undefined;
+  const editing = editId && editId !== "retire" ? events.find((e) => e.id === editId) : undefined;
+  const cur = (n: number) => formatCurrency(n, locale);
+  const retW = estimateW(t("lifeEvents.retirement"), retYearShown);
+  const retCx = xOf(retYearShown);
+  const retLeft = clampNum(retCx - retW / 2, 4, innerW - retW - 4);
 
   return (
     <div className="space-y-3">
       <WealthArea points={points} retirementYear={retirementYear} ghostPoints={ghost} />
 
-      {/* Draggable life-events track, aligned to the chart's plot area */}
-      <div style={{ paddingLeft: PLOT_LEFT, paddingRight: PLOT_RIGHT }}>
-        <div
-          ref={trackRef}
-          data-testid="timeline-track"
-          className="relative h-px rounded-full bg-border"
-          style={{ marginTop: 44, marginBottom: 16 }}
-        >
-          {/* Retirement anchor */}
-          <div
-            className="absolute -top-10 bottom-[-0.75rem] z-10 w-px bg-primary/40"
-            style={{ left: `${leftPct(retYearShown)}%` }}
-          />
-          <button
-            type="button"
-            data-testid="timeline-retire"
-            onPointerDown={startRetireDrag}
-            aria-label={`${t("lifeEvents.retirement")} ${retYearShown}`}
-            className="absolute -top-10 z-20 -translate-x-1/2 cursor-grab touch-none rounded-full bg-primary px-2 py-0.5 text-[10px] font-semibold whitespace-nowrap text-primary-foreground shadow-sm active:cursor-grabbing"
-            style={{ left: `${leftPct(retYearShown)}%` }}
-          >
-            {t("lifeEvents.retirement")} · {retYearShown}
-          </button>
-
-          {/* Event chips */}
-          {events.map((item) => {
-            const preset = lifeEventPreset(item.presetKey);
-            const Icon = preset.icon;
-            const year = drag?.kind === "event" && drag.id === item.id ? drag.year : item.year;
-            return (
-              <div
-                key={item.id}
-                className="absolute top-1 z-10 -translate-x-1/2"
-                style={{ left: `${leftPct(year)}%` }}
-              >
-                <span className="mx-auto block h-3 w-px bg-border" />
-                <button
-                  type="button"
-                  data-testid={`timeline-event-${item.presetKey}`}
-                  onPointerDown={(e) => startEventDrag(e, item)}
-                  onKeyDown={(e) => {
-                    if (e.key === "ArrowLeft") nudge(item, e.shiftKey ? -5 : -1);
-                    else if (e.key === "ArrowRight") nudge(item, e.shiftKey ? 5 : 1);
-                    else if (e.key === "Enter" || e.key === " ") setEditId((c) => (c === item.id ? null : item.id));
-                    else if (e.key === "Delete" || e.key === "Backspace") removeLifeEvent(item.id);
-                  }}
-                  role="slider"
-                  aria-valuemin={thisYear}
-                  aria-valuemax={retirementYear}
-                  aria-valuenow={year}
-                  aria-label={`${item.label || t(`lifeEvents.preset.${item.presetKey}`)} ${year}`}
-                  className={cn(
-                    "flex cursor-grab touch-none items-center gap-1 rounded-full px-2 py-1 text-[11px] font-medium whitespace-nowrap shadow-sm ring-1 ring-border/50 outline-none focus-visible:ring-2 focus-visible:ring-ring active:cursor-grabbing",
-                    preset.color,
-                    editId === item.id && "ring-2 ring-ring",
-                  )}
-                >
-                  <Icon className="size-3" />
-                  <span className="max-w-24 truncate">{item.label || t(`lifeEvents.preset.${item.presetKey}`)}</span>
-                  <span className="tabular-nums opacity-70">· {year}</span>
-                </button>
-              </div>
-            );
-          })}
-
-          <span className="absolute top-2 left-0 text-[10px] text-muted-foreground">{minYear}</span>
-          <span className="absolute top-2 right-0 text-[10px] text-muted-foreground">{maxYear}</span>
+      {/* ---------------- faixa da linha do tempo (v6) ---------------- */}
+      <div
+        className="overflow-hidden rounded-2xl border"
+        style={{ borderColor: T.hairline, boxShadow: "0 1px 2px rgba(20,24,31,.04)" }}
+      >
+        {/* cabeçalho */}
+        <div className="flex flex-wrap items-end justify-between gap-3 px-5 pt-4 pb-3.5">
+          <div>
+            <div
+              className="text-[11px] font-semibold tracking-[0.14em] uppercase"
+              style={{ color: T.faint }}
+            >
+              {t("timeline.planTitle")}
+            </div>
+            <h3 className="font-heading mt-0.5 text-lg leading-tight font-semibold" style={{ color: T.ink }}>
+              {t("timeline.title")}
+            </h3>
+            <p className="mt-1 text-xs" style={{ color: T.muted }}>
+              {t("timeline.subtitle")}
+            </p>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3 text-xs font-semibold" style={{ color: T.muted }}>
+              <span className="flex items-center gap-1.5">
+                <i className="inline-block size-2 rounded-full" style={{ background: T.in }} />
+                {t("lifeEvents.inflow")}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <i className="inline-block size-2 rounded-full" style={{ background: T.out }} />
+                {t("lifeEvents.outflow")}
+              </span>
+              <span className="flex items-center gap-1.5">
+                <i className="inline-block size-2 rounded-full" style={{ background: T.red }} />
+                {t("timeline.legendMilestone")}
+              </span>
+            </div>
+            <Button size="sm" onClick={() => setCustomOpen(true)}>
+              <Plus className="size-4" />
+              {t("timeline.addEvent")}
+            </Button>
+          </div>
         </div>
+
+        {/* faixa (scroll horizontal honesto quando o horizonte não cabe) */}
+        <div
+          ref={wrapRef}
+          data-testid="timeline-track"
+          className="overflow-x-auto"
+          style={{ background: T.surface, borderTop: `1px solid ${T.hairline}` }}
+        >
+          <div className="relative my-2" style={{ width: innerW, height: layout.height }}>
+            {/* linhas / pontos / conectores */}
+            <svg width={innerW} height={layout.height} className="absolute inset-0 block">
+              <line x1={PAD_L} y1={layout.axisY} x2={innerW - PAD_R} y2={layout.axisY} stroke={T.hairline} strokeWidth={2} />
+              {/* hoje */}
+              <line x1={xOf(minYear)} y1={layout.axisY - 5} x2={xOf(minYear)} y2={layout.axisY + 5} stroke={T.faint} strokeWidth={2} />
+              {ticks.map((y) => (
+                <g key={y}>
+                  <line x1={xOf(y)} y1={layout.axisY} x2={xOf(y)} y2={layout.axisY + 6} stroke={T.hairline} strokeWidth={1.5} />
+                  <text x={xOf(y)} y={layout.axisY + RULER_GAP} textAnchor="middle" fontSize="12" fontWeight="600" fill={T.faint}>
+                    {y}
+                  </text>
+                </g>
+              ))}
+              {/* guia do marco */}
+              <line x1={retCx} y1={26} x2={retCx} y2={layout.axisY} stroke={T.red} strokeWidth={1.5} strokeDasharray="3 4" opacity={0.6} />
+              {/* conectores + pontos */}
+              {layout.items.map(({ ev, cx, top }) => {
+                const c = colorFor(ev.kind);
+                const sel = editId === ev.id;
+                return (
+                  <g key={ev.id}>
+                    <line x1={cx} y1={top + CHIP_H} x2={cx} y2={layout.axisY} stroke={c.main} strokeWidth={1.25} opacity={sel ? 0.9 : 0.4} />
+                    <circle cx={cx} cy={layout.axisY} r={sel ? 5 : 4} fill={c.main} stroke="#fff" strokeWidth={2} />
+                  </g>
+                );
+              })}
+            </svg>
+
+            {/* marco: Aposentadoria (âncora real, arrastável) */}
+            <div
+              role="button"
+              tabIndex={0}
+              data-testid="timeline-retire"
+              aria-label={`${t("timeline.legendMilestone")} ${t("lifeEvents.retirement")}, ${retYearShown}`}
+              onPointerDown={onRetirePointerDown}
+              onPointerMove={onRetirePointerMove}
+              onPointerUp={onRetirePointerUp}
+              onKeyDown={onRetireKey}
+              className={cn(
+                "absolute flex items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold whitespace-nowrap text-white select-none focus-visible:outline-2 focus-visible:outline-offset-2",
+                CHIP_TRANSITION,
+                drag?.kind === "retire" ? "cursor-grabbing" : "cursor-grab",
+              )}
+              style={{
+                top: 2,
+                left: retLeft,
+                height: 26,
+                background: T.red,
+                touchAction: "none",
+                boxShadow: editId === "retire" ? `0 0 0 3px ${T.redFill}` : "0 1px 2px rgba(20,24,31,.12)",
+                zIndex: drag?.kind === "retire" ? 40 : 20,
+              }}
+            >
+              <Flag className="size-3.5" /> {t("lifeEvents.retirement")} · {retYearShown}
+            </div>
+
+            {/* eventos (chips ricos em lanes) */}
+            {layout.items.map(({ ev, year, label, top, left }) => {
+              const preset = lifeEventPreset(ev.presetKey);
+              const Icon = preset.icon ?? CircleDot;
+              const c = colorFor(ev.kind);
+              const sel = editId === ev.id;
+              const dragging = drag?.kind === "event" && drag.id === ev.id;
+              return (
+                <div
+                  key={ev.id}
+                  role="button"
+                  tabIndex={0}
+                  data-testid={`timeline-event-${ev.presetKey}`}
+                  aria-label={`${label}, ${t(`lifeEvents.${ev.kind}`)} ${cur(ev.amount)}, ${year}. ${t("timeline.subtitle")}`}
+                  onPointerDown={(e) => onEventPointerDown(e, ev)}
+                  onPointerMove={(e) => onEventPointerMove(e, ev)}
+                  onPointerUp={(e) => onEventPointerUp(e, ev)}
+                  onKeyDown={(e) => onKeyNudge(e, ev)}
+                  className={cn(
+                    "absolute flex items-center gap-2 rounded-[10px] border bg-white px-2.5 whitespace-nowrap select-none hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2",
+                    CHIP_TRANSITION,
+                    dragging ? "cursor-grabbing" : "cursor-grab",
+                  )}
+                  style={{
+                    top,
+                    left,
+                    height: CHIP_H,
+                    borderColor: sel ? c.main : T.hairline,
+                    boxShadow: sel
+                      ? `0 0 0 3px ${c.fill}, 0 4px 10px rgba(20,24,31,.10)`
+                      : "0 1px 2px rgba(20,24,31,.06)",
+                    touchAction: "none",
+                    zIndex: dragging ? 40 : sel ? 30 : 10,
+                  }}
+                >
+                  <span
+                    className="flex size-[22px] shrink-0 items-center justify-center rounded-md"
+                    style={{ background: c.fill, color: c.main }}
+                  >
+                    <Icon className="size-3.5" />
+                  </span>
+                  <span className="max-w-36 truncate text-[13px] font-semibold" style={{ color: T.ink }}>
+                    {label}
+                  </span>
+                  <span className="text-xs font-semibold tabular-nums" style={{ color: T.faint }}>
+                    · {year}
+                  </span>
+                  {ev.kind === "inflow" ? (
+                    <ArrowDownLeft className="size-3.5" style={{ color: c.main }} />
+                  ) : (
+                    <ArrowUpRight className="size-3.5" style={{ color: c.main }} />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* painel de edição inline */}
+        {(editing || editId === "retire") && (
+          <div className="border-t bg-white px-5 py-4" style={{ borderColor: T.hairline }}>
+            <div className="mb-3.5 flex items-center justify-between">
+              <div
+                className="flex items-center gap-2 text-xs font-bold"
+                style={{ color: editing ? colorFor(editing.kind).main : T.red }}
+              >
+                <span
+                  className="flex size-[22px] items-center justify-center rounded-md"
+                  style={{ background: editing ? colorFor(editing.kind).fill : T.redFill }}
+                >
+                  {editing ? <GripVertical className="size-3.5" /> : <Flag className="size-3.5" />}
+                </span>
+                {editing ? t("timeline.editEvent") : t("timeline.editMilestone")}
+              </div>
+              <Button
+                variant="outline"
+                size="icon-sm"
+                data-testid="event-editor-close"
+                aria-label={t("common.close")}
+                onClick={() => setEditId(null)}
+              >
+                <X className="size-4" />
+              </Button>
+            </div>
+
+            {editing ? (
+              <EventFields
+                ev={editing}
+                minYear={thisYear}
+                maxYear={maxYear}
+                cur={cur}
+                onChange={(patch) => updateLifeEvent(editing.id, patch)}
+                onRemove={() => {
+                  removeLifeEvent(editing.id);
+                  setEditId(null);
+                }}
+              />
+            ) : (
+              <RetireFields
+                age={Math.min(Math.max(assumptions.retirementAge, retMin), retMax)}
+                retMin={retMin}
+                retMax={retMax}
+                year={retirementYear}
+                onChange={(age) =>
+                  updateScenarioAssumptions(scenarioId, {
+                    retirementAge: clampRetAge(age),
+                    growthScenario: "custom",
+                  })
+                }
+              />
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Inline editor for the selected event */}
-      {editing && (
-        <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-muted/40 p-3">
-          <Input
-            value={editing.label ?? ""}
-            placeholder={t(`lifeEvents.preset.${editing.presetKey}`)}
-            onChange={(e) => updateLifeEvent(editing.id, { label: e.target.value || undefined })}
-            className="h-8 min-w-32 flex-1"
-          />
-          <label className="flex items-center gap-1 text-xs text-muted-foreground">
-            {t("lifeEvents.year")}
-            <Input
-              type="number"
-              min={thisYear}
-              max={retirementYear}
-              value={editing.year}
-              onChange={(e) =>
-                updateLifeEvent(editing.id, { year: clampEventYear(e.target.valueAsNumber || editing.year) })
-              }
-              className="h-8 w-20 tabular-nums"
-            />
-          </label>
-          <MoneyInput
-            value={editing.amount}
-            onChange={(n) => updateLifeEvent(editing.id, { amount: n })}
-            className="h-8 w-32"
-          />
-          <div className="flex rounded-full border border-border p-0.5 text-xs">
-            {(["outflow", "inflow"] as const).map((k) => (
-              <button
-                key={k}
-                type="button"
-                onClick={() => updateLifeEvent(editing.id, { kind: k })}
-                className={cn(
-                  "rounded-full px-2.5 py-1 font-medium transition-colors",
-                  editing.kind === k
-                    ? k === "inflow"
-                      ? "bg-positive-muted text-positive"
-                      : "bg-negative/10 text-negative"
-                    : "text-muted-foreground",
-                )}
-              >
-                {t(`lifeEvents.${k}`)}
-              </button>
-            ))}
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => {
-              removeLifeEvent(editing.id);
-              setEditId(null);
-            }}
-          >
-            <Trash2 className="size-4" />
-            {t("lifeEvents.remove")}
-          </Button>
-          <Button variant="ghost" size="sm" data-testid="event-editor-close" onClick={() => setEditId(null)}>
-            <X className="size-4" />
-          </Button>
-        </div>
-      )}
-
-      {/* Preset palette — click to drop an event, then drag it on the timeline */}
+      {/* paleta de presets (atalho de 1 clique — mantida do v2/v5) */}
       <div>
         <div className="mb-1.5 text-[11px] tracking-wide text-muted-foreground/80 uppercase">
           {t("lifeEvents.palette")}
@@ -342,7 +566,7 @@ export function WealthTimeline({
           <button
             type="button"
             data-testid="palette-custom"
-            onClick={() => setCustomOpen(true)} // v5: big modal with peer suggestions
+            onClick={() => setCustomOpen(true)}
             className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
           >
             <Plus className="size-3.5" />
@@ -351,7 +575,191 @@ export function WealthTimeline({
         </div>
       </div>
 
-      <CustomEventModal plan={plan} open={customOpen} onOpenChange={setCustomOpen} maxYear={retirementYear} />
+      <CustomEventModal plan={plan} open={customOpen} onOpenChange={setCustomOpen} maxYear={maxYear} />
+    </div>
+  );
+}
+
+/* ------------------------- campos do painel: evento ------------------------- */
+function EventFields({
+  ev,
+  minYear,
+  maxYear,
+  cur,
+  onChange,
+  onRemove,
+}: {
+  ev: LifeEvent;
+  minYear: number;
+  maxYear: number;
+  cur: (n: number) => string;
+  onChange: (patch: Partial<LifeEvent>) => void;
+  onRemove: () => void;
+}) {
+  const t = useTranslations();
+  const c = colorFor(ev.kind);
+  const duracao = ev.recurring && ev.endYear ? Math.max(1, ev.endYear - ev.year + 1) : 1;
+  const label = "mb-1.5 block text-[11px] font-bold tracking-[0.06em] uppercase";
+
+  return (
+    <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
+      <div className="min-w-48 flex-[2_1_200px]">
+        <span className={label} style={{ color: T.faint }}>{t("eventForm.name")}</span>
+        <Input
+          value={ev.label ?? ""}
+          placeholder={t(`lifeEvents.preset.${ev.presetKey}`)}
+          onChange={(e) => onChange({ label: e.target.value || undefined })}
+          className="h-9"
+        />
+      </div>
+
+      <div className="min-w-40 flex-[1_1_170px]">
+        <span className={label} style={{ color: T.faint }}>{t("eventForm.flow")}</span>
+        <div className="flex overflow-hidden rounded-[9px] border" style={{ borderColor: T.hairline }}>
+          {(["outflow", "inflow"] as const).map((k, i) => {
+            const kc = colorFor(k);
+            const active = ev.kind === k;
+            return (
+              <button
+                key={k}
+                type="button"
+                onClick={() => onChange({ kind: k })}
+                className="flex flex-1 items-center justify-center gap-1.5 px-2 py-2 text-[13px] font-bold"
+                style={{
+                  background: active ? kc.main : "#fff",
+                  color: active ? "#fff" : T.muted,
+                  borderLeft: i ? `1px solid ${T.hairline}` : "none",
+                }}
+              >
+                {k === "inflow" ? <ArrowDownLeft className="size-3.5" /> : <ArrowUpRight className="size-3.5" />}
+                {t(`lifeEvents.${k}`)}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="min-w-36 flex-[1_1_150px]">
+        <span className={label} style={{ color: T.faint }}>{t("eventForm.amount")}</span>
+        <MoneyInput value={ev.amount} onChange={(n) => onChange({ amount: n })} className="h-9 w-full" />
+      </div>
+
+      {/* duração/recorrência — campos do protótipo preservados (spec §A adaptar 6) */}
+      <div className="flex items-center gap-2 pb-1">
+        <Switch
+          id="tl-rec"
+          checked={!!ev.recurring}
+          onCheckedChange={(v) =>
+            onChange(v ? { recurring: true, endYear: ev.endYear ?? ev.year + 2 } : { recurring: undefined, endYear: undefined })
+          }
+        />
+        <label htmlFor="tl-rec" className="text-xs" style={{ color: T.muted }}>
+          {t("eventForm.recurring")}
+        </label>
+      </div>
+      {ev.recurring && (
+        <div className="w-24">
+          <span className={label} style={{ color: T.faint }}>{t("eventForm.duration")}</span>
+          <Input
+            type="number"
+            min={1}
+            max={maxYear - ev.year + 1}
+            value={duracao}
+            onChange={(e) =>
+              onChange({ endYear: ev.year + Math.max(1, e.target.valueAsNumber || 1) - 1 })
+            }
+            className="h-9 tabular-nums"
+          />
+        </div>
+      )}
+
+      <div className="min-w-52 flex-[2_1_220px]">
+        <span className={label} style={{ color: T.faint }}>
+          {t("eventForm.year")} — <b style={{ color: T.ink }}>{ev.year}</b>
+        </span>
+        <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min={minYear}
+            max={maxYear}
+            value={ev.year}
+            onChange={(e) => onChange({ year: Number(e.target.value) })}
+            className="w-full"
+            style={{ accentColor: c.main }}
+            aria-label={t("eventForm.year")}
+          />
+          <Input
+            type="number"
+            min={minYear}
+            max={maxYear}
+            value={ev.year}
+            onChange={(e) => onChange({ year: clampNum(e.target.valueAsNumber || ev.year, minYear, maxYear) })}
+            className="h-9 w-20 text-center font-bold tabular-nums"
+          />
+        </div>
+      </div>
+
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={onRemove}
+        className="font-bold"
+        style={{ background: T.redFill, color: T.red }}
+      >
+        <Trash2 className="size-4" />
+        {t("lifeEvents.remove")}
+      </Button>
+      <span className="sr-only">{cur(ev.amount)}</span>
+    </div>
+  );
+}
+
+/* ---------------------- campos do painel: marco (aposentadoria) ---------------------- */
+function RetireFields({
+  age,
+  retMin,
+  retMax,
+  year,
+  onChange,
+}: {
+  age: number;
+  retMin: number;
+  retMax: number;
+  year: number;
+  onChange: (age: number) => void;
+}) {
+  const t = useTranslations();
+  const label = "mb-1.5 block text-[11px] font-bold tracking-[0.06em] uppercase";
+  return (
+    <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
+      <div className="min-w-64 flex-[2_1_260px]">
+        <span className={label} style={{ color: T.faint }}>
+          {t("workspace.retirementAge")} — <b style={{ color: T.ink }}>{age}</b> · {year}
+        </span>
+        <div className="flex items-center gap-3">
+          <input
+            type="range"
+            min={retMin}
+            max={retMax}
+            value={age}
+            onChange={(e) => onChange(Number(e.target.value))}
+            className="w-full"
+            style={{ accentColor: T.red }}
+            aria-label={t("workspace.retirementAge")}
+          />
+          <Input
+            type="number"
+            min={retMin}
+            max={retMax}
+            value={age}
+            onChange={(e) => onChange(e.target.valueAsNumber || age)}
+            className="h-9 w-20 text-center font-bold tabular-nums"
+          />
+        </div>
+      </div>
+      <p className="pb-1 text-xs" style={{ color: T.muted }}>
+        {t("timeline.milestoneHint")}
+      </p>
     </div>
   );
 }
