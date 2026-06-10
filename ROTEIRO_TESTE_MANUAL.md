@@ -90,6 +90,31 @@
     referência (A ★), herança, e "Próximos passos" derivados do conteúdo de
     cada plano (+ adição manual). Selo de valores ilustrativos no rodapé.*
 
+## Bloco 7 — v6: Timeline redesenhada + Gate de senha
+
+24. **Gate**: abra o site numa janela anônima. ✅ *Tela 100% preta com
+    "Projeto Vision · Acesso restrito" e um único campo. Senha errada → "Senha
+    incorreta" sutil; senha correta ("horizonte") → o protótipo carrega no
+    login do advisor. As APIs também ficam atrás do gate.*
+25. **Lanes**: com a Camila aberta, adicione 6+ eventos pela paleta. ✅ *Os
+    chips se empilham em camadas SEM nenhuma sobreposição de nome; a faixa
+    cresce em altura; cada chip tem ícone temático colorido, ano e seta de
+    direção (verde ↓ entrada, laranja ↗ saída); conectores finos descem até o
+    ponto no eixo; régua de anos adapta o passo e marca "hoje".*
+26. **Reorganização ao vivo**: arraste um chip lentamente pela faixa. ✅ *Os
+    chips trocam de camada suavemente DURANTE o arrasto (transição de 180ms)
+    e a curva-fantasma reage junto, como sempre.*
+27. **Painel inline**: clique num chip (sem arrastar). ✅ *Painel abre abaixo
+    da faixa com cabeçalho colorido pelo tipo: nome, toggle Saída/Entrada,
+    valor, Recorrente + duração, e ANO com slider + campo numérico
+    SINCRONIZADOS; "Remover" em vermelho-claro exclui na hora.*
+28. **Marco**: o badge vermelho "Aposentadoria · YYYY" no topo continua
+    arrastável com recálculo ao vivo (âncora real); clique nele → painel do
+    marco com slider de idade. ✅ *Limites de idade respeitados.*
+29. **Pós-aposentadoria (novo)**: arraste um evento para DEPOIS do marco da
+    aposentadoria. ✅ *O evento é aceito (o horizonte vai até a longevidade) e
+    a fase de usufruto reage — saída acelera o consumo, entrada estende.*
+
 ## Se algo falhar
 
 Anote o passo + o que apareceu (print ajuda) e me mande. **Nenhum push ou

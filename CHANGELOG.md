@@ -1,5 +1,55 @@
 # Changelog
 
+## v6 — Timeline redesenhada + Gate de senha (branch `feature/v6-timeline-gate` — em validação, sem deploy)
+
+### Parte A — Redesign da faixa de eventos (referência: timeline_vision.jsx)
+- **Lanes**: eventos empacotados na primeira camada livre (gap 14px) — zero
+  sobreposição de labels com 22+ eventos (verificado por colisão de bounding
+  boxes); a faixa cresce em altura conforme as lanes; **reorganização AO VIVO
+  durante o arrasto** com transição de 180ms (`prefers-reduced-motion`
+  respeitado).
+- **Chips ricos**: ícone temático em quadrado colorido (presets existentes) +
+  nome + ano + seta de direção (entrada verde ↓ / saída laranja ↗); conectores
+  SVG finos até o ponto no eixo, com realce no selecionado.
+- **Marco**: badge vermelho Bradesco com bandeira e guia tracejada — a
+  Aposentadoria continua sendo a ÂNCORA REAL (clamps retMin/retMax e
+  recálculo ao vivo preservados); clique abre painel do marco com slider de
+  idade.
+- **Régua adaptativa** (passo 1/2/5/10 com ≥46px) + marca de "hoje" + **scroll
+  horizontal honesto** (MIN_PX_PER_YEAR=16, ResizeObserver).
+- **Painel de edição inline** no layout da referência (cabeçalho colorido,
+  fechar no X, Remover em vermelho-claro): nome, toggle Saída/Entrada, valor,
+  ano com range slider + input sincronizados, e os campos do protótipo
+  preservados (Recorrente + duração).
+- **Interações**: pointer capture com snap por ano; tap (≤4px) seleciona;
+  teclado ←/→ ±1, Shift ±5, Enter/Espaço, Delete; aria-labels com valor
+  formatado; foco visível.
+- **VIS-607 habilitado**: o horizonte da faixa vai até a longevidade do caso e
+  eventos podem viver na fase de usufruto (o motor já projetava ambas as
+  fases; a trava da UI v1 foi removida).
+- Dados/Regra Zero intactos: o JSX era referência de UI; eventos vêm do store,
+  recálculo via motor por rAF (ghost), formatação pelo i18n do app, strings em
+  `messages/*` com paridade EN/PT. Tipografia global mantida (ponto a
+  confirmar nº 1 — Fraunces/Hanken só com decisão app-wide).
+
+### Parte B — Gate de senha (tela preta antes de tudo)
+- `proxy.ts` (Next 16 renomeou middleware → proxy): sem cookie, páginas são
+  reescritas para `/gate` (nenhum HTML do protótipo servido) e TODAS as APIs
+  respondem 401. Senha só em `GATE_PASSWORD` (env local + Vercel); cookie
+  httpOnly/sameSite=lax/Secure-em-https com token SHA-256 não-reversível,
+  24h. Sem a env o gate fica desarmado (fail-open documentado). Login do
+  advisor permanece DEPOIS do gate (camadas distintas). **Gate de
+  demonstração** — não é autenticação de produção (nota no README).
+- Scripts de QA e da demo autenticam via `golden/gate-helper.mjs` (lê
+  env/.env.local; a senha não existe hardcoded no repo).
+
+### QA v6
+- 17/17 checks novos (gate no navegador; zero-sobreposição com 22 chips;
+  lane reorganizando DURANTE o drag; slider+input sincronizados; Remover;
+  painel do marco; evento pós-aposentadoria sem NaN) + **zero regressão**:
+  33/33 da bateria geral e 17/17 da v5 sobre a timeline nova; 137 testes;
+  golden de paridade inalterado; bench 0,57 ms.
+
 ## v5 — Peer insights + Comparação de planos (branch `feature/v5-peers-cenarios` — em validação, sem deploy)
 
 ### Feature 1 — Modal de evento customizado com sugestões de peers
