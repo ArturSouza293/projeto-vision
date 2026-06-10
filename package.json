@@ -8,6 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "db:migrate": "node --env-file=.env.local scripts/migrate.mjs",
+    "test": "vitest run",
+    "bench": "vitest run engine/__tests__/bench.test.ts",
+    "golden:check": "vitest run golden/parity.test.ts",
+    "golden:capture": "node -e \"require('fs').rmSync('golden/values.json',{force:true})\" && vitest run golden/parity.test.ts",
     "demo:record": "node demo/record.mjs",
     "demo:build": "node demo/build.mjs",
     "demo": "npm run demo:record && npm run demo:build"
@@ -47,6 +51,7 @@
     "ffprobe-static": "^3.1.0",
     "playwright": "^1.60.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.8"
   }
 }
