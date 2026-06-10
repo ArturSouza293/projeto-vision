@@ -1,5 +1,36 @@
 # Changelog
 
+## v7 — Eventos da timeline → Oportunidades de cross-sell (branch `feature/v7-cross-sell-eventos` — em validação, sem deploy)
+
+- **Auditoria primeiro** (`docs/AUDIT_CROSS_SELL.md`): a matriz provou que a
+  timeline era invisível para o cross-sell (14 fontes ausentes, 4 parciais);
+  a implementação cobriu SÓ os gaps — as 10 regras existentes ficaram intactas
+  (com testes de regressão novos).
+- **B1 — eventos → sinais** (`lib/cross-sell-events.ts`, determinístico):
+  entrada grande → alocação da entrada (+ sucessão quando herança × gap);
+  saída planejável → poupança programada com aporte do MOTOR (TVM, rota do
+  solveGoal) ou financiamento planejado/consórcio quando próximo e não cabe na
+  sobra; educação consolida evento+objetivo numa oportunidade só (origens
+  listadas); abrir negócio → funding + revisão de proteção; viagem → câmbio só
+  acima do limiar; evento pós-aposentadoria → revisão de desacumulação citando
+  `anoEsgotamento` do motor; custom nunca ignorado.
+- **B2 — plano → sinais**: objetivo sem funding → aporte programado;
+  esgotamento → renda vitalícia; suitability × alocação divergente →
+  realocação; titularidade concentrada + sucessão → planejamento sucessório.
+- **B3 — pertinência/ranqueamento** (`lib/cross-sell-config.ts`, confirmado
+  com o negócio): limiar 20% da renda anual; janela de 5 anos com decaimento
+  linear; score de evento explicável (fit + proximidade + valor relativo);
+  consolidação por produto com origens mescladas; teto de exibição 5 +
+  "ver todas"; lista vazia honesta preservada.
+- **B4 — UI/payload**: cada card mostra a ORIGEM do sinal ("derivada do
+  evento: Venda de imóvel · 2031" / "derivada do plano: gap de proteção");
+  racionais viraram templates ICU com slots numéricos formatados por locale
+  (EN/PT em paridade); o JSON do CRM ganhou `origemSinal` por oportunidade.
+- QA: 19 testes nomeados por regra; 156 testes totais; golden INALTERADO
+  (cross-sell não toca a projeção); 7/7 checks de navegador; grep de
+  aritmética em components/ limpo. Bugfix pego pelos testes: dupla divisão
+  por 12 no aporte programado (subestimava 12×).
+
 ## v6 — Timeline redesenhada + Gate de senha (branch `feature/v6-timeline-gate` — em validação, sem deploy)
 
 ### Parte A — Redesign da faixa de eventos (referência: timeline_vision.jsx)

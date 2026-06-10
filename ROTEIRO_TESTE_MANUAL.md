@@ -115,6 +115,25 @@
     aposentadoria. ✅ *O evento é aceito (o horizonte vai até a longevidade) e
     a fase de usufruto reage — saída acelera o consumo, entrada estende.*
 
+## Bloco 8 — v7: Eventos → Oportunidades de cross-sell
+
+30. Com a Camila aberta, adicione **"Venda de imóvel"** na timeline e vá para
+    a fase **Entrega**. ✅ *Card "Plano de alocação da entrada" com o valor do
+    evento e a linha "↳ derivada do evento: Venda de imóvel · ano".*
+31. Adicione **"Troca de carro"** e **"Abrir negócio"**; volte à Entrega.
+    ✅ *"Poupança programada" com o aporte/mês calculado pelo motor e as DUAS
+    origens listadas no mesmo card; "Revisão de proteção" citando a virada de
+    carreira. Se aproximar o evento (2 anos) até não caber na sobra, o card
+    vira "Financiamento planejado / consórcio" — nunca silêncio.*
+32. Adicione uma **"Viagem internacional" de R$ 30 mil**. ✅ *NENHUM card de
+    câmbio aparece (abaixo do limiar de 20% da renda anual — anti-spam). Suba
+    o valor para R$ 50 mil e o card aparece.*
+33. Arraste um evento de saída para DEPOIS da aposentadoria. ✅ *Card "Revisão
+    de desacumulação" citando o ano em que o patrimônio esgota (motor).*
+34. Com 6+ oportunidades, confira o **teto**: 5 cards + botão "Ver todas (N a
+    mais)"; o JSON do pacote (CRM) leva a lista completa com `origemSinal`
+    em cada oportunidade.
+
 ## Se algo falhar
 
 Anote o passo + o que apareceu (print ajuda) e me mande. **Nenhum push ou

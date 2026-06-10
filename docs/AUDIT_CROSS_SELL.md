@@ -89,6 +89,38 @@ visível), não hardcoded.
 
 ---
 
-**Status: PARADO aguardando confirmação dos pontos do spec antes da Parte B**
-(limiar X%, janela N anos, consórcio/crédito ofertável?, teto M).
-A seção "DEPOIS" desta matriz será preenchida ao final da implementação.
+# DEPOIS — matriz final de cobertura (Parte B implementada)
+
+Parâmetros confirmados pelo usuário: **limiar 20% da renda anual · janela 5
+anos com decaimento linear (peso mínimo 0,2) · consórcio/financiamento
+planejado ofertável como categoria · teto de exibição 5** — tudo em
+`lib/cross-sell-config.ts` (decisão de negócio visível).
+
+| Item da auditoria | Antes | Depois | Onde |
+|---|---|---|---|
+| Eventos de ENTRADA (property_sell/inheritance/bonus/custom) | ❌ | ✅ `inflowParking` (+ `successionPlanning` quando herança × gap de sucessão) | `cross-sell-events.ts` B1.1 |
+| Eventos de SAÍDA planejável (property_buy/car/renovation/wedding/custom) | ❌ | ✅ `plannedSavings` com aporte do motor (TVM, rota do solveGoal) OU `plannedFinancing` quando próximo e não cabe na sobra — nunca silêncio | B1.2 |
+| Educação (evento e/ou objetivo) | 🟡 | ✅ UMA oportunidade consolidada com as duas origens; racional cita o horizonte | B1.3 + consolidação |
+| Abrir negócio | ❌ | ✅ funding + `protectionReview` (renda volátil) | B1.4 |
+| Viagem/câmbio | ❌ | ✅ `fxAccount` somente ≥ limiar (anti-spam testado) | B1.5 |
+| Evento pós-aposentadoria | ❌ | ✅ `decumulationReview` citando `anoEsgotamento` do motor | B1.6 |
+| Eventos custom | ❌ | ✅ caem nas famílias por tipo/fase/valor | B1.7 |
+| Objetivo sem funding | ❌ | ✅ `goalFunding` com aporte do motor | B2.1 |
+| Esgotamento projetado | ❌ | ✅ `decumulationReview` (consolida com B1.6) | B2.2 |
+| Suitability × alocação | ❌ | ✅ `reallocation` (limiares na config) | B2.3 |
+| Titularidade + sucessão | ❌ | ✅ `successionPlanning` (concentração > 70%) | B2.4 |
+| Limiar de relevância | ❌ | ✅ 20% da renda anual (config) | B3 |
+| Janela temporal | ❌ | ✅ decaimento linear 5 anos; score de evento = fit + proximidade + valor RELATIVO (sem duplicar o boost de valor absoluto) | B3 |
+| Dedupe/consolidação | 🟡 | ✅ por produto, mesclando origens (máx. 3 listadas) | B3 |
+| Teto + "ver todas" | 🟡 | ✅ teto 5 na EXIBIÇÃO; gerador devolve o ranking completo; payload leva tudo | B3/B4 |
+| Lista vazia honesta | ✅ | ✅ preservada (testada) | regressão |
+| Origem do sinal no card | ❌ | ✅ "derivada do evento/do plano: X · ano" | B4 (output.tsx) |
+| `origemSinal` no JSON do CRM | ❌ | ✅ por oportunidade | B4 (output.ts) |
+| Racionais com slots numéricos | 🟡 | ✅ templates ICU com {aporte}/{ano}/{anoEsgotamento} formatados por locale, EN/PT em paridade | messages |
+| 10 regras existentes | ✅ | ✅ intactas (+ origem do plano), com testes de regressão | cross-sell.ts |
+
+**QA:** 19 testes nomeados por regra (`lib/__tests__/cross-sell.test.ts`) ·
+156 testes totais · golden de paridade INALTERADO (cross-sell não toca a
+projeção, como exigido) · 7/7 checks de navegador na tela de Entrega
+(screenshot `golden/v7_output.png`) · grep de aritmética em `components/`
+limpo (a derivação vive em `lib/`).
