@@ -13,7 +13,8 @@ import {
   investableWealth,
   netWorthTotals,
 } from "@/lib/calc";
-import type { CrossSellOpportunity, Fit, Plan } from "@/lib/types";
+import { signalsFromEvents, signalsFromPlanGaps } from "@/lib/cross-sell-events";
+import type { CrossSellOpportunity, Fit, Plan, SignalOrigin } from "@/lib/types";
 
 const FIT_BASE: Record<Fit, number> = { high: 70, medium: 50, low: 32 };
 
@@ -64,6 +65,7 @@ export function generateOpportunities(plan: Plan): CrossSellOpportunity[] {
     categoryKey: string,
     rationaleKey: string,
     estimatedValue: number,
+    originKey?: string, // v7 — "derivada do plano: …" no card
   ) =>
     out.push({
       id: `op-${i++}`,
@@ -73,53 +75,80 @@ export function generateOpportunities(plan: Plan): CrossSellOpportunity[] {
       fit,
       estimatedValue,
       score: scoreFor(fit, estimatedValue),
+      origens: originKey ? [{ tipo: "plan", originKey }] : undefined,
     });
 
   if (cf.surplus < 0 || highRateBalance > 0) {
-    add("high", "crosssell.product.debtRestructure", "crosssell.cat.credit", "crosssell.why.highCostDebt", Math.max(highRateBalance, monthlyExpense * 3));
+    add("high", "crosssell.product.debtRestructure", "crosssell.cat.credit", "crosssell.why.highCostDebt", Math.max(highRateBalance, monthlyExpense * 3), "crosssell.origin.debt");
   }
   if (p.dependents >= 1) {
-    add(soleProvider ? "high" : "medium", "crosssell.product.lifeInsurance", "crosssell.cat.protection", soleProvider ? "crosssell.why.soleProvider" : "crosssell.why.dependents", Math.min(annualIncome * 10, 3_000_000));
+    add(soleProvider ? "high" : "medium", "crosssell.product.lifeInsurance", "crosssell.cat.protection", soleProvider ? "crosssell.why.soleProvider" : "crosssell.why.dependents", Math.min(annualIncome * 10, 3_000_000), "crosssell.origin.family");
   }
   if (healthMonthly >= 2000 && p.dependents >= 1) {
-    add("high", "crosssell.product.medicalFund", "crosssell.cat.protection", "crosssell.why.medicalContinuity", Math.min(5_000_000, healthMonthly * 180));
+    add("high", "crosssell.product.medicalFund", "crosssell.cat.protection", "crosssell.why.medicalContinuity", Math.min(5_000_000, healthMonthly * 180), "crosssell.origin.health");
   }
   if (liquidGap > 0) {
-    add("high", "crosssell.product.emergencyFund", "crosssell.cat.reserve", "crosssell.why.reserveGap", liquidGap);
+    add("high", "crosssell.product.emergencyFund", "crosssell.cat.reserve", "crosssell.why.reserveGap", liquidGap, "crosssell.origin.reserveGap");
   }
   if (idleCash > 50_000 && nw.byClass.cash >= nw.byClass.investments) {
-    add("high", "crosssell.product.cashMigration", "crosssell.cat.investments", "crosssell.why.idleCash", idleCash);
+    add("high", "crosssell.product.cashMigration", "crosssell.cat.investments", "crosssell.why.idleCash", idleCash, "crosssell.origin.idleCash");
   }
   if (!hasPension && (isPJ || annualIncome > 240_000)) {
-    add(isPJ ? "high" : "medium", "crosssell.product.pension", "crosssell.cat.retirement", isPJ ? "crosssell.why.noPensionPj" : "crosssell.why.pensionTopUp", Math.round(annualIncome * 0.12));
+    add(isPJ ? "high" : "medium", "crosssell.product.pension", "crosssell.cat.retirement", isPJ ? "crosssell.why.noPensionPj" : "crosssell.why.pensionTopUp", Math.round(annualIncome * 0.12), "crosssell.origin.noPension");
   }
   if (nearRetirement && investable > 0) {
-    add(age >= 58 ? "high" : "medium", "crosssell.product.incomeLadder", "crosssell.cat.retirement", "crosssell.why.incomeLadder", Math.round(investable * 0.4));
+    add(age >= 58 ? "high" : "medium", "crosssell.product.incomeLadder", "crosssell.cat.retirement", "crosssell.why.incomeLadder", Math.round(investable * 0.4), "crosssell.origin.nearRetirement");
   }
   if (educationGoal) {
-    add("high", "crosssell.product.education", "crosssell.cat.goals", "crosssell.why.educationGoal", educationGoal.targetAmount);
+    add("high", "crosssell.product.education", "crosssell.cat.goals", "crosssell.why.educationGoal", educationGoal.targetAmount, "crosssell.origin.educationGoal");
   }
   if (propertyGoal) {
-    add("medium", "crosssell.product.realEstate", "crosssell.cat.credit", "crosssell.why.propertyGoal", propertyGoal.targetAmount);
+    add("medium", "crosssell.product.realEstate", "crosssell.cat.credit", "crosssell.why.propertyGoal", propertyGoal.targetAmount, "crosssell.origin.propertyGoal");
   }
   if (mortgageBalance > 0) {
-    add("medium", "crosssell.product.mortgageReview", "crosssell.cat.credit", "crosssell.why.mortgage", mortgageBalance);
+    add("medium", "crosssell.product.mortgageReview", "crosssell.cat.credit", "crosssell.why.mortgage", mortgageBalance, "crosssell.origin.mortgage");
   }
   if (wealthy && investable > 0) {
-    add(p.segment === "private" ? "high" : "medium", "crosssell.product.offshore", "crosssell.cat.international", "crosssell.why.offshore", Math.round(investable * 0.2));
+    add(p.segment === "private" ? "high" : "medium", "crosssell.product.offshore", "crosssell.cat.international", "crosssell.why.offshore", Math.round(investable * 0.2), "crosssell.origin.segment");
   }
   if (p.segment === "private") {
-    add("high", "crosssell.product.succession", "crosssell.cat.wealth", "crosssell.why.succession", nw.netWorth);
+    add("high", "crosssell.product.succession", "crosssell.cat.wealth", "crosssell.why.succession", nw.netWorth, "crosssell.origin.segment");
   }
   if (cf.surplus > 500) {
-    add("medium", "crosssell.product.autoInvest", "crosssell.cat.investments", "crosssell.why.autoInvest", Math.round(cf.surplus * 12));
+    add("medium", "crosssell.product.autoInvest", "crosssell.cat.investments", "crosssell.why.autoInvest", Math.round(cf.surplus * 12), "crosssell.origin.surplus");
   }
 
-  // De-duplicate by product (keep the higher score) and rank.
+  // v7 — sinais derivados dos EVENTOS da timeline (B1) e dos gaps do plano (B2).
+  out.push(...signalsFromEvents(plan), ...signalsFromPlanGaps(plan));
+
+  // Consolidação por PRODUTO (B3): mantém a oportunidade de maior score e
+  // mescla as ORIGENS das demais — é isso que faz evento↔objetivo de educação
+  // virar UMA oportunidade (VIS-608) e múltiplas fontes listarem no card.
   const byProduct = new Map<string, CrossSellOpportunity>();
   for (const o of out) {
     const ex = byProduct.get(o.productKey);
-    if (!ex || o.score > ex.score) byProduct.set(o.productKey, o);
+    if (!ex) {
+      byProduct.set(o.productKey, o);
+    } else {
+      const principal = o.score > ex.score ? o : ex;
+      const outro = o.score > ex.score ? ex : o;
+      const origens = dedupeOrigins([...(principal.origens ?? []), ...(outro.origens ?? [])]);
+      byProduct.set(o.productKey, { ...principal, origens });
+    }
   }
-  return [...byProduct.values()].sort((a, b) => b.score - a.score).slice(0, 6);
+  // Ranking completo — o TETO de exibição (config) é aplicado na tela, com
+  // "ver todas" para o excedente; o payload do CRM leva a lista inteira.
+  return [...byProduct.values()].sort((a, b) => b.score - a.score);
+}
+
+function dedupeOrigins(origens: SignalOrigin[]): SignalOrigin[] {
+  const seen = new Set<string>();
+  const out: SignalOrigin[] = [];
+  for (const o of origens) {
+    const key = `${o.tipo}:${o.label ?? ""}:${o.presetKey ?? ""}:${o.originKey ?? ""}:${o.ano ?? ""}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(o);
+  }
+  return out.slice(0, 3);
 }

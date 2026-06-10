@@ -517,16 +517,34 @@ export type EnginePhase = "simulate" | "output";
 
 export type Fit = "high" | "medium" | "low";
 
+/** v7 — where a cross-sell signal came from (shown on the card + CRM payload). */
+export interface SignalOrigin {
+  /** "event" = timeline life event · "plan" = plan element (goal/gap/profile). */
+  tipo: "event" | "plan";
+  /** Free-text label (event custom name, goal label) — wins over the keys. */
+  label?: string;
+  /** Event preset key — UI resolves via `lifeEvents.preset.*`. */
+  presetKey?: string;
+  /** Plan-element i18n key — UI resolves via `crosssell.origin.*`. */
+  originKey?: string;
+  /** Calendar year, when the source has one (events, goals). */
+  ano?: number;
+}
+
 export interface CrossSellOpportunity {
   id: string;
   productKey: string;
   categoryKey: string;
   rationaleKey: string;
+  /** v7 — numeric/text slots interpolated into the rationale template (engine-sourced). */
+  rationaleParams?: Record<string, string | number>;
   fit: Fit;
   /** 0..100 fit score for ranking and display. */
   score: number;
   /** Illustrative BRL signal (coverage / AUM / balance at stake). */
   estimatedValue: number;
+  /** v7 — signal origins (consolidated when multiple sources fire the same product). */
+  origens?: SignalOrigin[];
 }
 
 export interface OutboundResult {
@@ -567,5 +585,7 @@ export interface OutputPayload {
     score: number;
     estimatedValue: number;
     rationale: string;
+    /** v7 — origem(ns) do sinal, legíveis (S7 do data mapping). */
+    origemSinal: string[];
   }[];
 }

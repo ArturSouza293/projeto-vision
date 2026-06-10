@@ -88,20 +88,48 @@
     "planForKnown": "A plan for what they care about"
   },
   "persona": {
-    "marcos": { "tagline": "Over-indebted worker escaping high-cost debt" },
-    "aline": { "tagline": "Almost debt-free, about to become a first-time saver" },
-    "camilaDiego": { "tagline": "Dual-income couple at peak savings, weighing their first apartment" },
-    "fernanda": { "tagline": "High-income mother securing a child's lifelong care" },
-    "joseCarlos": { "tagline": "Pre-retiree turning a portfolio into income" },
-    "patricia": { "tagline": "Entrepreneur deploying a post-sale windfall" },
-    "julia": { "tagline": "First formal job, high savings potential, habit yet to build" },
-    "bruno": { "tagline": "Heir at a crossroads — own career vs. the family business" },
-    "luana": { "tagline": "Sole-provider mother who values protection over returns" },
-    "thiago": { "tagline": "Variable-income freelancer with no pension safety net" },
-    "roberto": { "tagline": "Just cleared consumer debt — amortize vs. invest the mortgage?" },
-    "ricardo": { "tagline": "High-earning executive with scattered, tax-inefficient wealth" },
-    "helena": { "tagline": "Widow living off her portfolio — needs inflation-proof income" },
-    "antonio": { "tagline": "Consolidated old-money estate — succession & liquidity is the work" }
+    "marcos": {
+      "tagline": "Over-indebted worker escaping high-cost debt"
+    },
+    "aline": {
+      "tagline": "Almost debt-free, about to become a first-time saver"
+    },
+    "camilaDiego": {
+      "tagline": "Dual-income couple at peak savings, weighing their first apartment"
+    },
+    "fernanda": {
+      "tagline": "High-income mother securing a child's lifelong care"
+    },
+    "joseCarlos": {
+      "tagline": "Pre-retiree turning a portfolio into income"
+    },
+    "patricia": {
+      "tagline": "Entrepreneur deploying a post-sale windfall"
+    },
+    "julia": {
+      "tagline": "First formal job, high savings potential, habit yet to build"
+    },
+    "bruno": {
+      "tagline": "Heir at a crossroads — own career vs. the family business"
+    },
+    "luana": {
+      "tagline": "Sole-provider mother who values protection over returns"
+    },
+    "thiago": {
+      "tagline": "Variable-income freelancer with no pension safety net"
+    },
+    "roberto": {
+      "tagline": "Just cleared consumer debt — amortize vs. invest the mortgage?"
+    },
+    "ricardo": {
+      "tagline": "High-earning executive with scattered, tax-inefficient wealth"
+    },
+    "helena": {
+      "tagline": "Widow living off her portfolio — needs inflation-proof income"
+    },
+    "antonio": {
+      "tagline": "Consolidated old-money estate — succession & liquidity is the work"
+    }
   },
   "flags": {
     "soleProvider": "Sole provider — protection is a priority",
@@ -503,13 +531,14 @@
     "clear": "Clear"
   },
   "timeline": {
-    "title": "Timeline",
-    "hint": "Click the line to add an event",
-    "retirement": "Retirement",
-    "add": "Add",
-    "cancel": "Cancel",
-    "eventTitle": "Event title",
-    "newEvent": "Event"
+    "planTitle": "Life plan",
+    "title": "Financial timeline",
+    "subtitle": "Drag an event to change the year · click to edit",
+    "addEvent": "Add event",
+    "legendMilestone": "Milestone",
+    "editEvent": "Edit event",
+    "editMilestone": "Edit milestone",
+    "milestoneHint": "Retirement anchors the plan: moving the milestone recalculates contributions, curve and indicators."
   },
   "eventType": {
     "review": "Review",
@@ -551,7 +580,13 @@
     "createFirst": "Create the first scenario to start the simulation loop.",
     "parameters": "Planning parameters",
     "growthScenario": "Growth scenario",
-    "growth": { "base": "Base", "cautious": "Cautious", "conservative": "Conservative", "stressed": "Stressed", "custom": "Custom" },
+    "growth": {
+      "base": "Base",
+      "cautious": "Cautious",
+      "conservative": "Conservative",
+      "stressed": "Stressed",
+      "custom": "Custom"
+    },
     "monthlyContribution": "Monthly contribution",
     "retirementAge": "Retirement age",
     "expectedReturn": "Expected real return",
@@ -610,10 +645,22 @@
     "subtitle": "Before the 'what' and the 'how', the why. See what changes when money has a plan.",
     "segmentHint": "Examples for the profile:",
     "cards": {
-      "c1": { "q": "I already invest. Why do I need a plan?", "a": "Investing without a plan is having the pieces without the puzzle. A plan gives every real a job: a goal, a horizon and a fitting risk. Without it, a portfolio can look 'good' — and still not take you where you want to go." },
-      "c2": { "q": "Why talk about my life before talking about products?", "a": "A product is the 'what'. Your life is the 'why'. Without the why, any product fits — and none solves it. The plan is born from your goals; products are a consequence." },
-      "c3": { "q": "What happens if I don't plan?", "a": "The short term decides for you: surprises become debt, retirement gets postponed, and succession turns into cost and family conflict — at the worst possible time." },
-      "c4": { "q": "Why start now and not next year?", "a": "Time is the only asset you can't get back. Every year delayed needs a bigger monthly contribution for the same goal." }
+      "c1": {
+        "q": "I already invest. Why do I need a plan?",
+        "a": "Investing without a plan is having the pieces without the puzzle. A plan gives every real a job: a goal, a horizon and a fitting risk. Without it, a portfolio can look 'good' — and still not take you where you want to go."
+      },
+      "c2": {
+        "q": "Why talk about my life before talking about products?",
+        "a": "A product is the 'what'. Your life is the 'why'. Without the why, any product fits — and none solves it. The plan is born from your goals; products are a consequence."
+      },
+      "c3": {
+        "q": "What happens if I don't plan?",
+        "a": "The short term decides for you: surprises become debt, retirement gets postponed, and succession turns into cost and family conflict — at the worst possible time."
+      },
+      "c4": {
+        "q": "Why start now and not next year?",
+        "a": "Time is the only asset you can't get back. Every year delayed needs a bigger monthly contribution for the same goal."
+      }
     },
     "example": "For {target} at 65: starting at {a1} costs {m1}/mo; waiting until {a2} rises to {m2}/mo.",
     "cta": "Start my plan",
@@ -634,11 +681,18 @@
   "peer": {
     "title": "What are people like you planning for?",
     "subtitle": "Based on clients with a similar profile — ordered by how many found each scenario valuable.",
-    "tab": { "sugestoes": "Suggestions for you", "criar": "Create from scratch" },
+    "tab": {
+      "sugestoes": "Suggestions for you",
+      "criar": "Create from scratch"
+    },
     "chipsLabel": "Your profile:",
     "chipIdade": "{faixa} years",
     "chipRenda": "income ≈ {valor}/month",
-    "chipComposicao": { "solteiro": "single", "casal": "couple", "familia": "with children" },
+    "chipComposicao": {
+      "solteiro": "single",
+      "casal": "couple",
+      "familia": "with children"
+    },
     "relevTitle": "Why is this relevant for you?",
     "considerTitle": "What could be considered?",
     "social": "{n} in 10 clients like you added this",
@@ -715,16 +769,6 @@
     "goalLink": "Link to goal (optional)",
     "goalNone": "No link",
     "create": "Add event"
-  },
-  "timeline": {
-    "planTitle": "Life plan",
-    "title": "Financial timeline",
-    "subtitle": "Drag an event to change the year · click to edit",
-    "addEvent": "Add event",
-    "legendMilestone": "Milestone",
-    "editEvent": "Edit event",
-    "editMilestone": "Edit milestone",
-    "milestoneHint": "Retirement anchors the plan: moving the milestone recalculates contributions, curve and indicators."
   },
   "variants": {
     "label": "Plans",
@@ -816,13 +860,38 @@
     "achievable": "achievable"
   },
   "kpiDetail": {
-    "wealth": { "title": "Wealth at retirement", "body": "What you'll have accumulated at retirement — today's investable wealth plus contributions and real growth." },
-    "duration": { "title": "How long income lasts", "body": "How many years the portfolio sustains the retirement income need before depleting." },
-    "probability": { "title": "Probability of success", "body": "Chance the plan funds the desired income across the whole horizon — capital at retirement vs. capital needed." },
-    "estate": { "title": "Estate at horizon", "body": "How much should remain at the end of the planning horizon (legacy / margin)." },
-    "gap": { "title": "Retirement income gap", "body": "The gap between the portfolio's sustainable monthly income IN RETIREMENT and the desired income. Not the same as free balance — today's monthly surplus to invest. Negative = shortfall; positive = surplus." },
-    "goals": { "title": "Goals", "body": "How many goals are achievable in the current scenario. Tap each one for detail.", "achievable": "goals achievable", "ok": "achievable", "partial": "partial" },
-    "f": { "investableNow": "Investable today", "need": "Monthly need", "continuing": "Continuing income" },
+    "wealth": {
+      "title": "Wealth at retirement",
+      "body": "What you'll have accumulated at retirement — today's investable wealth plus contributions and real growth."
+    },
+    "duration": {
+      "title": "How long income lasts",
+      "body": "How many years the portfolio sustains the retirement income need before depleting."
+    },
+    "probability": {
+      "title": "Probability of success",
+      "body": "Chance the plan funds the desired income across the whole horizon — capital at retirement vs. capital needed."
+    },
+    "estate": {
+      "title": "Estate at horizon",
+      "body": "How much should remain at the end of the planning horizon (legacy / margin)."
+    },
+    "gap": {
+      "title": "Retirement income gap",
+      "body": "The gap between the portfolio's sustainable monthly income IN RETIREMENT and the desired income. Not the same as free balance — today's monthly surplus to invest. Negative = shortfall; positive = surplus."
+    },
+    "goals": {
+      "title": "Goals",
+      "body": "How many goals are achievable in the current scenario. Tap each one for detail.",
+      "achievable": "goals achievable",
+      "ok": "achievable",
+      "partial": "partial"
+    },
+    "f": {
+      "investableNow": "Investable today",
+      "need": "Monthly need",
+      "continuing": "Continuing income"
+    },
     "askBia": "Ask Bia",
     "askGeneric": "Explain '{topic}' for this client in plain language, using the plan's numbers, and tell me the next step."
   },
@@ -871,7 +940,14 @@
     "title": "Client data",
     "subtitle": "Fill or refine the dossier — the simulation updates live.",
     "finish": "Done",
-    "tab": { "profile": "Profile", "income": "Income", "expense": "Expenses", "networth": "Net worth", "suitability": "Suitability", "goals": "Goals" }
+    "tab": {
+      "profile": "Profile",
+      "income": "Income",
+      "expense": "Expenses",
+      "networth": "Net worth",
+      "suitability": "Suitability",
+      "goals": "Goals"
+    }
   },
   "output": {
     "title": "Handoff to Salesforce",
@@ -885,7 +961,11 @@
     "crossSell": "Cross-sell opportunities",
     "estimatedTotal": "Potential at stake:",
     "potential": "Potential:",
-    "fit": { "high": "High fit", "medium": "Medium fit", "low": "Low fit" },
+    "fit": {
+      "high": "High fit",
+      "medium": "Medium fit",
+      "low": "Low fit"
+    },
     "generatedData": "Generated data",
     "payload": "Output payload (API)",
     "viewJson": "Raw JSON",
@@ -896,7 +976,11 @@
     "sent": "Plan delivered to Salesforce",
     "delivered": "Delivered to Salesforce",
     "approveToSend": "Approve the plan to enable sending.",
-    "fitScore": "Fit score"
+    "fitScore": "Fit score",
+    "originEvent": "derived from event:",
+    "originPlan": "derived from plan:",
+    "showAll": "Show all ({n} more)",
+    "showLess": "Show less"
   },
   "crosssell": {
     "product": {
@@ -912,7 +996,16 @@
       "succession": "Succession structure (holding, ITCMD)",
       "autoInvest": "Automatic monthly contribution",
       "medicalFund": "Ring-fenced medical fund + health-plan continuity",
-      "incomeLadder": "FII + Tesouro Renda+ income ladder"
+      "incomeLadder": "FII + Tesouro Renda+ income ladder",
+      "inflowParking": "Inflow allocation plan",
+      "plannedSavings": "Planned savings for the event",
+      "plannedFinancing": "Planned financing / consortium",
+      "decumulationReview": "Decumulation review / programmed income",
+      "successionPlanning": "Succession planning",
+      "reallocation": "Portfolio reallocation",
+      "goalFunding": "Programmed contribution for the goal",
+      "protectionReview": "Protection review (life/disability)",
+      "fxAccount": "International account / programmed FX"
     },
     "cat": {
       "credit": "Credit",
@@ -939,7 +1032,39 @@
       "succession": "A sizeable estate needs succession and liquidity planning.",
       "autoInvest": "Monthly surplus not yet automated into investments.",
       "medicalContinuity": "High recurring medical costs with dependents — fund the stream and secure coverage continuity.",
-      "incomeLadder": "Approaching retirement — convert the portfolio into an inflation-protected income stream."
+      "incomeLadder": "Approaching retirement — convert the portfolio into an inflation-protected income stream.",
+      "inflowParking": "Sizable inflow expected in {ano} — deciding its destination before the money lands avoids idle cash.",
+      "inflowSuccession": "The inflow expected in {ano} is the opportunity to fund the succession liquidity still missing.",
+      "plannedSavings": "Event planned for {ano}: a contribution of {aporte, number, ::currency/BRL}/month gets there without credit.",
+      "plannedFinancing": "The {ano} event is close and the required contribution ({aporte, number, ::currency/BRL}/month) does not fit the surplus — structured financing/consortium preserves the plan.",
+      "educationHorizon": "Education with a {anos}-year horizon until {ano} — long horizons favor instruments with long-term benefits (attributes, not labels).",
+      "businessVolatility": "Opening a business in {ano} makes income more volatile — review life/disability coverage BEFORE the move.",
+      "travelFx": "Relevant international expense in {ano} — programming FX dilutes rate risk.",
+      "familyGrowing": "Family growing in {ano} — protection and planning must keep up.",
+      "decumulation": "Outflow planned for {ano}, already in the usufruct phase — review the income plan.",
+      "decumulationDepletes": "The outflow planned for {ano} happens in retirement and wealth depletes in {anoEsgotamento} — review decumulation/programmed income.",
+      "depletionPlan": "On the current path wealth depletes in {anoEsgotamento} — structuring lifetime income/pension protects longevity.",
+      "goalGap": "Goal underfunded until {ano} — a programmed contribution of {aporte, number, ::currency/BRL}/month closes the gap.",
+      "tooRisky": "Conservative profile with a risk-heavy allocation — realign the portfolio to suitability.",
+      "tooConservative": "Aggressive profile with excess cash — the money is below the client mandate.",
+      "ownershipConcentration": "Wealth concentrated in a single holder with an active succession goal — structure the succession plan."
+    },
+    "origin": {
+      "debt": "high-cost debt",
+      "family": "dependents in the profile",
+      "health": "recurring health expenses",
+      "reserveGap": "emergency reserve gap",
+      "idleCash": "idle cash above the reserve",
+      "noPension": "no pension vehicle",
+      "nearRetirement": "retirement proximity",
+      "educationGoal": "education goal",
+      "propertyGoal": "property goal",
+      "mortgage": "active mortgage",
+      "segment": "segment profile",
+      "surplus": "recurring monthly surplus",
+      "depletion": "projected wealth depletion",
+      "suitability": "suitability × allocation mismatch",
+      "ownership": "concentrated ownership"
     }
   }
 }

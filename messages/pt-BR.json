@@ -88,20 +88,48 @@
     "planForKnown": "Um plano para o que importa"
   },
   "persona": {
-    "marcos": { "tagline": "Trabalhador endividado fugindo do crédito caro" },
-    "aline": { "tagline": "Quase sem dívidas, prestes a poupar pela primeira vez" },
-    "camilaDiego": { "tagline": "Casal de alta renda no auge da poupança, avaliando o primeiro apartamento" },
-    "fernanda": { "tagline": "Mãe de alta renda garantindo o cuidado vitalício de um filho" },
-    "joseCarlos": { "tagline": "Pré-aposentado transformando o portfólio em renda" },
-    "patricia": { "tagline": "Empreendedora alocando os recursos após a venda" },
-    "julia": { "tagline": "Primeiro emprego formal, alto potencial de poupança, hábito a construir" },
-    "bruno": { "tagline": "Herdeiro na encruzilhada — carreira própria vs. a empresa da família" },
-    "luana": { "tagline": "Mãe única provedora que valoriza proteção acima de rentabilidade" },
-    "thiago": { "tagline": "Freelancer de renda variável sem rede de previdência" },
-    "roberto": { "tagline": "Acabou de quitar a dívida — amortizar vs. investir o financiamento?" },
-    "ricardo": { "tagline": "Executivo de alta renda com patrimônio disperso e ineficiente em IR" },
-    "helena": { "tagline": "Viúva vivendo da carteira — precisa de renda protegida da inflação" },
-    "antonio": { "tagline": "Patrimônio antigo consolidado — sucessão & liquidez é o trabalho" }
+    "marcos": {
+      "tagline": "Trabalhador endividado fugindo do crédito caro"
+    },
+    "aline": {
+      "tagline": "Quase sem dívidas, prestes a poupar pela primeira vez"
+    },
+    "camilaDiego": {
+      "tagline": "Casal de alta renda no auge da poupança, avaliando o primeiro apartamento"
+    },
+    "fernanda": {
+      "tagline": "Mãe de alta renda garantindo o cuidado vitalício de um filho"
+    },
+    "joseCarlos": {
+      "tagline": "Pré-aposentado transformando o portfólio em renda"
+    },
+    "patricia": {
+      "tagline": "Empreendedora alocando os recursos após a venda"
+    },
+    "julia": {
+      "tagline": "Primeiro emprego formal, alto potencial de poupança, hábito a construir"
+    },
+    "bruno": {
+      "tagline": "Herdeiro na encruzilhada — carreira própria vs. a empresa da família"
+    },
+    "luana": {
+      "tagline": "Mãe única provedora que valoriza proteção acima de rentabilidade"
+    },
+    "thiago": {
+      "tagline": "Freelancer de renda variável sem rede de previdência"
+    },
+    "roberto": {
+      "tagline": "Acabou de quitar a dívida — amortizar vs. investir o financiamento?"
+    },
+    "ricardo": {
+      "tagline": "Executivo de alta renda com patrimônio disperso e ineficiente em IR"
+    },
+    "helena": {
+      "tagline": "Viúva vivendo da carteira — precisa de renda protegida da inflação"
+    },
+    "antonio": {
+      "tagline": "Patrimônio antigo consolidado — sucessão & liquidez é o trabalho"
+    }
   },
   "flags": {
     "soleProvider": "Única provedora — proteção é prioridade",
@@ -503,13 +531,14 @@
     "clear": "Limpar"
   },
   "timeline": {
-    "title": "Linha do tempo",
-    "hint": "Clique na linha para adicionar um evento",
-    "retirement": "Aposentadoria",
-    "add": "Adicionar",
-    "cancel": "Cancelar",
-    "eventTitle": "Título do evento",
-    "newEvent": "Evento"
+    "planTitle": "Plano de vida",
+    "title": "Linha do tempo financeira",
+    "subtitle": "Arraste um evento para mudar o ano · clique para editar",
+    "addEvent": "Adicionar evento",
+    "legendMilestone": "Marco",
+    "editEvent": "Editar evento",
+    "editMilestone": "Editar marco",
+    "milestoneHint": "A aposentadoria é a âncora do plano: mover o marco recalcula aportes, curva e indicadores."
   },
   "eventType": {
     "review": "Revisão",
@@ -551,7 +580,13 @@
     "createFirst": "Crie o primeiro cenário para iniciar o loop de simulação.",
     "parameters": "Parâmetros de planejamento",
     "growthScenario": "Cenário de crescimento",
-    "growth": { "base": "Base", "cautious": "Cauteloso", "conservative": "Conservador", "stressed": "Estressado", "custom": "Personalizado" },
+    "growth": {
+      "base": "Base",
+      "cautious": "Cauteloso",
+      "conservative": "Conservador",
+      "stressed": "Estressado",
+      "custom": "Personalizado"
+    },
     "monthlyContribution": "Aporte mensal",
     "retirementAge": "Idade de aposentadoria",
     "expectedReturn": "Retorno real esperado",
@@ -610,10 +645,22 @@
     "subtitle": "Antes do 'o quê' e do 'como', o porquê. Veja o que muda quando o dinheiro tem um plano.",
     "segmentHint": "Exemplos para o perfil:",
     "cards": {
-      "c1": { "q": "Eu já invisto. Por que preciso de um plano?", "a": "Investir sem plano é ter peças sem o quebra-cabeça. O plano dá função a cada real: um objetivo, um prazo e um risco adequado. Sem isso, a carteira pode estar 'boa' — e ainda assim não levar você aonde quer chegar." },
-      "c2": { "q": "Por que falar da minha vida antes de falar de produto?", "a": "Produto é o 'o quê'. Sua vida é o 'porquê'. Sem saber o porquê, qualquer produto serve — e nenhum resolve. O plano nasce dos seus objetivos; os produtos são consequência." },
-      "c3": { "q": "O que acontece se eu não planejar?", "a": "O curto prazo decide por você: imprevistos viram dívida, a aposentadoria fica para depois, e a sucessão vira custo e conflito para a família — no pior momento possível." },
-      "c4": { "q": "Por que começar agora, e não no ano que vem?", "a": "Tempo é o único ativo que não se recupera. Cada ano adiado exige um aporte maior para o mesmo objetivo." }
+      "c1": {
+        "q": "Eu já invisto. Por que preciso de um plano?",
+        "a": "Investir sem plano é ter peças sem o quebra-cabeça. O plano dá função a cada real: um objetivo, um prazo e um risco adequado. Sem isso, a carteira pode estar 'boa' — e ainda assim não levar você aonde quer chegar."
+      },
+      "c2": {
+        "q": "Por que falar da minha vida antes de falar de produto?",
+        "a": "Produto é o 'o quê'. Sua vida é o 'porquê'. Sem saber o porquê, qualquer produto serve — e nenhum resolve. O plano nasce dos seus objetivos; os produtos são consequência."
+      },
+      "c3": {
+        "q": "O que acontece se eu não planejar?",
+        "a": "O curto prazo decide por você: imprevistos viram dívida, a aposentadoria fica para depois, e a sucessão vira custo e conflito para a família — no pior momento possível."
+      },
+      "c4": {
+        "q": "Por que começar agora, e não no ano que vem?",
+        "a": "Tempo é o único ativo que não se recupera. Cada ano adiado exige um aporte maior para o mesmo objetivo."
+      }
     },
     "example": "Para {target} aos 65: começar aos {a1} custa {m1}/mês; esperar até {a2} sobe para {m2}/mês.",
     "cta": "Começar meu plano",
@@ -634,11 +681,18 @@
   "peer": {
     "title": "O que pessoas como você estão planejando?",
     "subtitle": "Com base em clientes de perfil parecido — ordenado por quantos consideraram cada cenário valioso.",
-    "tab": { "sugestoes": "Sugestões para você", "criar": "Criar do zero" },
+    "tab": {
+      "sugestoes": "Sugestões para você",
+      "criar": "Criar do zero"
+    },
     "chipsLabel": "Seu perfil:",
     "chipIdade": "{faixa} anos",
     "chipRenda": "renda ≈ {valor}/mês",
-    "chipComposicao": { "solteiro": "solteiro(a)", "casal": "casal", "familia": "com filhos" },
+    "chipComposicao": {
+      "solteiro": "solteiro(a)",
+      "casal": "casal",
+      "familia": "com filhos"
+    },
     "relevTitle": "Por que isso é relevante para você?",
     "considerTitle": "O que poderia ser considerado?",
     "social": "{n} em 10 clientes como você adicionaram",
@@ -715,16 +769,6 @@
     "goalLink": "Vincular a objetivo (opcional)",
     "goalNone": "Sem vínculo",
     "create": "Adicionar evento"
-  },
-  "timeline": {
-    "planTitle": "Plano de vida",
-    "title": "Linha do tempo financeira",
-    "subtitle": "Arraste um evento para mudar o ano · clique para editar",
-    "addEvent": "Adicionar evento",
-    "legendMilestone": "Marco",
-    "editEvent": "Editar evento",
-    "editMilestone": "Editar marco",
-    "milestoneHint": "A aposentadoria é a âncora do plano: mover o marco recalcula aportes, curva e indicadores."
   },
   "variants": {
     "label": "Planos",
@@ -816,13 +860,38 @@
     "achievable": "atingíveis"
   },
   "kpiDetail": {
-    "wealth": { "title": "Patrimônio na aposentadoria", "body": "Quanto você terá acumulado ao se aposentar, somando o investível de hoje, os aportes e o crescimento real." },
-    "duration": { "title": "Por quanto tempo a renda dura", "body": "Quantos anos a carteira sustenta a necessidade de renda na aposentadoria antes de esgotar." },
-    "probability": { "title": "Probabilidade de sucesso", "body": "Chance de o plano financiar a renda desejada por todo o horizonte — capital na aposentadoria vs. capital necessário." },
-    "estate": { "title": "Patrimônio no horizonte", "body": "Quanto deve sobrar no fim do horizonte de planejamento (herança / margem)." },
-    "gap": { "title": "Lacuna na aposentadoria", "body": "Diferença entre a renda mensal sustentável da carteira NA APOSENTADORIA e a renda desejada. Não confunda com o saldo livre, que é a sobra mensal de hoje para aportar. Negativo = falta; positivo = sobra." },
-    "goals": { "title": "Objetivos", "body": "Quantos objetivos são atingíveis no cenário atual. Toque em cada um para ver o detalhe.", "achievable": "objetivos atingíveis", "ok": "atingível", "partial": "parcial" },
-    "f": { "investableNow": "Investível hoje", "need": "Necessidade mensal", "continuing": "Renda contínua" },
+    "wealth": {
+      "title": "Patrimônio na aposentadoria",
+      "body": "Quanto você terá acumulado ao se aposentar, somando o investível de hoje, os aportes e o crescimento real."
+    },
+    "duration": {
+      "title": "Por quanto tempo a renda dura",
+      "body": "Quantos anos a carteira sustenta a necessidade de renda na aposentadoria antes de esgotar."
+    },
+    "probability": {
+      "title": "Probabilidade de sucesso",
+      "body": "Chance de o plano financiar a renda desejada por todo o horizonte — capital na aposentadoria vs. capital necessário."
+    },
+    "estate": {
+      "title": "Patrimônio no horizonte",
+      "body": "Quanto deve sobrar no fim do horizonte de planejamento (herança / margem)."
+    },
+    "gap": {
+      "title": "Lacuna na aposentadoria",
+      "body": "Diferença entre a renda mensal sustentável da carteira NA APOSENTADORIA e a renda desejada. Não confunda com o saldo livre, que é a sobra mensal de hoje para aportar. Negativo = falta; positivo = sobra."
+    },
+    "goals": {
+      "title": "Objetivos",
+      "body": "Quantos objetivos são atingíveis no cenário atual. Toque em cada um para ver o detalhe.",
+      "achievable": "objetivos atingíveis",
+      "ok": "atingível",
+      "partial": "parcial"
+    },
+    "f": {
+      "investableNow": "Investível hoje",
+      "need": "Necessidade mensal",
+      "continuing": "Renda contínua"
+    },
     "askBia": "Pergunte à Bia",
     "askGeneric": "Explique '{topic}' deste cliente em linguagem simples, com base nos números do plano, e diga qual é o próximo passo."
   },
@@ -871,7 +940,14 @@
     "title": "Dados do cliente",
     "subtitle": "Preencha ou refine o dossiê — a simulação atualiza ao vivo.",
     "finish": "Concluir",
-    "tab": { "profile": "Perfil", "income": "Renda", "expense": "Despesas", "networth": "Patrimônio", "suitability": "Suitability", "goals": "Objetivos" }
+    "tab": {
+      "profile": "Perfil",
+      "income": "Renda",
+      "expense": "Despesas",
+      "networth": "Patrimônio",
+      "suitability": "Suitability",
+      "goals": "Objetivos"
+    }
   },
   "output": {
     "title": "Entrega para o Salesforce",
@@ -885,7 +961,11 @@
     "crossSell": "Oportunidades de cross-sell",
     "estimatedTotal": "Potencial em jogo:",
     "potential": "Potencial:",
-    "fit": { "high": "Alto fit", "medium": "Médio fit", "low": "Baixo fit" },
+    "fit": {
+      "high": "Alto fit",
+      "medium": "Médio fit",
+      "low": "Baixo fit"
+    },
     "generatedData": "Dados gerados",
     "payload": "Pacote de saída (API)",
     "viewJson": "JSON bruto",
@@ -896,7 +976,11 @@
     "sent": "Plano entregue ao Salesforce",
     "delivered": "Entregue ao Salesforce",
     "approveToSend": "Aprove o plano para habilitar o envio.",
-    "fitScore": "Score de fit"
+    "fitScore": "Score de fit",
+    "originEvent": "derivada do evento:",
+    "originPlan": "derivada do plano:",
+    "showAll": "Ver todas ({n} a mais)",
+    "showLess": "Mostrar menos"
   },
   "crosssell": {
     "product": {
@@ -912,7 +996,16 @@
       "succession": "Estrutura sucessória (holding, ITCMD)",
       "autoInvest": "Aporte mensal automático",
       "medicalFund": "Fundo médico blindado + continuidade do plano de saúde",
-      "incomeLadder": "Escada de renda FII + Tesouro Renda+"
+      "incomeLadder": "Escada de renda FII + Tesouro Renda+",
+      "inflowParking": "Plano de alocação da entrada",
+      "plannedSavings": "Poupança programada para o evento",
+      "plannedFinancing": "Financiamento planejado / consórcio",
+      "decumulationReview": "Revisão de desacumulação / renda programada",
+      "successionPlanning": "Planejamento sucessório",
+      "reallocation": "Realocação de carteira",
+      "goalFunding": "Aporte programado para o objetivo",
+      "protectionReview": "Revisão de proteção (vida/invalidez)",
+      "fxAccount": "Conta internacional / câmbio programado"
     },
     "cat": {
       "credit": "Crédito",
@@ -939,7 +1032,39 @@
       "succession": "Um patrimônio relevante precisa de sucessão e planejamento de liquidez.",
       "autoInvest": "Sobra mensal ainda não automatizada em investimentos.",
       "medicalContinuity": "Custos médicos altos e recorrentes com dependentes — capitalize o fluxo e garanta a continuidade da cobertura.",
-      "incomeLadder": "Perto da aposentadoria — converter o portfólio em renda protegida da inflação."
+      "incomeLadder": "Perto da aposentadoria — converter o portfólio em renda protegida da inflação.",
+      "inflowParking": "Entrada relevante prevista para {ano} — definir o destino antes de o dinheiro chegar evita o caixa parado.",
+      "inflowSuccession": "A entrada prevista para {ano} é a oportunidade de dimensionar a liquidez sucessória que ainda falta.",
+      "plannedSavings": "Evento planejado para {ano}: um aporte de {aporte, number, ::currency/BRL} por mês chega lá sem crédito.",
+      "plannedFinancing": "O evento de {ano} está próximo e o aporte necessário ({aporte, number, ::currency/BRL}/mês) não cabe na sobra — estruturar financiamento planejado/consórcio preserva o plano.",
+      "educationHorizon": "Educação com horizonte de {anos} anos até {ano} — prazo longo favorece instrumentos com benefício de longo prazo (atributos, não rótulos).",
+      "businessVolatility": "Abrir negócio em {ano} torna a renda mais volátil — revisar coberturas de vida e invalidez ANTES da virada.",
+      "travelFx": "Despesa internacional relevante em {ano} — programar câmbio dilui o risco de taxa.",
+      "familyGrowing": "Família crescendo em {ano} — proteção e planejamento precisam acompanhar.",
+      "decumulation": "Saída prevista para {ano}, já na fase de usufruto — revisar o plano de renda.",
+      "decumulationDepletes": "A saída prevista para {ano} acontece no usufruto e o patrimônio esgota em {anoEsgotamento} — revisar desacumulação/renda programada.",
+      "depletionPlan": "Na trajetória atual o patrimônio esgota em {anoEsgotamento} — estruturar renda vitalícia/previdência protege a longevidade.",
+      "goalGap": "Objetivo com funding incompleto até {ano} — aporte programado de {aporte, number, ::currency/BRL}/mês fecha a lacuna.",
+      "tooRisky": "Perfil conservador com alocação carregada em risco — realinhar a carteira ao suitability.",
+      "tooConservative": "Perfil arrojado com excesso de caixa — o dinheiro está aquém do mandato do cliente.",
+      "ownershipConcentration": "Patrimônio concentrado num único titular com objetivo de sucessão ativo — estruturar o planejamento sucessório."
+    },
+    "origin": {
+      "debt": "dívida de alto custo",
+      "family": "dependentes no perfil",
+      "health": "despesas de saúde recorrentes",
+      "reserveGap": "lacuna na reserva de emergência",
+      "idleCash": "caixa parado acima da reserva",
+      "noPension": "ausência de previdência",
+      "nearRetirement": "proximidade da aposentadoria",
+      "educationGoal": "objetivo de educação",
+      "propertyGoal": "objetivo de imóvel",
+      "mortgage": "financiamento imobiliário ativo",
+      "segment": "perfil do segmento",
+      "surplus": "sobra mensal recorrente",
+      "depletion": "esgotamento projetado do patrimônio",
+      "suitability": "divergência suitability × alocação",
+      "ownership": "titularidade concentrada"
     }
   }
 }

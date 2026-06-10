@@ -24,11 +24,12 @@ import {
 import { Money } from "@/components/app/money";
 import { Button } from "@/components/ui/button";
 import { generateOpportunities } from "@/lib/cross-sell";
+import { CROSS_SELL_CONFIG } from "@/lib/cross-sell-config";
 import { formatDate } from "@/lib/format";
 import { buildOutputPayload } from "@/lib/output";
 import { projectPlan } from "@/lib/plan";
 import { useVisionStore } from "@/lib/store/plan-store";
-import type { Fit } from "@/lib/types";
+import type { Fit, SignalOrigin } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const CAT_ICON: Record<string, LucideIcon> = {
@@ -58,6 +59,7 @@ export function Output() {
   const outbound = useVisionStore((s) => s.outbound);
   const busy = useVisionStore((s) => s.busy);
   const [showJson, setShowJson] = useState(false);
+  const [showAllOps, setShowAllOps] = useState(false); // v7 — teto + "ver todas"
   const now = useRef(new Date().toISOString()).current;
 
   const approved = plan.approvalStatus === "approved";
@@ -65,15 +67,32 @@ export function Output() {
     plan.scenarios.find((s) => s.id === plan.selectedScenarioId) ?? plan.scenarios[0];
 
   const opportunities = useMemo(() => generateOpportunities(plan), [plan]);
+  // v7 — teto de EXIBIÇÃO parametrizado; o payload do CRM leva a lista inteira.
+  const visibleOps = showAllOps
+    ? opportunities
+    : opportunities.slice(0, CROSS_SELL_CONFIG.tetoExibicao);
+  const hiddenCount = opportunities.length - CROSS_SELL_CONFIG.tetoExibicao;
+
+  // v7 — origem do sinal legível ("derivada do evento: X · 2035").
+  const originText = (or: SignalOrigin) => {
+    const nome =
+      or.label ||
+      (or.presetKey ? t(`lifeEvents.preset.${or.presetKey}`) : or.originKey ? t(or.originKey) : "");
+    const prefixo = or.tipo === "event" ? t("output.originEvent") : t("output.originPlan");
+    return `${prefixo} ${nome}${or.ano ? ` · ${or.ano}` : ""}`;
+  };
+
   const payload = useMemo(
     () =>
       buildOutputPayload({
         plan,
         scenario: selected,
         opportunities,
-        resolve: (k) => t(k),
+        resolve: (k, params) => t(k, params as Record<string, string | number>),
+        resolveOrigin: originText,
         now,
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [plan, selected, opportunities, t, now],
   );
   const result = selected ? projectPlan(plan, selected.assumptions) : null;
@@ -148,7 +167,7 @@ export function Output() {
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              {opportunities.map((o, i) => {
+              {visibleOps.map((o, i) => {
                 const id = o.categoryKey.split(".").pop() ?? "investments";
                 const Icon = CAT_ICON[id] ?? TrendingUp;
                 return (
@@ -169,7 +188,15 @@ export function Output() {
                     </div>
                     <div className="mt-2.5 text-sm font-medium text-foreground">{t(o.productKey)}</div>
                     <div className="text-[11px] tracking-wide text-muted-foreground/80 uppercase">{t(o.categoryKey)}</div>
-                    <p className="mt-1.5 text-xs text-muted-foreground">{t(o.rationaleKey)}</p>
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      {t(o.rationaleKey, o.rationaleParams as Record<string, string | number>)}
+                    </p>
+                    {/* v7 — origem do sinal (evento da timeline ou elemento do plano) */}
+                    {(o.origens ?? []).map((or, j) => (
+                      <p key={j} className="mt-1 text-[11px] text-info">
+                        ↳ {originText(or)}
+                      </p>
+                    ))}
                     <div className="mt-2.5 text-sm">
                       <span className="text-muted-foreground">{t("output.potential")} </span>
                       <Money value={o.estimatedValue} compact className="font-semibold text-foreground" />
@@ -187,6 +214,15 @@ export function Output() {
                 );
               })}
             </div>
+            {hiddenCount > 0 && (
+              <div className="mt-3 text-center">
+                <Button variant="ghost" size="sm" onClick={() => setShowAllOps((v) => !v)}>
+                  {showAllOps
+                    ? t("output.showLess")
+                    : t("output.showAll", { n: hiddenCount })}
+                </Button>
+              </div>
+            )}
           </section>
 
           {result && (
