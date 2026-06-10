@@ -101,6 +101,24 @@ The runner (`scripts/migrate.mjs`) applies `migrations/*.sql` in order, tracks w
 
 ---
 
+## Demo gate (password screen)
+
+Every route — pages AND APIs (`/api/scenarios`, `/api/advisor`, `/api/plano-ideal`)
+— sits behind a black password screen, enforced **server-side** by `proxy.ts`
+(Next 16's renamed middleware): no cookie → pages are rewritten to `/gate`
+(no prototype HTML is served) and APIs return 401. The password lives ONLY in
+the `GATE_PASSWORD` env var (set it in `.env.local` and in the Vercel project
+envs); the cookie stores a non-reversible SHA-256 token, `httpOnly`,
+`sameSite=lax`, `secure` on HTTPS, 24h. **Without the env the gate is
+DISARMED** (fail-open by design — a missing env must not brick the demo).
+
+> ⚠️ Honesty note: this is a **demo gate** — it stops casual access to a
+> public Preview link. It is NOT production authentication; the real Vision
+> will use corporate auth. QA scripts authenticate via `golden/gate-helper.mjs`
+> (reads the env / `.env.local`, never hardcoded).
+
+---
+
 ## Demo video (~36s, no audio)
 
 A fully automated pipeline records a short product demo of the prototype — Playwright

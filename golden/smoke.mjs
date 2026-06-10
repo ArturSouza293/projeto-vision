@@ -8,11 +8,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
+import { passGate } from "./gate-helper.mjs";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const fixture = fs.readFileSync(path.join(__dirname, "..", "demo", "raw", "fixtures", "workspace.json"), "utf8");
 
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+await passGate(ctx, "http://localhost:3010"); // v6: gate de demonstração
 await ctx.addInitScript(({ k, v }) => localStorage.setItem(k, v), { k: "vision-store", v: fixture });
 
 const page = await ctx.newPage();

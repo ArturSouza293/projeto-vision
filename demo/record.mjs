@@ -14,6 +14,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
 
+import { passGate } from "../golden/gate-helper.mjs";
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SB = JSON.parse(fs.readFileSync(path.join(__dirname, "storyboard.json"), "utf8"));
 const RAW = path.join(__dirname, "raw");
@@ -131,6 +133,7 @@ async function scrollTrackTo(page, targetY) {
 async function prepareFixtures(browser) {
   console.log("• preparing localStorage fixtures (non-recorded pass)…");
   const ctx = await browser.newContext({ viewport: SB.viewport });
+  await passGate(ctx, SB.baseUrl); // v6: gate de demonstração
   const page = await ctx.newPage();
   await page.goto(SB.baseUrl, { waitUntil: "domcontentloaded" });
 
@@ -302,6 +305,7 @@ async function recordScene(browser, scene) {
     viewport: SB.viewport,
     recordVideo: { dir: RAW, size: SB.viewport },
   });
+  await passGate(ctx, SB.baseUrl); // v6: gate de demonstração
   await ctx.addInitScript(({ key, value }) => localStorage.setItem(key, value), {
     key: STORE_KEY,
     value: fixture,

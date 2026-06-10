@@ -12,6 +12,8 @@
  */
 import { chromium } from "playwright";
 
+import { passGate } from "./gate-helper.mjs";
+
 const BASE = "http://localhost:3010";
 const results = [];
 const fail = [];
@@ -24,6 +26,7 @@ function check(name, ok, detail = "") {
 
 async function newSession(browser) {
   const ctx = await browser.newContext({ viewport: { width: 1920, height: 1080 } });
+  await passGate(ctx, BASE); // v6: gate de demonstração
   const page = await ctx.newPage();
   const errors = [];
   page.on("console", (m) => m.type() === "error" && errors.push(m.text()));
