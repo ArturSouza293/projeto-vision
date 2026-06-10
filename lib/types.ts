@@ -407,11 +407,28 @@ export interface LifeEvent {
   kind: LifeEventKind;
   /** Calendar year the event lands on (or starts, for recurring). */
   year: number;
+  /** Month 1–12 within the year (engine C1). Absent = year-end (v2 parity). */
+  month?: number;
   /** Amount in BRL (always positive; sign comes from `kind`). */
   amount: number;
   /** When true, applies annually over [year, endYear] instead of once. */
   recurring?: boolean;
   endYear?: number;
+  /** Optional link to a goal this event relates to (informational in v5). */
+  goalId?: string;
+}
+
+/** v5 — full-case variant for A/B/C comparison ("Planos"). */
+export type VariantColor = "blue" | "green" | "orange" | "purple";
+
+export interface CaseVariant {
+  id: string;
+  name: string;
+  color: VariantColor;
+  /** The comparison baseline (exactly one per set). */
+  isRef: boolean;
+  /** Deep snapshot of the whole case (data + scenarios + events). */
+  plan: Plan;
 }
 
 export type AdvisorEventType =

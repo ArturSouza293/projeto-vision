@@ -55,14 +55,16 @@ export function monthlyPmtForTarget(target: number, years: number, r: number): n
 
 /* --------------------------------------------------------- projection map */
 
-function toCase(input: ProjectionInput): PlanningCase {
+export function toEngineCase(input: ProjectionInput): PlanningCase {
   const anoBase = new Date().getFullYear();
   const lifeEvents: EventoDeVida[] = (input.lifeEvents ?? []).map((ev) => ({
     id: ev.id,
     tipo: ev.kind === "inflow" ? "entrada" : "saida",
     valor: ev.amount,
+    // v5: explicit month when the user set one; default stays DECEMBER
+    // (v2 parity: events hit at year-end, after growth).
     ano: ev.year,
-    mes: 12, // v2 semantics: events hit at year-end, after growth
+    mes: ev.month ?? 12,
     recorrente: ev.recurring,
     anoFim: ev.endYear,
   }));
@@ -113,7 +115,7 @@ function toCase(input: ProjectionInput): PlanningCase {
 export function projectInputViaEngine(input: ProjectionInput): ProjectionResult {
   const { goals, realReturn: r } = input;
   const thisYear = new Date().getFullYear();
-  const proj = localEngine.project(toCase(input));
+  const proj = localEngine.project(toEngineCase(input));
 
   // Event inflows per year (plain sums — used to keep the income LINE clean,
   // exactly like v2 where events moved wealth but not the income series).

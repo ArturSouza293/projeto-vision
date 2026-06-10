@@ -6,9 +6,10 @@ import { useTranslations } from "next-intl";
 import { Plus, Trash2, X } from "@/components/app/icons";
 import { MoneyInput } from "@/components/app/number-field";
 import { WealthArea } from "@/components/charts/wealth-area";
+import { CustomEventModal } from "@/components/engine/custom-event-modal";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CUSTOM_PRESET, LIFE_EVENT_PRESETS, lifeEventPreset } from "@/lib/life-event-meta";
+import { LIFE_EVENT_PRESETS, lifeEventPreset } from "@/lib/life-event-meta";
 import { projectPlan } from "@/lib/plan";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { LifeEvent, Plan, ProjectionPoint, ScenarioAssumptions } from "@/lib/types";
@@ -52,6 +53,7 @@ export function WealthTimeline({
   const [ghost, setGhost] = useState<ProjectionPoint[] | null>(null);
   const [drag, setDrag] = useState<DragState | null>(null);
   const [editId, setEditId] = useState<string | null>(null);
+  const [customOpen, setCustomOpen] = useState(false); // v5: peer-insights modal
 
   // Tear down any in-flight drag listeners + pending frame if we unmount mid-drag
   // (switching scenario/persona) — otherwise leaked window listeners could mutate
@@ -339,7 +341,8 @@ export function WealthTimeline({
           })}
           <button
             type="button"
-            onClick={() => addPreset(CUSTOM_PRESET.key)}
+            data-testid="palette-custom"
+            onClick={() => setCustomOpen(true)} // v5: big modal with peer suggestions
             className="inline-flex items-center gap-1 rounded-full border border-dashed border-border px-2.5 py-1 text-xs font-medium text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
           >
             <Plus className="size-3.5" />
@@ -347,6 +350,8 @@ export function WealthTimeline({
           </button>
         </div>
       </div>
+
+      <CustomEventModal plan={plan} open={customOpen} onOpenChange={setCustomOpen} maxYear={retirementYear} />
     </div>
   );
 }

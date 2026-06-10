@@ -631,6 +631,125 @@
     "regenerate": "Regenerate",
     "applied": "Plan applied"
   },
+  "peer": {
+    "title": "What are people like you planning for?",
+    "subtitle": "Based on clients with a similar profile — ordered by how many found each scenario valuable.",
+    "tab": { "sugestoes": "Suggestions for you", "criar": "Create from scratch" },
+    "chipsLabel": "Your profile:",
+    "chipIdade": "{faixa} years",
+    "chipRenda": "income ≈ {valor}/month",
+    "chipComposicao": { "solteiro": "single", "casal": "couple", "familia": "with children" },
+    "relevTitle": "Why is this relevant for you?",
+    "considerTitle": "What could be considered?",
+    "social": "{n} in 10 clients like you added this",
+    "addAsEvent": "Add as event",
+    "selected": "Selected",
+    "addToPlan": "Add to plan ({n})",
+    "illustrativeNote": "Illustrative statistics — sources pending compliance validation · illustrative values",
+    "tipCategoria": "Clients with your profile typically allocate up to {valor} to events in this category.",
+    "cards": {
+      "protecao-renda": {
+        "titulo": "What if your income stopped tomorrow?",
+        "stat": "1 in 8 professionals faces an involuntary income interruption before 60.",
+        "sugestao": "Income protection of {valor} per year (65% of your annual salary) would keep the family's standard while you bounce back."
+      },
+      "doenca-grave": {
+        "titulo": "What if a serious illness hit at your career peak?",
+        "stat": "1 in 6 adults faces a serious health condition during working life.",
+        "sugestao": "A protection reserve of {valor} (4× your annual income) would cover treatment and a career pause without unwinding the plan."
+      },
+      "viagem-sonhos": {
+        "titulo": "Is that dream trip in the plan?",
+        "stat": "6 in 10 families postpone the big trip for lack of planning — not income.",
+        "sugestao": "Clients with your profile typically set aside {valor} for the family trip."
+      },
+      "intercambio-filhos": {
+        "titulo": "Kids' exchange program: dream or plan?",
+        "stat": "7 in 10 parents consider international experience decisive in education.",
+        "sugestao": "An exchange program typically costs {valor} in your segment — planned ahead, it becomes a comfortable contribution."
+      },
+      "reforma-casa": {
+        "titulo": "Will the house keep up with your life?",
+        "stat": "5 in 10 homes need a major renovation every decade.",
+        "sugestao": "Renovations at your standard run around {valor} — better in the plan than as a surprise."
+      },
+      "ano-sabatico": {
+        "titulo": "Does a sabbatical year fit your plan?",
+        "stat": "3 in 10 professionals plan an extended career break.",
+        "sugestao": "A year off costs about {valor} (80% of your annual income) — feasible with a set date."
+      },
+      "festa-casamento": {
+        "titulo": "Is the wedding party planned?",
+        "stat": "4 in 10 couples start life together with party debt.",
+        "sugestao": "Weddings at your profile run around {valor} — with a date and contributions, no debt."
+      },
+      "imovel-lazer": {
+        "titulo": "Beach or country house: what if it were yours?",
+        "stat": "2 in 10 families in your segment invest in a leisure property.",
+        "sugestao": "A typical leisure property for your profile costs {valor}."
+      },
+      "reserva-oportunidade": {
+        "titulo": "Ready for the next opportunity?",
+        "stat": "4 in 10 clients have missed a good opportunity for lack of liquidity.",
+        "sugestao": "An opportunity reserve of {valor} (half your annual income) keeps you ready to act."
+      },
+      "carro-eletrico": {
+        "titulo": "Time to upgrade the car?",
+        "stat": "5 in 10 clients change cars every 4–6 years.",
+        "sugestao": "An upgrade at your standard runs around {valor}."
+      }
+    }
+  },
+  "eventForm": {
+    "name": "Event name",
+    "namePh": "E.g.: Income protection",
+    "category": "Category",
+    "flow": "Type",
+    "amount": "Amount",
+    "annualEcho": "Total over the period: {total}",
+    "recurring": "Recurring (annual)",
+    "year": "Year",
+    "month": "Month",
+    "monthDefault": "Year-end (default)",
+    "duration": "Duration (years)",
+    "goalLink": "Link to goal (optional)",
+    "goalNone": "No link",
+    "create": "Add event"
+  },
+  "variants": {
+    "label": "Plans",
+    "duplicate": "Duplicate as plan",
+    "compare": "Compare plans",
+    "ref": "reference",
+    "setRef": "Set {name} as reference",
+    "remove": "Remove plan",
+    "needTwo": "Duplicate the current plan to compare"
+  },
+  "planCompare": {
+    "title": "Plan Summary",
+    "subtitle": "Side-by-side comparison — every number comes from the engine.",
+    "wealthAt": "Wealth at retirement ({ano})",
+    "depletes": "depletes in {ano}",
+    "avgIncome": "Average retirement income /month",
+    "gap": "Income gap vs essential needs",
+    "noGap": "No gap",
+    "gapValue": "{valor}/year",
+    "estate": "Estate ({ano})",
+    "vsRef": "vs ref",
+    "refBadge": "Reference",
+    "nextSteps": "Next steps",
+    "addStep": "Add",
+    "stepPh": "New step…",
+    "illustrative": "Illustrative values — premises in the premises panel"
+  },
+  "nextSteps": {
+    "inflow": "Plan receipt/investment: {nome} — {valor} in {ano}",
+    "recurringOutflow": "Set up recurring commitment: {nome} — {valor}/year from {ano1} to {ano2}",
+    "gap": "Plan coverage for the essential-income gap in retirement",
+    "depletion": "Revisit contributions or age — wealth depletes in {ano}",
+    "goalRisk": "Revisit the date or contribution of goal {nome}",
+    "standard": "Review portfolio resilience and allocation stress test"
+  },
   "premises": {
     "open": "Premises & sources",
     "title": "Plan premises",

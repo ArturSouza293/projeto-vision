@@ -631,6 +631,125 @@
     "regenerate": "Gerar novamente",
     "applied": "Plano aplicado"
   },
+  "peer": {
+    "title": "O que pessoas como você estão planejando?",
+    "subtitle": "Com base em clientes de perfil parecido — ordenado por quantos consideraram cada cenário valioso.",
+    "tab": { "sugestoes": "Sugestões para você", "criar": "Criar do zero" },
+    "chipsLabel": "Seu perfil:",
+    "chipIdade": "{faixa} anos",
+    "chipRenda": "renda ≈ {valor}/mês",
+    "chipComposicao": { "solteiro": "solteiro(a)", "casal": "casal", "familia": "com filhos" },
+    "relevTitle": "Por que isso é relevante para você?",
+    "considerTitle": "O que poderia ser considerado?",
+    "social": "{n} em 10 clientes como você adicionaram",
+    "addAsEvent": "Adicionar como evento",
+    "selected": "Selecionado",
+    "addToPlan": "Adicionar ao plano ({n})",
+    "illustrativeNote": "Estatísticas ilustrativas — fontes a validar com compliance · valores ilustrativos",
+    "tipCategoria": "Clientes do seu perfil costumam destinar até {valor} a eventos desta categoria.",
+    "cards": {
+      "protecao-renda": {
+        "titulo": "E se sua renda parasse amanhã?",
+        "stat": "1 em 8 profissionais passa por uma interrupção involuntária de renda antes dos 60.",
+        "sugestao": "Uma proteção de renda de {valor} por ano (65% do seu salário anual) manteria o padrão da família enquanto você se recoloca."
+      },
+      "doenca-grave": {
+        "titulo": "E se uma doença séria chegasse no auge da sua carreira?",
+        "stat": "1 em 6 adultos enfrenta uma condição grave de saúde durante a vida ativa.",
+        "sugestao": "Uma reserva de proteção de {valor} (4× sua renda anual) cobriria tratamento e pausa de carreira sem desmontar o plano."
+      },
+      "viagem-sonhos": {
+        "titulo": "Aquela viagem dos sonhos está no plano?",
+        "stat": "6 em 10 famílias adiam a grande viagem por falta de planejamento — não de renda.",
+        "sugestao": "Clientes do seu perfil reservam tipicamente {valor} para a viagem da família."
+      },
+      "intercambio-filhos": {
+        "titulo": "Intercâmbio dos filhos: sonho ou plano?",
+        "stat": "7 em 10 pais consideram a experiência internacional decisiva na formação.",
+        "sugestao": "Um intercâmbio costuma custar {valor} no seu segmento — com antecedência, vira um aporte tranquilo."
+      },
+      "reforma-casa": {
+        "titulo": "A casa vai acompanhar a sua vida?",
+        "stat": "5 em 10 imóveis pedem uma reforma relevante a cada década.",
+        "sugestao": "Reformas no seu padrão ficam em torno de {valor} — melhor no plano do que no susto."
+      },
+      "ano-sabatico": {
+        "titulo": "Um ano sabático cabe no seu plano?",
+        "stat": "3 em 10 profissionais planejam uma pausa estendida na carreira.",
+        "sugestao": "Um ano fora custa cerca de {valor} (80% da sua renda anual) — viável com data marcada."
+      },
+      "festa-casamento": {
+        "titulo": "A festa de casamento está prevista?",
+        "stat": "4 em 10 casais começam a vida a dois com a dívida da festa.",
+        "sugestao": "Casamentos no seu perfil ficam em torno de {valor} — com data e aporte, sem dívida."
+      },
+      "imovel-lazer": {
+        "titulo": "Casa de praia ou campo: e se fosse sua?",
+        "stat": "2 em 10 famílias do seu segmento investem em imóvel de lazer.",
+        "sugestao": "Um imóvel de lazer típico do seu perfil custa {valor}."
+      },
+      "reserva-oportunidade": {
+        "titulo": "Pronto para a próxima oportunidade?",
+        "stat": "4 em 10 clientes já perderam uma boa oportunidade por falta de liquidez.",
+        "sugestao": "Uma reserva de oportunidade de {valor} (metade da sua renda anual) deixa você pronto para agir."
+      },
+      "carro-eletrico": {
+        "titulo": "Hora de trocar o carro?",
+        "stat": "5 em 10 clientes trocam de carro a cada 4–6 anos.",
+        "sugestao": "A troca no seu padrão fica em torno de {valor}."
+      }
+    }
+  },
+  "eventForm": {
+    "name": "Nome do evento",
+    "namePh": "Ex.: Proteção de renda",
+    "category": "Categoria",
+    "flow": "Tipo",
+    "amount": "Valor",
+    "annualEcho": "Total no período: {total}",
+    "recurring": "Recorrente (anual)",
+    "year": "Ano",
+    "month": "Mês",
+    "monthDefault": "Fim do ano (padrão)",
+    "duration": "Duração (anos)",
+    "goalLink": "Vincular a objetivo (opcional)",
+    "goalNone": "Sem vínculo",
+    "create": "Adicionar evento"
+  },
+  "variants": {
+    "label": "Planos",
+    "duplicate": "Duplicar como plano",
+    "compare": "Comparar planos",
+    "ref": "referência",
+    "setRef": "Definir {name} como referência",
+    "remove": "Remover plano",
+    "needTwo": "Duplique o plano atual para comparar"
+  },
+  "planCompare": {
+    "title": "Resumo dos Planos",
+    "subtitle": "Comparação lado a lado — todos os números vêm do motor.",
+    "wealthAt": "Patrimônio na aposentadoria ({ano})",
+    "depletes": "esgota em {ano}",
+    "avgIncome": "Renda média na aposentadoria /mês",
+    "gap": "Gap de renda vs necessidade essencial",
+    "noGap": "Sem gap",
+    "gapValue": "{valor}/ano",
+    "estate": "Herança ({ano})",
+    "vsRef": "vs ref",
+    "refBadge": "Referência",
+    "nextSteps": "Próximos passos",
+    "addStep": "Adicionar",
+    "stepPh": "Novo passo…",
+    "illustrative": "Valores ilustrativos — premissas no painel de premissas"
+  },
+  "nextSteps": {
+    "inflow": "Planejar recebimento/investimento: {nome} — {valor} em {ano}",
+    "recurringOutflow": "Configurar compromisso recorrente: {nome} — {valor}/ano de {ano1} a {ano2}",
+    "gap": "Planejar cobertura do gap de renda essencial na aposentadoria",
+    "depletion": "Rever aportes ou idade — patrimônio esgota em {ano}",
+    "goalRisk": "Rever data ou aporte do objetivo {nome}",
+    "standard": "Revisar resiliência da carteira e stress test da alocação"
+  },
   "premises": {
     "open": "Premissas e fontes",
     "title": "Premissas do plano",
