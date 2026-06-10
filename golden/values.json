@@ -1,0 +1,429 @@
+{
+  "simples": {
+    "clientId": "camila-diego",
+    "assumptions": {
+      "monthlyContribution": 800,
+      "retirementAge": 65,
+      "expectedRealReturn": 4,
+      "inflation": 5,
+      "growthScenario": "custom"
+    },
+    "cashFlow": {
+      "income": 16800,
+      "expense": 11000,
+      "surplus": 5800,
+      "savingsRate": 0.34523809523809523
+    },
+    "netWorth": {
+      "totalAssets": 200000,
+      "totalLiabilities": 40000,
+      "netWorth": 160000,
+      "liquidAssets": 170000,
+      "byClass": {
+        "cash": 60000,
+        "investments": 110000,
+        "pension": 30000,
+        "real_estate": 0,
+        "vehicle": 0,
+        "foreign": 0,
+        "fgts": 0,
+        "business": 0,
+        "other": 0
+      }
+    },
+    "debtService": 0,
+    "investable": 200000,
+    "premissasDerivadas": {
+      "reserveFloor": 66000,
+      "reserveShort": 0,
+      "succession": 10000,
+      "retirementNeed": 11760,
+      "continuingIncome": 0,
+      "inss": 8157.41
+    },
+    "kpis": {
+      "wealthAtRetirement": 1244179,
+      "retirementDurationYears": 11,
+      "probabilityOfSuccess": 15,
+      "estateAtDeath": 0,
+      "incomeGap": -5764,
+      "objetivos": "1/5"
+    },
+    "curve": {
+      "points": 62,
+      "first": {
+        "year": 2026,
+        "wealth": 217600,
+        "income": 201600,
+        "needs": 141120
+      },
+      "y5": {
+        "year": 2031,
+        "wealth": 316740,
+        "income": 201600,
+        "needs": 141120
+      },
+      "y10": {
+        "year": 2036,
+        "wealth": 437360,
+        "income": 201600,
+        "needs": 141120
+      },
+      "atRetirement": {
+        "year": 2057,
+        "wealth": 1152826,
+        "income": 141120,
+        "needs": 141120
+      },
+      "last": {
+        "year": 2087,
+        "wealth": 0,
+        "income": 0,
+        "needs": 141120
+      }
+    },
+    "goalFunding": [
+      {
+        "goalId": "goal-succession",
+        "fundedPct": 0
+      },
+      {
+        "goalId": "g1",
+        "fundedPct": 33
+      },
+      {
+        "goalId": "g2",
+        "fundedPct": 95
+      },
+      {
+        "goalId": "g3",
+        "fundedPct": 44
+      },
+      {
+        "goalId": "g4",
+        "fundedPct": 38
+      }
+    ],
+    "workspace": {
+      "goalContributions": 5000,
+      "allocated": 5800,
+      "freeBalance": 0,
+      "deficit": false,
+      "overAllocated": false
+    },
+    "checkpoints": {
+      "p70": 6.5,
+      "full": null
+    },
+    "planoIdeal": {
+      "bounds": {
+        "contribMax": 800,
+        "retMin": 45,
+        "retMax": 80,
+        "returnMax": 12
+      },
+      "heuristic": {
+        "monthlyContribution": 800,
+        "retirementAge": 65,
+        "expectedRealReturn": 6.5,
+        "inflation": 4
+      }
+    },
+    "defaultGoalTargets": [
+      {
+        "type": "emergency_reserve",
+        "targetAmount": 66000
+      },
+      {
+        "type": "retirement",
+        "targetAmount": 2310726
+      },
+      {
+        "type": "legacy",
+        "targetAmount": 10000
+      }
+    ]
+  },
+  "completo": {
+    "clientId": "fernanda",
+    "assumptions": {
+      "monthlyContribution": 0,
+      "retirementAge": 65,
+      "expectedRealReturn": 4,
+      "inflation": 5,
+      "growthScenario": "custom"
+    },
+    "cashFlow": {
+      "income": 20800,
+      "expense": 19000,
+      "surplus": 1800,
+      "savingsRate": 0.08653846153846154
+    },
+    "netWorth": {
+      "totalAssets": 1000000,
+      "totalLiabilities": 350000,
+      "netWorth": 650000,
+      "liquidAssets": 280000,
+      "byClass": {
+        "cash": 80000,
+        "investments": 200000,
+        "pension": 120000,
+        "real_estate": 600000,
+        "vehicle": 0,
+        "foreign": 0,
+        "fgts": 0,
+        "business": 0,
+        "other": 0
+      }
+    },
+    "debtService": 0,
+    "investable": 400000,
+    "premissasDerivadas": {
+      "reserveFloor": 114000,
+      "reserveShort": 0,
+      "succession": 80000,
+      "retirementNeed": 14559.999999999998,
+      "continuingIncome": 0,
+      "inss": 8157.41
+    },
+    "kpis": {
+      "wealthAtRetirement": 284662,
+      "retirementDurationYears": 1,
+      "probabilityOfSuccess": 4,
+      "estateAtDeath": 0,
+      "incomeGap": -13188,
+      "objetivos": "0/5"
+    },
+    "curve": {
+      "points": 55,
+      "first": {
+        "year": 2026,
+        "wealth": 416000,
+        "income": 249600,
+        "needs": 174720
+      },
+      "y5": {
+        "year": 2031,
+        "wealth": 0,
+        "income": 249600,
+        "needs": 174720
+      },
+      "y10": {
+        "year": 2036,
+        "wealth": 0,
+        "income": 249600,
+        "needs": 174720
+      },
+      "atRetirement": {
+        "year": 2050,
+        "wealth": 121329,
+        "income": 174720,
+        "needs": 174720
+      },
+      "last": {
+        "year": 2080,
+        "wealth": 0,
+        "income": 0,
+        "needs": 174720
+      }
+    },
+    "goalFunding": [
+      {
+        "goalId": "goal-succession",
+        "fundedPct": 0
+      },
+      {
+        "goalId": "g1",
+        "fundedPct": 0
+      },
+      {
+        "goalId": "g2",
+        "fundedPct": 29
+      },
+      {
+        "goalId": "g3",
+        "fundedPct": 58
+      },
+      {
+        "goalId": "g4",
+        "fundedPct": 18
+      }
+    ],
+    "workspace": {
+      "goalContributions": 3000,
+      "allocated": 3000,
+      "freeBalance": -1200,
+      "deficit": false,
+      "overAllocated": true
+    },
+    "checkpoints": {
+      "p70": null,
+      "full": null
+    },
+    "planoIdeal": {
+      "bounds": {
+        "contribMax": 0,
+        "retMin": 45,
+        "retMax": 80,
+        "returnMax": 12
+      },
+      "heuristic": {
+        "monthlyContribution": 0,
+        "retirementAge": 65,
+        "expectedRealReturn": 5,
+        "inflation": 4
+      }
+    },
+    "defaultGoalTargets": [
+      {
+        "type": "emergency_reserve",
+        "targetAmount": 114000
+      },
+      {
+        "type": "retirement",
+        "targetAmount": 2860899
+      },
+      {
+        "type": "legacy",
+        "targetAmount": 80000
+      }
+    ]
+  },
+  "sobra-negativa": {
+    "clientId": "marcos",
+    "assumptions": {
+      "monthlyContribution": 0,
+      "retirementAge": 65,
+      "expectedRealReturn": 4,
+      "inflation": 5,
+      "growthScenario": "custom"
+    },
+    "cashFlow": {
+      "income": 4000,
+      "expense": 4200,
+      "surplus": -200,
+      "savingsRate": -0.05
+    },
+    "netWorth": {
+      "totalAssets": 300,
+      "totalLiabilities": 35000,
+      "netWorth": -34700,
+      "liquidAssets": 300,
+      "byClass": {
+        "cash": 300,
+        "investments": 0,
+        "pension": 0,
+        "real_estate": 0,
+        "vehicle": 0,
+        "foreign": 0,
+        "fgts": 0,
+        "business": 0,
+        "other": 0
+      }
+    },
+    "debtService": 0,
+    "investable": 300,
+    "premissasDerivadas": {
+      "reserveFloor": 25200,
+      "reserveShort": 24900,
+      "succession": 60,
+      "retirementNeed": 2800,
+      "continuingIncome": 0,
+      "inss": 2400
+    },
+    "kpis": {
+      "wealthAtRetirement": 865,
+      "retirementDurationYears": 0,
+      "probabilityOfSuccess": 3,
+      "estateAtDeath": 0,
+      "incomeGap": -2796,
+      "objetivos": "0/3"
+    },
+    "curve": {
+      "points": 58,
+      "first": {
+        "year": 2026,
+        "wealth": 312,
+        "income": 48000,
+        "needs": 33600
+      },
+      "y5": {
+        "year": 2031,
+        "wealth": 380,
+        "income": 48000,
+        "needs": 33600
+      },
+      "y10": {
+        "year": 2036,
+        "wealth": 462,
+        "income": 48000,
+        "needs": 33600
+      },
+      "atRetirement": {
+        "year": 2053,
+        "wealth": 0,
+        "income": 900,
+        "needs": 33600
+      },
+      "last": {
+        "year": 2083,
+        "wealth": 0,
+        "income": 0,
+        "needs": 33600
+      }
+    },
+    "goalFunding": [
+      {
+        "goalId": "goal-emergency",
+        "fundedPct": 0
+      },
+      {
+        "goalId": "goal-retirement",
+        "fundedPct": 0
+      },
+      {
+        "goalId": "goal-succession",
+        "fundedPct": 0
+      }
+    ],
+    "workspace": {
+      "goalContributions": 0,
+      "allocated": 0,
+      "freeBalance": -200,
+      "deficit": true,
+      "overAllocated": false
+    },
+    "checkpoints": {
+      "p70": null,
+      "full": null
+    },
+    "planoIdeal": {
+      "bounds": {
+        "contribMax": 0,
+        "retMin": 45,
+        "retMax": 80,
+        "returnMax": 12
+      },
+      "heuristic": {
+        "monthlyContribution": 0,
+        "retirementAge": 65,
+        "expectedRealReturn": 5,
+        "inflation": 4
+      }
+    },
+    "defaultGoalTargets": [
+      {
+        "type": "emergency_reserve",
+        "targetAmount": 25200
+      },
+      {
+        "type": "retirement",
+        "targetAmount": 550173
+      },
+      {
+        "type": "legacy",
+        "targetAmount": 60
+      }
+    ]
+  }
+}
