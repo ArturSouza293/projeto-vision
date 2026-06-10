@@ -11,6 +11,7 @@ import { CopilotPanel } from "@/components/advisor-copilot/copilot-panel";
 import { DataStudio } from "@/components/engine/data-studio";
 import { Output } from "@/components/engine/output";
 import { PersonaSidebar } from "@/components/engine/persona-sidebar";
+import { WhyPlan } from "@/components/engine/why-plan";
 import { Workspace } from "@/components/engine/workspace";
 import { Button } from "@/components/ui/button";
 import {
@@ -93,6 +94,7 @@ function Welcome() {
 export function EngineShell() {
   const t = useTranslations();
   const plan = useVisionStore((s) => s.activePlan);
+  const introSeen = useVisionStore((s) => s.introSeen);
   const phase = useVisionStore((s) => s.phase);
   const closePlan = useVisionStore((s) => s.closePlan);
   const setDataTab = useVisionStore((s) => s.setDataTab);
@@ -214,8 +216,10 @@ export function EngineShell() {
           >
             {phase === "simulate" ? <Workspace /> : <Output />}
           </motion.div>
-        ) : (
+        ) : introSeen ? (
           <Welcome />
+        ) : (
+          <WhyPlan />
         )}
       </main>
 

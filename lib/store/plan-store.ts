@@ -80,6 +80,10 @@ export interface VisionStore {
   locale: Locale;
   setLocale: (l: Locale) => void;
 
+  /** Whether the "Por que planejar?" intro has been dismissed this session (not persisted). */
+  introSeen: boolean;
+  setIntroSeen: (v: boolean) => void;
+
   // Saved persona library (Neon, server-side via /api/scenarios)
   advisorName: string;
   setAdvisorName: (name: string) => void;
@@ -200,6 +204,9 @@ export const useVisionStore = create<VisionStore>()(
 
       locale: "en",
       setLocale: (l) => set({ locale: l }),
+
+      introSeen: false,
+      setIntroSeen: (v) => set({ introSeen: v }),
 
       advisorName: "",
       setAdvisorName: (name) => set({ advisorName: name }),

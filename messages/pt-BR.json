@@ -605,6 +605,20 @@
       "custom": "Evento customizado"
     }
   },
+  "whyPlan": {
+    "title": "Por que planejar?",
+    "subtitle": "Antes do 'o quê' e do 'como', o porquê. Veja o que muda quando o dinheiro tem um plano.",
+    "segmentHint": "Exemplos para o perfil:",
+    "cards": {
+      "c1": { "q": "Eu já invisto. Por que preciso de um plano?", "a": "Investir sem plano é ter peças sem o quebra-cabeça. O plano dá função a cada real: um objetivo, um prazo e um risco adequado. Sem isso, a carteira pode estar 'boa' — e ainda assim não levar você aonde quer chegar." },
+      "c2": { "q": "Por que falar da minha vida antes de falar de produto?", "a": "Produto é o 'o quê'. Sua vida é o 'porquê'. Sem saber o porquê, qualquer produto serve — e nenhum resolve. O plano nasce dos seus objetivos; os produtos são consequência." },
+      "c3": { "q": "O que acontece se eu não planejar?", "a": "O curto prazo decide por você: imprevistos viram dívida, a aposentadoria fica para depois, e a sucessão vira custo e conflito para a família — no pior momento possível." },
+      "c4": { "q": "Por que começar agora, e não no ano que vem?", "a": "Tempo é o único ativo que não se recupera. Cada ano adiado exige um aporte maior para o mesmo objetivo." }
+    },
+    "example": "Para {target} aos 65: começar aos {a1} custa {m1}/mês; esperar até {a2} sobe para {m2}/mês.",
+    "cta": "Começar meu plano",
+    "openPersonas": "Abrir personas"
+  },
   "planoIdeal": {
     "button": "Plano Ideal com a BIA",
     "step1": "Analisando seu perfil…",

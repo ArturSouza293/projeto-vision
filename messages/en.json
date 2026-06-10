@@ -605,6 +605,20 @@
       "custom": "Custom event"
     }
   },
+  "whyPlan": {
+    "title": "Why plan?",
+    "subtitle": "Before the 'what' and the 'how', the why. See what changes when money has a plan.",
+    "segmentHint": "Examples for the profile:",
+    "cards": {
+      "c1": { "q": "I already invest. Why do I need a plan?", "a": "Investing without a plan is having the pieces without the puzzle. A plan gives every real a job: a goal, a horizon and a fitting risk. Without it, a portfolio can look 'good' — and still not take you where you want to go." },
+      "c2": { "q": "Why talk about my life before talking about products?", "a": "A product is the 'what'. Your life is the 'why'. Without the why, any product fits — and none solves it. The plan is born from your goals; products are a consequence." },
+      "c3": { "q": "What happens if I don't plan?", "a": "The short term decides for you: surprises become debt, retirement gets postponed, and succession turns into cost and family conflict — at the worst possible time." },
+      "c4": { "q": "Why start now and not next year?", "a": "Time is the only asset you can't get back. Every year delayed needs a bigger monthly contribution for the same goal." }
+    },
+    "example": "For {target} at 65: starting at {a1} costs {m1}/mo; waiting until {a2} rises to {m2}/mo.",
+    "cta": "Start my plan",
+    "openPersonas": "Open personas"
+  },
   "planoIdeal": {
     "button": "Ideal plan with BIA",
     "step1": "Reading your profile…",
