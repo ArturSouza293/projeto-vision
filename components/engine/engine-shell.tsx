@@ -9,7 +9,7 @@ import { Database, LogOut, Menu, Plus, Save, ScanFace, Sparkles } from "@/compon
 import { BradescoLogo } from "@/components/app/bradesco-logo";
 import { LocaleToggle } from "@/components/app/locale-toggle";
 import { CopilotPanel } from "@/components/advisor-copilot/copilot-panel";
-import { Client360Drawer } from "@/components/engine/client-360-drawer";
+import { Client360Modal } from "@/components/engine/client-360-modal";
 import { DataStudio } from "@/components/engine/data-studio";
 import { kycFor } from "@/lib/kyc";
 import { Output } from "@/components/engine/output";
@@ -254,7 +254,7 @@ export function EngineShell() {
 
       <PersonaSidebar />
       <DataStudio />
-      <Client360Drawer open={vision360Open} onOpenChange={setVision360Open} />
+      <Client360Modal open={vision360Open} onOpenChange={setVision360Open} />
 
       <Sheet open={copilotOpen} onOpenChange={setCopilotOpen}>
         <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">

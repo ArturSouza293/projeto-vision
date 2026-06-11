@@ -1,6 +1,21 @@
 # Changelog
 
-## v8 — Dossiês KYC + Visão 360 do cliente (branch `feature/v8-kyc-visao360`, sem deploy)
+## v8.1 — Visão 360: drawer → modal centralizado (UX)
+
+- A Visão 360 virou um **modal centralizado** (Dialog, igual aos demais modais
+  do app) no lugar do drawer lateral — o drawer amassava em telas estreitas
+  (cabeçalho colidia com o "X", os 4 KPIs do rodapé ficavam colados).
+- Layout reencaixado: header de identidade (eyebrow + nome + chips, com folga
+  para o botão de fechar), corpo rolável em grade 1/2 colunas (Relacionamento,
+  Fluxo de caixa e Proteção em largura total), rodapé fixo com os 4 KPIs do
+  motor bem espaçados + "Abrir plano completo". Responsivo (desktop 2 col,
+  mobile 1 col + rodapé 2×2).
+- Correção do estreitamento: `sm:max-w-4xl` (mesma variante) para o
+  tailwind-merge sobrepor o `sm:max-w-sm` do DialogContent base.
+- Double-check visual: as 9 categorias e todos os dados fictícios renderizam
+  (verificado em 3 larguras). 163 testes, regressão 33/33, tsc/build limpos.
+
+## v8 — Dossiês KYC + Visão 360 do cliente (em produção)
 
 - **Dados** (`lib/types.ts` + `lib/mock/kyc.ts`): tipo `ClientKYC` com as 9
   categorias da proposta "Conheça seu Cliente"; 14 dossiês fictícios (um por

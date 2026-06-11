@@ -4,7 +4,6 @@ import { useTranslations } from "next-intl";
 import {
   AlertTriangle,
   Banknote,
-  Building2,
   Globe2,
   Heart,
   HeartHandshake,
@@ -14,7 +13,7 @@ import {
   Users,
 } from "lucide-react";
 
-import { Sheet, SheetContent } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { achievableGoalCount, ageFromDob, cashFlowTotals } from "@/lib/calc";
 import { formatCompactCurrency, formatCurrency } from "@/lib/format";
@@ -24,7 +23,7 @@ import { useVisionStore } from "@/lib/store/plan-store";
 import type { KYCAlertaSeveridade, ScenarioAssumptions } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
-/** Pílula de seção. */
+/** Card de seção. */
 function Section({
   icon: Icon,
   title,
@@ -41,7 +40,7 @@ function Section({
   return (
     <section
       className={cn(
-        "rounded-2xl border bg-card p-4",
+        "flex flex-col rounded-2xl border bg-card p-4",
         accent ? "border-primary/30 bg-primary/[0.03]" : "border-border",
         className,
       )}
@@ -55,15 +54,15 @@ function Section({
   );
 }
 
-/** Linha rótulo → valor. */
+/** Linha rótulo → valor (rótulo curto à esquerda, valor à direita). */
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
-  if (children == null || children === "" ) return null;
+  if (children == null || children === "") return null;
   return (
-    <div className="flex flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-2">
-      <span className="shrink-0 text-[11px] tracking-wide text-muted-foreground uppercase sm:w-40">
+    <div className="grid grid-cols-[7.5rem_1fr] gap-x-3 gap-y-0.5">
+      <span className="pt-0.5 text-[11px] leading-snug tracking-wide text-muted-foreground uppercase">
         {label}
       </span>
-      <span className="text-foreground/90">{children}</span>
+      <span className="min-w-0 text-foreground/90">{children}</span>
     </div>
   );
 }
@@ -85,7 +84,7 @@ function Chips({ items }: { items: string[] }) {
 function IABadge() {
   const t = useTranslations();
   return (
-    <span className="inline-flex items-center gap-1 rounded-full bg-primary/[0.08] px-2 py-0.5 text-[10px] font-medium text-primary">
+    <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary/[0.08] px-2 py-0.5 text-[10px] font-medium text-primary">
       <Sparkles className="size-3" />
       {t("vision360.iaBadge")}
     </span>
@@ -98,7 +97,7 @@ const SEV_TONE: Record<KYCAlertaSeveridade, string> = {
   baixa: "border-border bg-muted/60 text-foreground/70",
 };
 
-export function Client360Drawer({
+export function Client360Modal({
   open,
   onOpenChange,
 }: {
@@ -143,19 +142,19 @@ export function Client360Drawer({
   };
 
   return (
-    <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent
-        side="right"
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
         data-testid="client-360"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-4xl"
+        /* sm:max-w-4xl (mesma variante) p/ o tailwind-merge sobrepor o sm:max-w-sm do base */
+        className="flex max-h-[88vh] w-full max-w-[calc(100%-1.5rem)] flex-col gap-0 overflow-hidden p-0 sm:max-w-4xl"
       >
-        {/* Cabeçalho de identidade */}
-        <header className="shrink-0 border-b border-border bg-gradient-to-br from-primary/[0.06] to-transparent px-5 py-4">
-          <div className="flex items-center gap-2 text-[11px] tracking-wide text-muted-foreground uppercase">
+        {/* Cabeçalho de identidade (pr-12 reserva espaço para o X) */}
+        <DialogHeader className="shrink-0 gap-0 space-y-0 border-b border-border bg-gradient-to-br from-primary/[0.06] to-transparent px-5 py-4 pr-12 text-left">
+          <DialogTitle className="flex items-center gap-1.5 text-[11px] font-medium tracking-wide text-muted-foreground uppercase">
             <HeartHandshake className="size-3.5 text-primary" />
             {t("vision360.title")}
-            <span className="text-muted-foreground/60">· {t("vision360.subtitle")}</span>
-          </div>
+            <span className="font-normal text-muted-foreground/60">· {t("vision360.subtitle")}</span>
+          </DialogTitle>
           <div className="mt-1.5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             <h2 className="font-heading text-xl font-semibold text-foreground">{name}</h2>
             <span className="text-sm text-muted-foreground">
@@ -184,17 +183,17 @@ export function Client360Drawer({
               </span>
             )}
           </div>
-        </header>
+        </DialogHeader>
 
         {/* Corpo rolável */}
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             {/* Relacionamento — card prioritário, largura total */}
             <Section
               icon={HeartHandshake}
               title={t("vision360.secRelationship")}
               accent
-              className="lg:col-span-2"
+              className="md:col-span-2"
             >
               <div className="rounded-xl border border-negative/30 bg-negative/[0.05] p-3">
                 <div className="mb-1.5 flex items-center gap-1.5 text-xs font-semibold text-negative">
@@ -210,15 +209,17 @@ export function Client360Drawer({
                   ))}
                 </ul>
               </div>
-              <Field label={t("vision360.channels")}>
-                <Chips items={kyc.relacionamento.canaisPreferidos} />
-              </Field>
-              <Field label={t("vision360.frequency")}>{kyc.relacionamento.frequencia}</Field>
-              <Field label={t("vision360.style")}>{kyc.relacionamento.estiloComunicacao}</Field>
-              <Field label={t("vision360.spouseClient")}>{yesNo(kyc.relacionamento.conjugeClienteBradesco)}</Field>
-              <Field label={t("vision360.childrenClients")}>{yesNo(kyc.relacionamento.filhosClientesBradesco)}</Field>
+              <div className="grid gap-2.5 sm:grid-cols-2">
+                <Field label={t("vision360.channels")}>
+                  <Chips items={kyc.relacionamento.canaisPreferidos} />
+                </Field>
+                <Field label={t("vision360.frequency")}>{kyc.relacionamento.frequencia}</Field>
+                <Field label={t("vision360.style")}>{kyc.relacionamento.estiloComunicacao}</Field>
+                <Field label={t("vision360.spouseClient")}>{yesNo(kyc.relacionamento.conjugeClienteBradesco)}</Field>
+                <Field label={t("vision360.childrenClients")}>{yesNo(kyc.relacionamento.filhosClientesBradesco)}</Field>
+              </div>
               <div className="rounded-xl bg-muted/50 p-3">
-                <div className="mb-1 flex items-center justify-between gap-2">
+                <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
                   <span className="text-[11px] tracking-wide text-muted-foreground uppercase">
                     {t("vision360.iaSummary")}
                   </span>
@@ -334,8 +335,8 @@ export function Client360Drawer({
             </Section>
 
             {/* Fluxo de caixa & alertas — largura total */}
-            <Section icon={Banknote} title={t("vision360.secCashflow")} className="lg:col-span-2">
-              <div className="grid gap-3 sm:grid-cols-2">
+            <Section icon={Banknote} title={t("vision360.secCashflow")} className="md:col-span-2">
+              <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <div className="mb-1.5 text-[11px] tracking-wide text-muted-foreground uppercase">
                     {t("vision360.fixedExpenses")}
@@ -344,7 +345,7 @@ export function Client360Drawer({
                     {kyc.fluxoCaixa.despesasFixas.map((d, i) => (
                       <li key={i} className="flex items-baseline justify-between gap-3 border-b border-border/50 pb-1 text-sm">
                         <span className="text-foreground/80">{d.categoria}</span>
-                        <span className="font-medium text-foreground">{cur(d.valor)}</span>
+                        <span className="shrink-0 font-medium text-foreground">{cur(d.valor)}</span>
                       </li>
                     ))}
                   </ul>
@@ -364,7 +365,7 @@ export function Client360Drawer({
                         key={i}
                         className={cn("flex items-start gap-2 rounded-lg border px-2.5 py-1.5 text-sm", SEV_TONE[al.severidade])}
                       >
-                        <span className="mt-0.5 shrink-0 rounded-full border border-current/30 px-1.5 text-[10px] font-semibold uppercase">
+                        <span className="mt-px shrink-0 rounded-full border border-current/30 px-1.5 text-[10px] font-semibold uppercase">
                           {sevLabel(al.severidade)}
                         </span>
                         <span className="text-foreground/85">{al.texto}</span>
@@ -374,7 +375,7 @@ export function Client360Drawer({
                 </div>
               </div>
               <div className="rounded-xl bg-muted/50 p-3">
-                <div className="mb-1 flex items-center justify-between gap-2">
+                <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
                   <span className="text-[11px] tracking-wide text-muted-foreground uppercase">
                     {t("vision360.iaExpenses")}
                   </span>
@@ -385,7 +386,7 @@ export function Client360Drawer({
             </Section>
 
             {/* Proteção — largura total */}
-            <Section icon={ShieldCheck} title={t("vision360.secProtection")} className="lg:col-span-2">
+            <Section icon={ShieldCheck} title={t("vision360.secProtection")} className="md:col-span-2">
               <Field label={t("vision360.succession")}>{kyc.protecao.planejamentoSucessorio}</Field>
               <div>
                 <div className="mb-1.5 text-[11px] tracking-wide text-muted-foreground uppercase">
@@ -414,25 +415,22 @@ export function Client360Drawer({
           </div>
         </div>
 
-        {/* Rodapé — 4 números do MOTOR */}
-        <footer className="shrink-0 border-t border-border bg-card/80 px-5 py-3">
-          <div className="flex items-end justify-between gap-3">
-            <div className="grid flex-1 grid-cols-2 gap-x-4 gap-y-1 sm:grid-cols-4">
+        {/* Rodapé — 4 números do MOTOR (sem colisão) + ação */}
+        <footer className="shrink-0 border-t border-border bg-muted/40 px-5 py-3">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 sm:grid-cols-4">
               <FooterKpi label={t("vision360.kpiWealth")} value={result ? compact(result.wealthAtRetirement) : "—"} />
               <FooterKpi label={t("vision360.kpiSurplus")} value={cur(surplus)} />
-              <FooterKpi
-                label={t("vision360.kpiGoals")}
-                value={`${goalsAchievable}/${plan.goals.length}`}
-              />
+              <FooterKpi label={t("vision360.kpiGoals")} value={`${goalsAchievable}/${plan.goals.length}`} />
               <FooterKpi label={t("vision360.kpiProbability")} value={result ? `${Math.round(result.probabilityOfSuccess)}%` : "—"} />
             </div>
-            <Button size="sm" onClick={openFullPlan} className="shrink-0">
+            <Button size="sm" onClick={openFullPlan} className="w-full shrink-0 sm:w-auto">
               {t("vision360.openFullPlan")}
             </Button>
           </div>
         </footer>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
 
