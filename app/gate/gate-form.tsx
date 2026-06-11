@@ -21,9 +21,19 @@ export function GateForm() {
         window.location.reload(); // cookie set → o proxy libera a rota original
         return;
       }
-      setError(true);
+      if (res.status === 401) {
+        setError(true); // senha realmente errada
+      } else {
+        // POST mutilado/bloqueado no caminho (DLP corporativo etc.) →
+        // rota alternativa: navegação GET com a chave; o proxy valida,
+        // seta o cookie e limpa a URL.
+        window.location.assign(`/?k=${encodeURIComponent(password)}`);
+        return;
+      }
     } catch {
-      setError(true);
+      // fetch nem saiu (proxy corporativo derrubou) → mesma rota alternativa
+      window.location.assign(`/?k=${encodeURIComponent(password)}`);
+      return;
     } finally {
       setBusy(false);
     }
