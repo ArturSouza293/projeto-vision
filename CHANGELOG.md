@@ -1,5 +1,24 @@
 # Changelog
 
+## Gate removido — teste de acesso no ambiente corporativo (branch `remove-gate`)
+
+- **Contexto**: o filtro corporativo passou a bloquear a URL inteira
+  (`projeto-vision.vercel.app`), não mais só o POST de login — assinatura de
+  bloqueio por categoria/reputação de domínio. Hipótese a testar: a própria
+  tela preta de senha (cara de página de phishing) pode ter sido o gatilho.
+- **Mudança**: removido o gate por completo — `proxy.ts`, `app/gate/*`,
+  `app/api/gate/route.ts`, `lib/gate-token.ts`. O app passa a abrir direto no
+  login do advisor, sem tela preta. `GATE_PASSWORD` sai do `.env.local`; no
+  Vercel a variável é apagada pelo usuário (o proxy já era fail-open, então a
+  remoção da env por si só desarmaria o gate — tirar o código garante que a
+  página de senha some do build).
+- Os scripts de QA mantêm o import de `passGate`, que vira **no-op** sem
+  `GATE_PASSWORD` (nenhuma edição necessária). `golden/v6-checks.mjs` (bateria
+  específica do gate) fica obsoleta enquanto o gate estiver fora.
+- Reversível: tudo preservado no histórico do git (basta reverter o commit).
+- QA: app abre direto (sem gate), `/gate` e `/api/gate` → 404, regressão do
+  núcleo intacta, tsc/build limpos.
+
 ## Gate — autenticação por hash (compatível com DLP corporativo), mesmo link
 
 - **Problema**: em máquinas corporativas o gate acusava "senha incorreta" com a
