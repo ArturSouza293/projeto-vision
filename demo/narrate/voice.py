@@ -38,7 +38,7 @@ def do_tts(plan_path: str) -> None:
 
     async def synth_one(it: dict) -> None:
         last = None
-        for attempt in range(6):  # rede oscila; tentativas com backoff
+        for attempt in range(8):  # o serviço derruba conexões em rajadas; insistir
             try:
                 com = edge_tts.Communicate(it["text"], plan["voice"], **kw)
                 await com.save(it["mp3"])
@@ -49,12 +49,13 @@ def do_tts(plan_path: str) -> None:
                 last = e
             if os.path.exists(it["mp3"]):
                 os.remove(it["mp3"])
-            await asyncio.sleep(1.5 * (attempt + 1))
+            await asyncio.sleep(min(30.0, 2.0 * (attempt + 1) ** 1.5))
         raise last
 
     async def run() -> None:
         for it in missing:
             await synth_one(it)
+            await asyncio.sleep(0.3)  # cortesia: evita rajada no endpoint
 
     try:
         asyncio.run(run())

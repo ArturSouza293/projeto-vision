@@ -130,7 +130,7 @@
       "engine": "edge-tts",
       "name": "pt-BR-ThalitaMultilingualNeural",
       "rate": "-2%",
-      "pitch": "-15Hz"
+      "pitch": "-8Hz"
     },
     "gaps": { "sentenceMs": 400, "chapterLeadMs": 300, "chapterTailMs": 400 },
     "loudness": { "i": -16, "tp": -1.5, "lra": 11 },
@@ -234,7 +234,7 @@
         "narracao": [
           {
             "texto": "Renda, despesas, patrimônio, dívidas.",
-            "falar": "Renda. Despesas. Patrimônio. Dívidas.",
+            "falar": "A renda. As despesas. O patrimônio. As dívidas.",
             "gapAfterMs": 450
           },
           {
@@ -302,10 +302,14 @@
         "features": ["F08", "F12"],
         "cuts": [{ "scene": "cap7_premissas", "from": "action-0.3", "to": "end+0.3" }],
         "narracao": [
-          { "texto": "Cada premissa é visível.", "gapAfterMs": 500 },
+          {
+            "texto": "Cada premissa é visível.",
+            "falar": "Cada premissa fica visível.",
+            "gapAfterMs": 500
+          },
           {
             "texto": "Cada cenário, testável.",
-            "falar": "Cada cenário... testável.",
+            "falar": "Cada cenário... você pode testar.",
             "gapAfterMs": 550
           },
           "Transparência aqui não é promessa: é arquitetura."
@@ -330,7 +334,7 @@
           },
           {
             "texto": "Cada número, auditável.",
-            "falar": "Cada número... auditável."
+            "falar": "E cada número é auditável."
           }
         ],
         "acaoEmTela": "Botão Plano Ideal → sliders animando → card do racional da BIA",
@@ -347,7 +351,10 @@
             "falar": "Feito para a conversa: nada se perde entre sessões... e a experiência fala a língua do seu cliente.",
             "gapAfterMs": 550
           },
-          "Literalmente."
+          {
+            "texto": "Literalmente.",
+            "falar": "Literalmente mesmo."
+          }
         ],
         "acaoEmTela": "Alternância EN↔PT ao vivo + reabertura de um caso salvo nos Recentes",
         "avatar": "br"
