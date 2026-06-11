@@ -134,6 +134,25 @@
     mais)"; o JSON do pacote (CRM) leva a lista completa com `origemSinal`
     em cada oportunidade.
 
+## Bloco 9 — Visão 360 (KYC "Conheça seu Cliente") · v8
+
+35. Abra uma **persona seed** (ex.: **Ricardo**). No header aparece o botão
+    **"Visão 360"** (ícone de raio-x), entre *Dados* e *Salvar*. ✅ *Em um caso
+    criado do zero o botão NÃO aparece — o gate da feature é a presença de KYC.*
+36. Clique em **Visão 360**. Abre um drawer largo com o cabeçalho (nome, idade,
+    segmento, **momento de vida**, conhecimento financeiro e **share of wallet
+    ~23%** com a leitura "oportunidade de captura"). ✅
+37. Confira o card **Relacionamento** (primeiro, em destaque): os **temas
+    sensíveis** aparecem num bloco vermelho inconfundível; canais, frequência,
+    estilo e o resumo da BIA com badge **"exemplo ilustrativo · em produção:
+    BIA"**. O painel de **Alertas** mostra severidade (ex.: TEDs para a XP =
+    Alta). ✅ *Nenhuma chamada de IA é feita — os resumos são mock.*
+38. No rodapé, os **4 números do plano** (patrimônio, sobra mensal, objetivos
+    N/M, probabilidade) devem ser **idênticos** aos KPIs do workspace por trás —
+    vêm do mesmo motor. Clique em **"Abrir plano completo"** para voltar. Troque
+    **EN/PT** e reabra: os rótulos trocam de idioma; os dados do dossiê seguem
+    em PT (são dados, não UI). ✅
+
 ## Se algo falhar
 
 Anote o passo + o que apareceu (print ajuda) e me mande. **Nenhum push ou

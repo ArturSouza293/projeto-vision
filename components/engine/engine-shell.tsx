@@ -1,14 +1,17 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Database, LogOut, Menu, Plus, Save, Sparkles } from "@/components/app/icons";
+import { Database, LogOut, Menu, Plus, Save, ScanFace, Sparkles } from "@/components/app/icons";
 
 import { BradescoLogo } from "@/components/app/bradesco-logo";
 import { LocaleToggle } from "@/components/app/locale-toggle";
 import { CopilotPanel } from "@/components/advisor-copilot/copilot-panel";
+import { Client360Drawer } from "@/components/engine/client-360-drawer";
 import { DataStudio } from "@/components/engine/data-studio";
+import { kycFor } from "@/lib/kyc";
 import { Output } from "@/components/engine/output";
 import { PersonaSidebar } from "@/components/engine/persona-sidebar";
 import { WhyPlan } from "@/components/engine/why-plan";
@@ -106,6 +109,12 @@ export function EngineShell() {
   const advisorName = useVisionStore((s) => s.advisorName);
   const logout = useVisionStore((s) => s.logout);
 
+  // v8 — Visão 360 (drawer). Só aparece no workspace de uma persona seed
+  // (resolvido pelo clientId via kycFor, robusto a snapshot persistido velho).
+  // Casos criados do zero têm clientId aleatório → sem 360.
+  const [vision360Open, setVision360Open] = useState(false);
+  const hasKyc = Boolean(plan && kycFor(plan));
+
   async function handleSave() {
     const res = await savePlan();
     if (res.synced) {
@@ -167,6 +176,19 @@ export function EngineShell() {
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
             {plan && (
               <>
+                {hasKyc && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    data-testid="open-vision-360"
+                    onClick={() => setVision360Open(true)}
+                    title={t("vision360.tooltip")}
+                    className={headerBtn}
+                  >
+                    <ScanFace className="size-4" />
+                    <span className="hidden md:inline">{t("vision360.open")}</span>
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -232,6 +254,7 @@ export function EngineShell() {
 
       <PersonaSidebar />
       <DataStudio />
+      <Client360Drawer open={vision360Open} onOpenChange={setVision360Open} />
 
       <Sheet open={copilotOpen} onOpenChange={setCopilotOpen}>
         <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">

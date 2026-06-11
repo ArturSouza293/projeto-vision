@@ -108,6 +108,138 @@ export interface ClientProfile {
   lifeInsurance?: number;
 
   segment: Segment;
+
+  /**
+   * v8 — KYC "Conheça seu Cliente" dossier (9 categories). Present ONLY on
+   * seed personas (the "Visão 360" demo feature gates on its presence). Cases
+   * created from scratch never carry it. STATIC mock data — never sent to the
+   * BIA (the payload whitelist in lib/plano-ideal.ts is inclusion-based, so
+   * this field cannot leak; a test guards it).
+   */
+  kyc?: ClientKYC;
+}
+
+/* ------------------------------------------------------------------ */
+/* v8 — KYC "Conheça seu Cliente" dossier (9 categories)              */
+/* Static, illustrative data for the seed personas' Visão 360.        */
+/* ------------------------------------------------------------------ */
+
+/** "fanático" | "ocasional" | "raro" — kept as string to allow nuance. */
+export interface KYCSport {
+  modalidade: string;
+  time?: string;
+  nivel: string;
+}
+export interface KYCViagens {
+  gosta: boolean;
+  /** Free text or destinations, as the dossier phrases it. */
+  nota?: string;
+}
+export interface KYCFilho {
+  nome: string;
+  idade: number;
+  nota?: string;
+}
+export interface KYCParente {
+  parentesco: string;
+  nome: string;
+  banco?: string;
+}
+export interface KYCEmpresa {
+  nome: string;
+  porte?: string;
+  nota?: string;
+}
+export interface KYCImovelInvestimento {
+  qtd: number;
+  receitaMensal?: number;
+  nota?: string;
+}
+export interface KYCDespesaFixa {
+  categoria: string;
+  valor: number;
+}
+export interface KYCSeguroExterno {
+  tipo: string;
+  possui: boolean;
+  obs?: string;
+}
+export type KYCAlertaSeveridade = "alta" | "media" | "baixa";
+export interface KYCAlerta {
+  texto: string;
+  severidade: KYCAlertaSeveridade;
+}
+
+export interface ClientKYC {
+  /** 1 — Perfil pessoal */
+  perfilPessoal: {
+    ramo: string;
+    cargo: string;
+    /** "Contador: sim · Advogado: não" etc., kept as the dossier phrases it. */
+    contadorAdvogado?: string;
+    conhecimentoFinanceiro: string; // básico | intermediário | avançado (ranges allowed)
+    interesses: string[];
+    esporte?: KYCSport;
+    admira: string[];
+    hobbies: string[];
+    viagens: KYCViagens;
+    pets: string[];
+  };
+  /** 2 — Perfil familiar */
+  perfilFamiliar: {
+    moraCom: string;
+    filhos: KYCFilho[];
+    arvoreGenealogica: KYCParente[];
+  };
+  /** 3 — Relacionamento (card prioritário) */
+  relacionamento: {
+    /** Orientação de abordagem — o maior valor da 360 para o advisor. */
+    temasSensiveis: string[];
+    canaisPreferidos: string[];
+    frequencia: string;
+    estiloComunicacao: string;
+    conjugeClienteBradesco?: boolean;
+    filhosClientesBradesco?: boolean;
+    /** Resumo IA mock (badge "exemplo ilustrativo · em produção: BIA"). */
+    resumoIAFicha: string;
+  };
+  /** 4 — Ativos financeiros */
+  ativosFinanceiros: {
+    origemCapital: string;
+    /** Saldo consolidado no banco (BRL) — numerador do share of wallet. */
+    saldoConsolidadoBanco: number;
+  };
+  /** 5 — Ativos não financeiros */
+  ativosNaoFinanceiros: {
+    imoveisProprios: number;
+    imoveisInvestimento?: KYCImovelInvestimento;
+    imoveisExterior: number;
+    empresas: KYCEmpresa[];
+  };
+  /** 6 — Fluxo de caixa & alertas */
+  fluxoCaixa: {
+    despesasFixas: KYCDespesaFixa[];
+    doacoes: { realiza: boolean; descricao?: string };
+    alertas: KYCAlerta[];
+    /** Resumo IA mock. */
+    resumoIAGastos: string;
+  };
+  /** 7 — Posição internacional */
+  posicaoInternacional: {
+    contaInternacional: boolean;
+    investeExterior: boolean;
+    valorExterior?: number;
+  };
+  /** 8 — Planejamentos */
+  planejamentos: {
+    momentoDeVida: string;
+  };
+  /** 9 — Proteção */
+  protecao: {
+    /** Estado do planejamento sucessório, como o dossiê descreve. */
+    planejamentoSucessorio: string;
+    segurosExternos: KYCSeguroExterno[];
+  };
 }
 
 /* ------------------------------------------------------------------ */

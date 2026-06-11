@@ -1,5 +1,32 @@
 # Changelog
 
+## v8 — Dossiês KYC + Visão 360 do cliente (branch `feature/v8-kyc-visao360`, sem deploy)
+
+- **Dados** (`lib/types.ts` + `lib/mock/kyc.ts`): tipo `ClientKYC` com as 9
+  categorias da proposta "Conheça seu Cliente"; 14 dossiês fictícios (um por
+  persona seed) transcritos do anexo de `01_personas_PT.md`, com os nomes de
+  cônjuge reconciliados ao cadastro do app. Anexados via `clientProfile.kyc` —
+  **casos criados do zero nunca têm KYC**.
+- **Botão "Visão 360"** no header do workspace, visível **só quando o caso ativo
+  tem KYC** (gate por presença de dados); ausente em casos do zero.
+- **Drawer "Cliente 360"** (`components/engine/client-360-drawer.tsx`):
+  cabeçalho de identidade + share of wallet com leitura comercial; card de
+  **Relacionamento em destaque** (temas sensíveis inconfundíveis); perfil
+  pessoal/familiar, ativos & patrimônio, posição internacional, fluxo de caixa
+  com **alertas por severidade**, proteção (com link para a Entrega); rodapé com
+  **4 números do MOTOR** (mesma fonte do workspace). Resumos da BIA são mock com
+  badge "exemplo ilustrativo" — **zero chamada de IA**.
+- **Derivações** (`lib/kyc.ts` + teste): `shareOfWallet` = saldo no banco ÷
+  patrimônio financeiro do caso (motor); âncora Ricardo ≈ 23%.
+- **Regra Zero / privacidade**: o dossiê KYC **não entra no payload da BIA** — a
+  whitelist de `buildPlanoIdealPayload` é por inclusão; teste novo varre todas
+  as personas garantindo que nenhum campo/valor de KYC vaza.
+- i18n EN/PT (namespace `vision360`, paridade de chaves); textos dos dossiês
+  permanecem em PT (são dados, não UI). QA: 163 testes (+7), bench, golden
+  inalterado, regressão 33/33, tsc/build limpos, verificação em browser
+  (botão presente/ausente, drawer, KPIs, EN/PT). Despesas KYC × plano lado a
+  lado ficaram para a v9 (decisão de escopo).
+
 ## Gate removido — teste de acesso no ambiente corporativo (branch `remove-gate`)
 
 - **Contexto**: o filtro corporativo passou a bloquear a URL inteira

@@ -63,6 +63,7 @@ export {
   Radio,
   RotateCcw,
   Save,
+  ScanFace,
   Send,
   ShieldCheck,
   Sparkles,
