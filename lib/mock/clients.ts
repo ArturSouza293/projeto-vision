@@ -6,6 +6,7 @@
  */
 
 import type { Plan } from "@/lib/types";
+import { KYC_DOSSIERS } from "@/lib/mock/kyc";
 
 /** Persona descriptor keys, resolved through the i18n catalogs. */
 export const PERSONA_META: Record<string, { taglineKey: string }> = {
@@ -757,3 +758,12 @@ export const SEED_PLANS: Plan[] = [
   patricia,
   antonio,
 ];
+
+// v8 — attach the KYC "Conheça seu Cliente" dossier to each seed persona (the
+// "Visão 360" button gates on its presence). Cases created from scratch use
+// blankPlan() and never carry kyc, so the button is absent there. The dossier
+// rides on clientProfile, which the Plan snapshots and structuredClone copies.
+for (const plan of SEED_PLANS) {
+  const dossier = KYC_DOSSIERS[plan.clientId];
+  if (dossier) plan.clientProfile.kyc = dossier;
+}

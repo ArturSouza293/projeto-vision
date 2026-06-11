@@ -165,6 +165,29 @@ product opportunities from each plan's signals, grounded in the Bradesco product
 
 ---
 
+## Client 360 (KYC dossiers · v8)
+
+Each **seed persona** carries a KYC "Conheça seu Cliente" dossier (9 categories,
+in `lib/mock/kyc.ts`) surfaced by a **"Visão 360"** drawer
+(`components/engine/client-360-drawer.tsx`).
+
+- **Gate by data presence**: the header button renders **only when the active
+  case has `clientProfile.kyc`**. Cases created from scratch never carry KYC, so
+  the button is simply absent there — that presence check IS the demo mechanism.
+- **Static mock data, no AI**: the dossiers (including the "BIA summaries") are
+  pre-written illustrative data shown with an "exemplo ilustrativo" badge — the
+  360 makes **zero** API calls.
+- **Privacy (Rule Zero)**: KYC **never** reaches the BIA. `buildPlanoIdealPayload`
+  is an inclusion whitelist (numbers/booleans only); a test in
+  `lib/__tests__/plano-ideal.test.ts` sweeps every persona to prove no KYC field
+  or value leaks into the payload.
+- **Plan numbers from the engine**: the drawer footer's 4 KPIs come from
+  `projectPlan` (same source as the workspace) — no arithmetic in the component.
+- **i18n**: UI labels are bilingual (`vision360` namespace, EN/PT). The dossier
+  **content** stays in PT on purpose (it's data, not UI).
+
+---
+
 ## Project structure
 
 ```
