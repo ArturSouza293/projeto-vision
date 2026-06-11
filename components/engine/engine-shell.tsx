@@ -11,6 +11,7 @@ import { LocaleToggle } from "@/components/app/locale-toggle";
 import { CopilotPanel } from "@/components/advisor-copilot/copilot-panel";
 import { Client360Drawer } from "@/components/engine/client-360-drawer";
 import { DataStudio } from "@/components/engine/data-studio";
+import { kycFor } from "@/lib/kyc";
 import { Output } from "@/components/engine/output";
 import { PersonaSidebar } from "@/components/engine/persona-sidebar";
 import { WhyPlan } from "@/components/engine/why-plan";
@@ -108,10 +109,11 @@ export function EngineShell() {
   const advisorName = useVisionStore((s) => s.advisorName);
   const logout = useVisionStore((s) => s.logout);
 
-  // v8 — Visão 360 (drawer). Estado local: só visível quando o caso ativo é uma
-  // persona seed (tem KYC). Casos do zero não renderizam o botão.
+  // v8 — Visão 360 (drawer). Só aparece no workspace de uma persona seed
+  // (resolvido pelo clientId via kycFor, robusto a snapshot persistido velho).
+  // Casos criados do zero têm clientId aleatório → sem 360.
   const [vision360Open, setVision360Open] = useState(false);
-  const hasKyc = Boolean(plan?.clientProfile.kyc);
+  const hasKyc = Boolean(plan && kycFor(plan));
 
   async function handleSave() {
     const res = await savePlan();

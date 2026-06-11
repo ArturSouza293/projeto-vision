@@ -18,7 +18,7 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { achievableGoalCount, ageFromDob, cashFlowTotals } from "@/lib/calc";
 import { formatCompactCurrency, formatCurrency } from "@/lib/format";
-import { shareOfWalletInsight } from "@/lib/kyc";
+import { kycFor, shareOfWalletInsight } from "@/lib/kyc";
 import { projectPlan } from "@/lib/plan";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { KYCAlertaSeveridade, ScenarioAssumptions } from "@/lib/types";
@@ -110,7 +110,7 @@ export function Client360Drawer({
   const plan = useVisionStore((s) => s.activePlan);
   const setPhase = useVisionStore((s) => s.setPhase);
 
-  const kyc = plan?.clientProfile.kyc;
+  const kyc = plan ? kycFor(plan) : undefined;
   if (!plan || !kyc) return null;
 
   const cur = (n: number) => formatCurrency(n, locale);

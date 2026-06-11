@@ -4,7 +4,20 @@
  * do app (`investableWealth`); só o saldo declarado é dado estático do KYC.
  */
 import { investableWealth } from "@/lib/calc";
-import type { Plan } from "@/lib/types";
+import { KYC_DOSSIERS } from "@/lib/mock/kyc";
+import type { ClientKYC, Plan } from "@/lib/types";
+
+/**
+ * Resolve o dossiê KYC de um plano de forma ROBUSTA: primeiro o snapshot
+ * (`clientProfile.kyc`), com fallback no dossiê da persona pelo `clientId`.
+ * O fallback é o que faz a Visão 360 funcionar mesmo quando o plano foi
+ * persistido no localStorage ANTES do campo `kyc` existir (snapshot velho) —
+ * e mantém o gate correto: casos criados do zero têm `clientId` aleatório,
+ * fora de KYC_DOSSIERS, então não ganham 360.
+ */
+export function kycFor(plan: Plan): ClientKYC | undefined {
+  return plan.clientProfile.kyc ?? KYC_DOSSIERS[plan.clientId];
+}
 
 /**
  * Share of wallet = saldo consolidado no banco (KYC) ÷ patrimônio financeiro
@@ -12,7 +25,7 @@ import type { Plan } from "@/lib/types";
  * 0..1, ou `null` quando não há KYC ou patrimônio financeiro.
  */
 export function shareOfWallet(plan: Plan): number | null {
-  const saldo = plan.clientProfile.kyc?.ativosFinanceiros.saldoConsolidadoBanco;
+  const saldo = kycFor(plan)?.ativosFinanceiros.saldoConsolidadoBanco;
   if (saldo == null) return null;
   const financial = investableWealth(plan.netWorth);
   if (financial <= 0) return null;
