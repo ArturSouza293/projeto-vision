@@ -42,6 +42,7 @@ yarn-error.log*
 /demo/narrate/frames/
 /demo/narrate/tmp/
 /demo/narrate/chapters/
+/demo/narrate/chapters_clean/
 /demo/narrate/avatar/
 
 # vercel
