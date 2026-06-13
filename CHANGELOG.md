@@ -1,5 +1,25 @@
 # Changelog
 
+## Demo v4 — corte limpo 4K para narração ao vivo
+
+- **`demo/clean.mjs`** (novo, `npm run demo:clean`): monta o vídeo da demo
+  **sem legenda, sem texto, sem avatar e sem áudio** — para o apresentador
+  narrar ao vivo. Mantém exatamente o ritmo da v3 narrada (linha do tempo
+  áudio-first recalculada com as durações do TTS em cache); o fechamento
+  (cap11) vira freeze do último frame + fade-out no lugar do card de texto.
+- **Gravação em 4K real**: `demo/record.mjs --scale N` (deviceScaleFactor;
+  scale 2 → 3840×2160). Coordenadas seguem em px CSS — nada muda nas cenas.
+  Fluidez verificada: ~23 fps únicos durante o drag da timeline.
+- **Roteiro `.txt` gerado** com janelas de tempo por bloco e o texto da
+  narração EXATAMENTE igual à última versão narrada (campo `texto`).
+- **Take cap2 atualizado**: mostra a **Visão 360** da persona (dossiê com
+  perfil pessoal, família e relacionamento — v8) no lugar do wizard de perfil,
+  casando com a fala "o consultor conhece quem importa".
+- Cena do **gate removida do storyboard** (o gate não existe mais no app).
+- Saídas: `demo_vision_v4_4K_sem_legenda.mp4` (3840×2160, 105s, H.264 yuv420p,
+  sem trilha de áudio) + `demo_vision_v4_roteiro_narracao.txt`, copiadas para
+  a pasta Project Vision do Desktop.
+
 ## v8.1 — Visão 360: drawer → modal centralizado (UX)
 
 - A Visão 360 virou um **modal centralizado** (Dialog, igual aos demais modais

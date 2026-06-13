@@ -16,6 +16,7 @@
     "demo:build": "node demo/build.mjs",
     "demo": "npm run demo:record && npm run demo:build",
     "demo:narrate": "node demo/narrate.mjs",
+    "demo:clean": "node demo/clean.mjs",
     "demo:v3": "node demo/record.mjs && node demo/narrate.mjs"
   },
   "dependencies": {

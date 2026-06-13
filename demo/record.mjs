@@ -23,6 +23,12 @@ const RAW = path.join(__dirname, "raw");
 const FIXTURES = path.join(RAW, "fixtures");
 const STORE_KEY = "vision-store";
 
+/** --scale N: grava em alta resolução real (deviceScaleFactor N; o vídeo sai
+ *  viewport×N — ex.: 2 → 3840×2160). Coordenadas seguem em px CSS do viewport. */
+const SCALE = process.argv.includes("--scale")
+  ? parseFloat(process.argv[process.argv.indexOf("--scale") + 1])
+  : 1;
+
 fs.mkdirSync(FIXTURES, { recursive: true });
 
 /* ---------------------------------------------------------------- cursor */
@@ -336,17 +342,22 @@ const SCENE_FNS = {
    * é regido pela narração no narrate.mjs. Marks padrão: action/end.
    * ------------------------------------------------------------------- */
 
-  /** Take cap2 — perfil & família (wizard aba Perfil, leitura calma). */
+  /** Take cap2 — quem importa: Visão 360 da persona (perfil pessoal + família
+   *  + relacionamento, com scroll calmo pelo dossiê). v8. */
   async cap2_perfil(page, p, mark) {
-    await page.waitForSelector('[data-testid="open-data"]');
+    await page.waitForSelector('[data-testid="open-vision-360"]');
     await sleep(page, 300);
     mark("action");
-    await clickTestId(page, "open-data", 500);
-    await page.waitForSelector('[data-testid="wizard-tab-profile"]');
-    await clickTestId(page, "wizard-tab-profile", 420);
-    await sleep(page, 400);
-    await driftOver(page, page.locator('[role="dialog"]'), p.profilePause);
-    await sleep(page, 400);
+    await clickTestId(page, "open-vision-360", 500);
+    await page.waitForSelector('[data-testid="client-360"]');
+    await sleep(page, p.openSettle);
+    await driftOver(page, page.locator('[data-testid="client-360"]'), p.readPause);
+    await page.getByTestId("client-360").evaluate((el, px) => {
+      el.querySelector(".overflow-y-auto")?.scrollBy({ top: px, behavior: "smooth" });
+    }, p.scrollPx);
+    await sleep(page, p.scrollPause);
+    await page.keyboard.press("Escape");
+    await sleep(page, 450);
     mark("end");
   },
 
@@ -484,7 +495,14 @@ async function recordScene(browser, scene) {
   console.log(`• recording scene "${scene.id}"…`);
   const ctx = await browser.newContext({
     viewport: SB.viewport,
-    recordVideo: { dir: RAW, size: SB.viewport },
+    deviceScaleFactor: SCALE,
+    recordVideo: {
+      dir: RAW,
+      size: {
+        width: Math.round(SB.viewport.width * SCALE),
+        height: Math.round(SB.viewport.height * SCALE),
+      },
+    },
   });
   if (scene.id !== "gate") await passGate(ctx, SB.baseUrl); // a cena do gate o DEMONSTRA
   if (scene.fixture && scene.fixture !== "none") {

@@ -16,14 +16,6 @@
   },
   "scenes": [
     {
-      "id": "gate",
-      "title": "Gate de acesso",
-      "fixture": "none",
-      "speed": 1.3,
-      "caption": "0 · Acesso restrito — gate de demonstração antes de tudo",
-      "params": { "typeDelay": 95, "afterEnter": 1100 }
-    },
-    {
       "id": "why",
       "title": "O porquê",
       "fixture": "intro",
@@ -164,9 +156,9 @@
     "takes": [
       {
         "id": "cap2_perfil",
-        "title": "Take — perfil & família",
+        "title": "Take — quem importa (Visão 360 da persona)",
         "fixture": "workspace",
-        "params": { "profilePause": 3000 }
+        "params": { "openSettle": 650, "readPause": 2400, "scrollPx": 520, "scrollPause": 1700 }
       },
       {
         "id": "cap3_vida",
@@ -224,7 +216,7 @@
             "falar": "Em minutos, o consultor conhece quem importa: você, sua família... e o tempo que vocês têm pela frente."
           }
         ],
-        "acaoEmTela": "Perfil preenchido com cônjuge e dependentes",
+        "acaoEmTela": "Visão 360 da persona: dossiê com perfil pessoal, família e relacionamento (v8)",
         "avatar": "br"
       },
       {
