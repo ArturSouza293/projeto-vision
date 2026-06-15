@@ -86,7 +86,7 @@ export function IncomeStep() {
                     value={item.label}
                     placeholder={t("common.label")}
                     onChange={(e) => updateIncome(item.id, { label: e.target.value })}
-                    className="min-w-0 flex-1"
+                    className="w-full min-w-0 sm:flex-1"
                   />
                   <Select
                     value={item.kind}

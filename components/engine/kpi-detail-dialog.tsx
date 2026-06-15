@@ -44,7 +44,7 @@ function Stat({ label, children }: { label: string; children: React.ReactNode })
   return (
     <div className="rounded-xl border border-border bg-muted/40 p-3">
       <div className="text-[11px] tracking-wide text-muted-foreground uppercase">{label}</div>
-      <div className="mt-0.5 font-heading text-base font-semibold text-foreground tabular-nums">
+      <div className="mt-0.5 font-heading text-sm font-semibold break-words text-foreground tabular-nums sm:text-base">
         {children}
       </div>
     </div>
@@ -176,7 +176,7 @@ export function KpiDetailDialog({
                 )}
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-2">
+              <div className={cn("grid gap-2 sm:grid-cols-2", kind === "gap" ? "grid-cols-1" : "grid-cols-2")}>
                 {figures.map((f, i) => (
                   <Stat key={i} label={f.label}>
                     {f.value}

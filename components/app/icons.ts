@@ -42,6 +42,7 @@ export {
   Copy,
   CreditCard,
   Database,
+  EllipsisVertical,
   Gem,
   Globe,
   GraduationCap,

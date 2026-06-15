@@ -23,7 +23,7 @@ export function IncomeNeedsChart({ points }: { points: ProjectionPoint[] }) {
   const locale = useVisionStore((s) => s.locale);
 
   return (
-    <div className="h-64 w-full">
+    <div className="h-52 w-full sm:h-64">
       <ResponsiveContainer width="100%" height="100%">
         <ComposedChart data={points} margin={{ top: 8, right: 8, left: 8, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--border)" strokeDasharray="3 3" />

@@ -96,7 +96,7 @@ export function PersonaSidebar() {
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
-      <SheetContent side="left" className="flex w-80 flex-col gap-0 p-0">
+      <SheetContent side="left" className="flex w-[85vw] max-w-80 flex-col gap-0 p-0">
         <SheetHeader className="border-b border-border px-4 py-4">
           <SheetTitle className="font-heading">{t("sidebar.title")}</SheetTitle>
           <SheetDescription>{t("sidebar.subtitle")}</SheetDescription>

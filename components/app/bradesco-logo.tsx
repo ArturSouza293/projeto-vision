@@ -9,7 +9,7 @@ export function BradescoLogo({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "font-heading text-[22px] leading-none font-extrabold lowercase tracking-[-0.03em] select-none",
+        "font-heading text-[18px] leading-none font-extrabold lowercase tracking-[-0.03em] select-none sm:text-[22px]",
         className,
       )}
     >

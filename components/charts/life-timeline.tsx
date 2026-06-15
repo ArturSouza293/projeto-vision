@@ -80,7 +80,49 @@ export function LifeTimeline() {
         <span className="text-xs text-muted-foreground">{t("timeline.hint")}</span>
       </div>
 
-      <div className="relative mx-2 mt-12 mb-12 h-0.5 rounded-full bg-border">
+      {/* Mobile: vertical stacked list (no overlay collisions on phones) */}
+      <ul className="flex flex-col gap-2 md:hidden">
+        <li className="flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary">
+          <span className="size-2 shrink-0 rounded-full bg-primary/60" />
+          <span className="min-w-0 truncate">
+            {t("timeline.retirement")} · {retirementYear}
+          </span>
+        </li>
+        {plan.goals.map((g) => (
+          <li
+            key={g.id}
+            className="flex items-center gap-2 rounded-full bg-info/15 px-3 py-1.5 text-xs font-medium text-info"
+          >
+            <span className="size-2 shrink-0 rounded-full bg-info" />
+            <span className="min-w-0 truncate">
+              {g.label || t(`goalType.${g.type}`)} · {g.targetYear}
+            </span>
+          </li>
+        ))}
+        {plan.events.map((e) => (
+          <li
+            key={e.id}
+            className="flex items-center gap-2 rounded-full bg-muted px-3 py-1.5 text-xs text-foreground"
+          >
+            <span className="size-2 shrink-0 rounded-full bg-primary" />
+            <span className="min-w-0 flex-1 truncate">
+              {e.title} · {eventYear(e.date)}
+            </span>
+            <button
+              type="button"
+              aria-label={t("common.remove")}
+              onClick={() => removeEvent(e.id)}
+              style={{ touchAction: "manipulation" }}
+              className="-m-1 inline-flex size-7 shrink-0 items-center justify-center p-1 text-muted-foreground transition-colors hover:text-negative"
+            >
+              <X className="size-2.5" />
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Desktop: absolute horizontal track (≥md keeps the original layout) */}
+      <div className="relative mx-2 mt-12 mb-12 hidden h-0.5 rounded-full bg-border md:block">
         {/* Retirement marker */}
         <div
           className="absolute -top-9 bottom-[-2.5rem] w-px bg-primary/40"
@@ -121,7 +163,8 @@ export function LifeTimeline() {
                 type="button"
                 aria-label={t("common.remove")}
                 onClick={() => removeEvent(e.id)}
-                className="text-muted-foreground transition-colors hover:text-negative"
+                style={{ touchAction: "manipulation" }}
+                className="-m-1 inline-flex size-7 items-center justify-center p-1 text-muted-foreground transition-colors hover:text-negative"
               >
                 <X className="size-2.5" />
               </button>

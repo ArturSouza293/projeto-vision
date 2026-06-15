@@ -166,7 +166,7 @@ export function NetWorthStep() {
                     value={a.ownership ?? "individual"}
                     onValueChange={(v) => updateAsset(a.id, { ownership: v as AssetOwnership })}
                   >
-                    <SelectTrigger className="h-7 w-28"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="h-9 w-28 sm:h-7"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {OWNERSHIPS.map((o) => (
                         <SelectItem key={o} value={o}>{t(`ownership.${o}`)}</SelectItem>
@@ -182,7 +182,7 @@ export function NetWorthStep() {
                         value={a.currency ?? "BRL"}
                         onValueChange={(v) => updateAsset(a.id, { currency: v as CurrencyCode })}
                       >
-                        <SelectTrigger className="h-7 w-20"><SelectValue /></SelectTrigger>
+                        <SelectTrigger className="h-9 w-20 sm:h-7"><SelectValue /></SelectTrigger>
                         <SelectContent>
                           {CURRENCIES.map((c) => (
                             <SelectItem key={c} value={c}>{c}</SelectItem>
@@ -205,7 +205,7 @@ export function NetWorthStep() {
                                 fxRate: e.target.value === "" ? undefined : e.target.valueAsNumber,
                               })
                             }
-                            className="h-7 w-16 tabular-nums"
+                            className="h-9 w-16 tabular-nums sm:h-7"
                           />
                           <span>BRL</span>
                         </label>
@@ -282,7 +282,7 @@ export function NetWorthStep() {
                         annualRate: e.target.value === "" ? undefined : e.target.valueAsNumber,
                       })
                     }
-                    className="h-7 w-16 tabular-nums"
+                    className="h-9 w-16 tabular-nums sm:h-7"
                   />
                   <span>% a.a.</span>
                 </label>
@@ -298,7 +298,7 @@ export function NetWorthStep() {
                         termMonths: e.target.value === "" ? undefined : e.target.valueAsNumber,
                       })
                     }
-                    className="h-7 w-16 tabular-nums"
+                    className="h-9 w-16 tabular-nums sm:h-7"
                   />
                   <span>{t("networth.months")}</span>
                 </label>
@@ -308,7 +308,7 @@ export function NetWorthStep() {
                     value={l.monthlyPayment ?? 0}
                     onChange={(n) => updateLiability(l.id, { monthlyPayment: n || undefined })}
                     ariaLabel={t("networth.payment")}
-                    className="h-7 w-24"
+                    className="h-9 w-24 sm:h-7"
                   />
                 </label>
                 <label className="flex items-center gap-1.5">
@@ -328,7 +328,7 @@ export function NetWorthStep() {
                         updateLiability(l.id, { linkedAssetId: v === "none" ? undefined : v })
                       }
                     >
-                      <SelectTrigger className="h-7 w-40"><SelectValue /></SelectTrigger>
+                      <SelectTrigger className="h-9 w-full sm:h-7 sm:w-40"><SelectValue /></SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">{t("networth.linkedNone")}</SelectItem>
                         {netWorth.assets.map((as) => (

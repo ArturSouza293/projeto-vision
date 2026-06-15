@@ -11,7 +11,7 @@
  * com stepper e eco anual, único/recorrente, ano + mês, duração, vínculo a
  * objetivo) com dica de peer por categoria.
  */
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 
 import {
@@ -105,6 +105,35 @@ export function CustomEventModal({
   const [page, setPage] = useState(0);
   const [selecionados, setSelecionados] = useState<Set<string>>(new Set());
   const maxPage = Math.max(0, insights.length - VISIBLE);
+
+  // Native scroll-snap carousel: derive the active "page" from scroll position
+  // (one card-width per page) so the dots/arrows stay in sync across breakpoints.
+  const trackRef = useRef<HTMLDivElement>(null);
+  const cardStep = () => {
+    const el = trackRef.current;
+    if (!el) return 1;
+    const first = el.firstElementChild as HTMLElement | null;
+    const gap = parseFloat(getComputedStyle(el).columnGap || "0") || 0;
+    return (first?.offsetWidth ?? el.clientWidth) + gap;
+  };
+  const scrollToPage = (i: number) => {
+    const el = trackRef.current;
+    if (!el) return;
+    el.scrollTo({ left: Math.max(0, Math.min(i, maxPage)) * cardStep(), behavior: "smooth" });
+  };
+  const scrollByPage = (dir: number) => scrollToPage(page + dir);
+
+  useEffect(() => {
+    const el = trackRef.current;
+    if (!el) return;
+    const onScroll = () => {
+      const step = cardStep();
+      setPage(step > 0 ? Math.max(0, Math.min(maxPage, Math.round(el.scrollLeft / step))) : 0);
+    };
+    el.addEventListener("scroll", onScroll, { passive: true });
+    return () => el.removeEventListener("scroll", onScroll);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maxPage, tab]);
 
   /* ---- aba "Criar do zero" ---- */
   const [nome, setNome] = useState("");
@@ -228,29 +257,27 @@ export function CustomEventModal({
                 ))}
               </div>
 
-              {/* carousel */}
+              {/* carousel — native scroll-snap (swipe on touch); arrows on sm+ */}
               <div className="relative">
-                <div className="overflow-hidden">
-                  <div
-                    className="flex gap-3 transition-transform duration-300"
-                    style={{ transform: `translateX(calc(-${page} * (33.333% + 0.25rem)))` }}
-                  >
-                    {insights.map((ins) => (
-                      <PeerCard
-                        key={ins.id}
-                        insight={ins}
-                        valor={cur(insightValue(ins, perfil))}
-                        selected={selecionados.has(ins.id)}
-                        onToggle={() => toggle(ins.id)}
-                      />
-                    ))}
-                  </div>
+                <div
+                  ref={trackRef}
+                  className="flex gap-3 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] touch-pan-x [&::-webkit-scrollbar]:hidden"
+                >
+                  {insights.map((ins) => (
+                    <PeerCard
+                      key={ins.id}
+                      insight={ins}
+                      valor={cur(insightValue(ins, perfil))}
+                      selected={selecionados.has(ins.id)}
+                      onToggle={() => toggle(ins.id)}
+                    />
+                  ))}
                 </div>
                 {page > 0 && (
-                  <CarouselArrow side="left" onClick={() => setPage((p) => Math.max(0, p - 1))} />
+                  <CarouselArrow side="left" onClick={() => scrollByPage(-1)} />
                 )}
                 {page < maxPage && (
-                  <CarouselArrow side="right" onClick={() => setPage((p) => Math.min(maxPage, p + 1))} />
+                  <CarouselArrow side="right" onClick={() => scrollByPage(1)} />
                 )}
               </div>
               {/* dots */}
@@ -260,7 +287,7 @@ export function CustomEventModal({
                     key={i}
                     type="button"
                     aria-label={`${i + 1}`}
-                    onClick={() => setPage(i)}
+                    onClick={() => scrollToPage(i)}
                     className={cn(
                       "size-2 rounded-full transition-colors",
                       i === page ? "bg-primary" : "bg-border hover:bg-muted-foreground/40",
@@ -312,7 +339,7 @@ export function CustomEventModal({
               <div>
                 <span className="mb-1 block text-xs text-muted-foreground">{t("eventForm.amount")}</span>
                 <div className="flex items-center gap-2">
-                  <MoneyInput value={valor} onChange={setValor} className="w-36" />
+                  <MoneyInput value={valor} onChange={setValor} className="w-full sm:w-36" />
                   <Stepper value={valor} onChange={setValor} step={5000} min={0} max={100000000} />
                 </div>
                 {recorrente && (
@@ -347,7 +374,7 @@ export function CustomEventModal({
                 <label className="block">
                   <span className="mb-1 block text-xs text-muted-foreground">{t("eventForm.month")}</span>
                   <Select value={mes === null ? "none" : String(mes)} onValueChange={(v) => setMes(v === "none" ? null : Number(v))}>
-                    <SelectTrigger className="w-36"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-full sm:w-36"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">{t("eventForm.monthDefault")}</SelectItem>
                       {Array.from({ length: 12 }, (_, i) => (
@@ -404,9 +431,9 @@ export function CustomEventModal({
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-border px-6 py-4">
+        <div className="flex flex-col gap-3 border-t border-border px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
           <span className="text-[10px] text-muted-foreground">{t("peer.illustrativeNote")}</span>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2">
             <Button variant="outline" onClick={() => onOpenChange(false)}>{t("common.close")}</Button>
             {tab === "sugestoes" ? (
               <Button data-testid="peer-apply" disabled={selecionados.size === 0} onClick={aplicarSugestoes}>
@@ -434,8 +461,8 @@ function CarouselArrow({ side, onClick }: { side: "left" | "right"; onClick: () 
       onClick={onClick}
       aria-label={side}
       className={cn(
-        "absolute top-1/2 z-10 grid size-8 -translate-y-1/2 place-items-center rounded-full border border-border bg-card shadow-md transition-colors hover:bg-muted",
-        side === "left" ? "-left-3" : "-right-3",
+        "absolute top-1/2 z-10 hidden size-11 -translate-y-1/2 place-items-center rounded-full border border-border bg-card shadow-md transition-colors hover:bg-muted sm:grid",
+        side === "left" ? "left-1" : "right-1",
       )}
     >
       <Icon className="size-4" />
@@ -460,7 +487,7 @@ function PeerCard({
     <div
       data-testid={`peer-card-${insight.id}`}
       className={cn(
-        "flex w-[calc(33.333%-0.5rem)] shrink-0 flex-col rounded-2xl border bg-card p-4 transition-colors",
+        "flex w-[80%] shrink-0 snap-start flex-col rounded-2xl border bg-card p-4 transition-colors sm:w-[calc(50%-0.375rem)] lg:w-[calc(33.333%-0.5rem)]",
         selected ? "border-primary/60 shadow-[0_0_0_1px_color-mix(in_oklch,var(--primary)_30%,transparent)]" : "border-border",
       )}
     >

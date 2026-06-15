@@ -33,7 +33,7 @@ export function KpiTile({
   onClick?: () => void;
 }) {
   const body = (
-    <>
+    <div className="pr-5">
       <div className="text-[11px] tracking-wide text-muted-foreground/80 uppercase">
         {label}
       </div>
@@ -41,12 +41,12 @@ export function KpiTile({
         value={value}
         format={format}
         className={cn(
-          "mt-1.5 block font-heading text-[26px] leading-none font-semibold",
+          "mt-1.5 block font-heading text-[22px] leading-none font-semibold sm:text-[26px]",
           TONE[tone],
         )}
       />
       {sublabel && <div className="mt-1.5 text-xs text-muted-foreground">{sublabel}</div>}
-    </>
+    </div>
   );
 
   if (onClick) {
@@ -55,7 +55,7 @@ export function KpiTile({
         type="button"
         onClick={onClick}
         className={cn(
-          "surface group/kpi relative rounded-2xl p-4 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none",
+          "surface group/kpi relative rounded-2xl p-3 text-left transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring/40 focus-visible:outline-none sm:p-4",
           className,
         )}
       >
@@ -65,5 +65,5 @@ export function KpiTile({
     );
   }
 
-  return <div className={cn("surface rounded-2xl p-4", className)}>{body}</div>;
+  return <div className={cn("surface rounded-2xl p-3 sm:p-4", className)}>{body}</div>;
 }

@@ -61,7 +61,7 @@ export function SuitabilityStep() {
               </div>
               <div
                 className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-background bg-primary shadow"
-                style={{ left: `${score}%` }}
+                style={{ left: `clamp(8px, ${score}%, calc(100% - 8px))` }}
               />
             </div>
             <div className="mt-1.5 flex justify-between text-[11px] text-muted-foreground">

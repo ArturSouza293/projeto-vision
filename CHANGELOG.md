@@ -1,5 +1,37 @@
 # Changelog
 
+## v9 — Protótipo inteiramente responsivo (mobile-first, qualquer aparelho)
+
+Varredura completa de responsividade (auditoria de 73 pontos em 7 grupos →
+correções) para o app funcionar bem de um celular de 360px até desktop.
+**Princípio:** toda mudança é no-op em `≥md` (768px) — o desktop renderiza
+idêntico, então os golden screenshots (1920px) e o vídeo da demo não mudam.
+
+- **Viewport** (`app/layout.tsx`): export `viewport` com `width=device-width`,
+  `themeColor` Bradesco e `colorScheme: light`. Zoom continua habilitado
+  (acessibilidade).
+- **Primitivas compartilhadas** (corrigem várias telas de uma vez):
+  - `Dialog`/`Sheet`: `max-h` + scroll interno — diálogos altos não cortam mais
+    abaixo da dobra em telas baixas.
+  - `Tabs`: lista com scroll horizontal quando há abas demais.
+  - `Input`/`Select`: altura de toque 44px no celular (`h-11 md:h-9`),
+    compacto no desktop.
+  - `Button` (icon-sm/icon-xs): área de toque ~44px via pseudo-elemento
+    invisível (fecha-diálogos), sem mudar o visual.
+  - `Slider`: alvo do thumb maior no toque. `Popover`: `max-w` para não estourar.
+- **Cabeçalho** (`engine-shell`): no celular as ações secundárias (Dados,
+  Salvar, Visão 360, Sair) entram num menu "⋮"; o seletor de fase ganha uma
+  linha própria; o "Sair" fica sempre acessível. Desktop inalterado.
+- **Modais**: Resumo dos Planos empilha 1 coluna no celular (era scroll lateral
+  forçado); carrossel de peers vira scroll-snap nativo com swipe; tabela do
+  IRRF (Premissas) com scroll horizontal.
+- **Timelines/gráficos**: faixa arrastável com área de toque maior nos chips
+  (sem mexer na geometria/Regra Zero); alturas de gráfico reduzidas no celular.
+- **Formulários** (cadastro): grids colapsam para 1 coluna no celular; editor
+  de dependentes deixa de estourar; inputs inline com alvo de toque.
+- **Workspace/saída**: KPIs, marcas do slider, trilha de variantes e payload
+  reencaixados para o celular.
+
 ## Demo v4 — corte limpo 4K para narração ao vivo
 
 - **`demo/clean.mjs`** (novo, `npm run demo:clean`): monta o vídeo da demo

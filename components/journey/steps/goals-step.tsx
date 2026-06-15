@@ -94,7 +94,7 @@ function GoalCard({ goal }: { goal: Goal }) {
         <Progress value={funded} className="h-1.5" />
       </div>
 
-      <div className="mt-4 grid grid-cols-2 gap-3">
+      <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
         <Field label={t("goals.targetAmount")}>
           <MoneyInput value={goal.targetAmount} onChange={(n) => updateGoal(goal.id, { targetAmount: n })} />
         </Field>
@@ -183,7 +183,7 @@ export function GoalsStep() {
       <StepHeader title={t("goals.title")} subtitle={t("goals.subtitle")} />
 
       {/* Dynamic cash-flow header — surplus vs. allocated to goals, always visible */}
-      <div className="mb-4 grid grid-cols-3 gap-3">
+      <div className="mb-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
         <StatTile
           label={t("goals.surplus")}
           tone={totals.surplus < 0 ? "negative" : "positive"}

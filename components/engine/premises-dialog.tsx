@@ -50,7 +50,7 @@ function Field({
   const t = useTranslations();
   const edited = Math.abs(value - def) > 1e-9;
   return (
-    <div className="flex items-start justify-between gap-4 py-2.5">
+    <div className="flex items-start justify-between gap-2 py-2.5 sm:gap-4">
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5 text-sm font-medium text-foreground">
           {label}
@@ -77,7 +77,7 @@ function Field({
             const n = parseFloat(e.target.value.replace(",", "."));
             onChange(Number.isFinite(n) ? n : 0);
           }}
-          className="w-24 text-right tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+          className="w-20 text-right tabular-nums [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none sm:w-24"
         />
         <span className="w-12 text-left text-xs text-muted-foreground">{unit}</span>
       </div>
@@ -238,7 +238,8 @@ export function PremisesDialog({
               onChange={(n) => set({ irrfSimplifiedDeduction: n })}
             />
             <div className="pt-3">
-              <table className="w-full text-xs">
+              <div className="-mx-1 overflow-x-auto">
+              <table className="w-full min-w-[22rem] text-xs">
                 <thead>
                   <tr className="text-left text-[10px] tracking-wide text-muted-foreground/80 uppercase">
                     <th className="pb-1 font-medium">{t("premises.irrf.base")}</th>
@@ -257,7 +258,7 @@ export function PremisesDialog({
                           : `${cur(prev)} – ${cur(b.upTo)}`;
                     return (
                       <tr key={i} className="border-t border-border/50">
-                        <td className="py-1 text-foreground/80">{range}</td>
+                        <td className="py-1 whitespace-nowrap text-foreground/80">{range}</td>
                         <td className="py-1 text-right text-foreground/80">
                           {b.rate === 0 ? t("premises.irrf.exempt") : formatPercent(b.rate, locale, 1)}
                         </td>
@@ -267,6 +268,7 @@ export function PremisesDialog({
                   })}
                 </tbody>
               </table>
+              </div>
               <div className="mt-2 flex items-center gap-1.5 text-[11px] text-muted-foreground">
                 <Info className="size-3.5 shrink-0 text-info" />
                 {t("premises.irrf.preview", {

@@ -11,7 +11,7 @@ export function ProbabilityGauge({ value }: { value: number }) {
 
   return (
     <div className="relative grid place-items-center">
-      <svg width="132" height="132" viewBox="0 0 132 132" className="-rotate-90">
+      <svg viewBox="0 0 132 132" className="h-auto w-full max-w-[132px] -rotate-90">
         <circle cx="66" cy="66" r={r} fill="none" stroke="var(--secondary)" strokeWidth="11" />
         <circle
           cx="66"

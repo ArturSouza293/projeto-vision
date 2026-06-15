@@ -55,13 +55,13 @@ export function WhyPlan() {
   }
 
   return (
-    <div className="mx-auto max-w-2xl py-10">
+    <div className="mx-auto max-w-2xl py-6 sm:py-10">
       <div className="text-center">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
           <Sparkles className="size-3.5" />
           {t("welcome.title", { name: advisorName })}
         </span>
-        <h1 className="mt-3 font-heading text-3xl font-semibold tracking-tight text-foreground">
+        <h1 className="mt-3 font-heading text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
           {t("whyPlan.title")}
         </h1>
         <p className="mt-2 text-muted-foreground">{t("whyPlan.subtitle")}</p>
@@ -70,7 +70,7 @@ export function WhyPlan() {
       {/* Segment selector — tweaks the example */}
       <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
         <span className="text-xs text-muted-foreground">{t("whyPlan.segmentHint")}</span>
-        <div className="inline-flex rounded-full border border-border p-0.5">
+        <div className="flex flex-wrap justify-center gap-0.5 rounded-2xl border border-border p-0.5">
           {SEGMENTS.map((s) => (
             <button
               key={s}

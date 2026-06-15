@@ -27,8 +27,12 @@ const buttonVariants = cva(
         sm: "h-7 gap-1.5 px-3 text-[0.8rem] has-data-[icon=inline-end]:pr-2 has-data-[icon=inline-start]:pl-2 [&_svg:not([class*='size-'])]:size-3.5",
         lg: "h-10 gap-2 px-6 text-[0.95rem] has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4",
         icon: "size-8",
-        "icon-xs": "size-6 [&_svg:not([class*='size-'])]:size-3",
-        "icon-sm": "size-7",
+        // icon-xs / icon-sm are the tiny close/control buttons used in dialogs,
+        // sheets and inline editors. Keep the visual size, but expand the
+        // tappable region to ~44px on touch via an invisible pseudo-element
+        // (no layout/visual change — safe for desktop golden screenshots).
+        "icon-xs": "relative size-6 after:absolute after:-inset-2.5 after:content-[''] [&_svg:not([class*='size-'])]:size-3",
+        "icon-sm": "relative size-7 after:absolute after:-inset-2 after:content-['']",
         "icon-lg": "size-10",
       },
     },

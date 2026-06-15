@@ -80,25 +80,36 @@ function ParamSlider({
         <span className="font-medium text-foreground tabular-nums">{display}</span>
       </div>
       <div className={cn("relative", marks && marks.length > 0 && "pt-5")}>
-        {marks?.map((m, i) => (
-          <div
-            key={i}
-            className="pointer-events-none absolute top-0 z-10 flex -translate-x-1/2 flex-col items-center"
-            style={{ left: `${pos(m.value)}%` }}
-          >
-            <span
+        {marks?.map((m, i) => {
+          const p = pos(m.value);
+          const edge = p < 8 ? "start" : p > 92 ? "end" : "center";
+          return (
+            <div
+              key={i}
               className={cn(
-                "rounded-full px-1.5 py-0.5 text-[9px] font-semibold whitespace-nowrap",
-                m.tone === "primary" ? "bg-primary/10 text-primary" : "bg-info/10 text-info",
+                "pointer-events-none absolute top-0 z-10 flex flex-col",
+                edge === "start"
+                  ? "items-start"
+                  : edge === "end"
+                    ? "-translate-x-full items-end"
+                    : "-translate-x-1/2 items-center",
               )}
+              style={{ left: `${p}%` }}
             >
-              {m.label}
-            </span>
-            <span
-              className={cn("h-2 w-px", m.tone === "primary" ? "bg-primary/50" : "bg-info/50")}
-            />
-          </div>
-        ))}
+              <span
+                className={cn(
+                  "max-w-[5rem] truncate rounded-full px-1.5 py-0.5 text-[8px] font-semibold",
+                  m.tone === "primary" ? "bg-primary/10 text-primary" : "bg-info/10 text-info",
+                )}
+              >
+                {m.label}
+              </span>
+              <span
+                className={cn("h-2 w-px", m.tone === "primary" ? "bg-primary/50" : "bg-info/50")}
+              />
+            </div>
+          );
+        })}
         <Slider value={[value]} min={min} max={max} step={step} onValueChange={([v]) => onChange(v)} />
       </div>
     </div>
@@ -348,7 +359,7 @@ export function Workspace() {
                 <button
                   type="button"
                   onClick={() => removeScenario(s.id)}
-                  className="text-muted-foreground hover:text-negative"
+                  className="grid size-6 -m-1 place-items-center text-muted-foreground hover:text-negative"
                   aria-label={t("common.remove")}
                 >
                   <X className="size-3.5" />
@@ -426,7 +437,7 @@ export function Workspace() {
 
       {/* Charts + parameters */}
       <div className="grid gap-5 lg:grid-cols-3">
-        <div className="space-y-5 lg:col-span-2">
+        <div className="min-w-0 space-y-5 lg:col-span-2">
           <section className="surface rounded-2xl p-5">
             <h3 className="mb-1 text-sm font-semibold text-foreground">{t("chart.wealthOverTime")}</h3>
             <WealthTimeline
@@ -473,7 +484,7 @@ export function Workspace() {
           )}
         </div>
 
-        <aside className="space-y-5">
+        <aside className="min-w-0 space-y-5">
           <section className="surface rounded-2xl p-5">
             <div className="mb-1 flex items-center justify-between gap-2">
               <h3 className="text-sm font-semibold text-foreground">{t("workspace.parameters")}</h3>
@@ -580,7 +591,7 @@ export function Workspace() {
               </div>
             )}
 
-            <div className="mt-5 flex items-center justify-between gap-3 rounded-xl border border-border bg-muted/30 p-3">
+            <div className="mt-5 flex flex-col gap-3 rounded-xl border border-border bg-muted/30 p-3 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <label className="flex cursor-pointer items-center gap-2 text-sm font-medium text-foreground">
                   <Switch
@@ -597,7 +608,7 @@ export function Workspace() {
                 </p>
               </div>
               {!dynamic && (
-                <Button size="sm" variant="outline" onClick={freezeNow}>
+                <Button size="sm" variant="outline" className="w-full sm:w-auto" onClick={freezeNow}>
                   <RotateCcw className="size-3.5" />
                   {t("workspace.recompute")}
                 </Button>

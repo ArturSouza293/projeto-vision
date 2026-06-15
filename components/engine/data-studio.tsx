@@ -89,7 +89,7 @@ export function DataStudio() {
                       {t(`dataDrawer.tab.${tb}`)}
                     </span>
                   </button>
-                  {i < TABS.length - 1 && <span className="h-px w-4 shrink-0 bg-border" />}
+                  {i < TABS.length - 1 && <span className="hidden h-px w-4 shrink-0 bg-border sm:block" />}
                 </li>
               );
             })}
@@ -107,12 +107,12 @@ export function DataStudio() {
           </motion.div>
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-border px-5 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-5 py-4">
           <Button variant="outline" disabled={isFirst} onClick={() => setDataTab(TABS[idx - 1])}>
             <ArrowLeft className="size-4" />
             {t("common.back")}
           </Button>
-          <span className="text-xs text-muted-foreground tabular-nums">
+          <span className="order-last w-full text-center text-xs text-muted-foreground tabular-nums sm:order-none sm:w-auto">
             {t("common.stepOf", { current: idx + 1, total: TABS.length })}
           </span>
           {isLast ? (

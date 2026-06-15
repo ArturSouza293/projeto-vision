@@ -100,10 +100,10 @@ export function PlanSummaryDialog({
           <DialogDescription>{t("planCompare.subtitle")}</DialogDescription>
         </DialogHeader>
 
-        <div className="min-h-0 flex-1 overflow-auto px-6 py-5">
+        <div className="min-h-0 flex-1 overflow-x-auto overflow-y-auto px-6 py-5">
           <div
-            className="grid gap-3"
-            style={{ gridTemplateColumns: `repeat(${Math.max(colunas.length, 1)}, minmax(240px, 1fr))` }}
+            className="grid grid-cols-1 gap-3 md:[grid-template-columns:repeat(var(--cols),minmax(240px,1fr))]"
+            style={{ ["--cols" as string]: Math.max(colunas.length, 1) }}
           >
             {colunas.map(({ variant, kpis, steps }) => {
               const delta = ref && variant.id !== ref.variant.id ? deltaKPIs(ref.kpis, kpis) : null;

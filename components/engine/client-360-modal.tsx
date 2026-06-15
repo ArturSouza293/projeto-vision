@@ -58,7 +58,7 @@ function Section({
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   if (children == null || children === "") return null;
   return (
-    <div className="grid grid-cols-[7.5rem_1fr] gap-x-3 gap-y-0.5">
+    <div className="grid grid-cols-[5.5rem_1fr] gap-x-3 gap-y-0.5 sm:grid-cols-[7.5rem_1fr]">
       <span className="pt-0.5 text-[11px] leading-snug tracking-wide text-muted-foreground uppercase">
         {label}
       </span>

@@ -145,9 +145,9 @@ export function CopilotPanel() {
           {events.map((e) => (
             <span
               key={e.id}
-              className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
+              className="inline-flex max-w-full min-w-0 items-center gap-1 truncate rounded-full bg-secondary px-2 py-0.5 text-xs text-secondary-foreground"
             >
-              <CalendarPlus className="size-3" />
+              <CalendarPlus className="size-3 shrink-0" />
               {e.title}
             </span>
           ))}
@@ -179,7 +179,7 @@ export function CopilotPanel() {
               <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
                 <div
                   className={cn(
-                    "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm whitespace-pre-wrap",
+                    "max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm whitespace-pre-wrap break-words",
                     m.role === "user"
                       ? "bg-primary text-primary-foreground"
                       : "bg-muted text-foreground",

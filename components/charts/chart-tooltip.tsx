@@ -21,7 +21,7 @@ export function MoneyTooltip(props: {
   if (!active || !payload || payload.length === 0) return null;
 
   return (
-    <div className="rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-md">
+    <div className="max-w-[70vw] rounded-lg border border-border bg-popover px-3 py-2 text-xs shadow-md sm:max-w-xs">
       {label !== undefined && label !== "" && (
         <div className="mb-1 font-medium text-foreground">{label}</div>
       )}

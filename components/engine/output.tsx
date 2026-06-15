@@ -119,7 +119,7 @@ export function Output() {
           approved && "border-positive/30",
         )}
       >
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           {approved ? (
             <CircleCheckBig className="size-5 shrink-0 text-positive" />
           ) : (
@@ -127,7 +127,7 @@ export function Output() {
               !
             </span>
           )}
-          <div>
+          <div className="min-w-0">
             <div className={cn("text-sm font-medium", approved ? "text-positive" : "text-foreground")}>
               {approved ? t("output.approved") : t("output.notApproved")}
             </div>
@@ -137,12 +137,13 @@ export function Output() {
           </div>
         </div>
         {approved ? (
-          <Button variant="outline" size="sm" onClick={reopenPlan}>
+          <Button variant="outline" size="sm" className="w-full sm:w-auto" onClick={reopenPlan}>
             <RotateCcw className="size-4" />
             {t("output.reopen")}
           </Button>
         ) : (
           <Button
+            className="w-full sm:w-auto"
             onClick={() => {
               approvePlan();
               toast.success(t("output.approved"));
@@ -228,7 +229,7 @@ export function Output() {
           {result && (
             <section className="surface rounded-2xl p-5">
               <h3 className="mb-3 text-sm font-semibold text-foreground">{t("output.generatedData")}</h3>
-              <div className="grid grid-cols-2 gap-x-6 gap-y-2.5 text-sm sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-2.5 text-sm sm:grid-cols-3">
                 <Row label={t("kpi.wealthAtRetirement")}><Money value={result.wealthAtRetirement} compact /></Row>
                 <Row label={t("kpi.probability")}>{result.probabilityOfSuccess}%</Row>
                 <Row label={t("kpi.retirementDuration")}>{result.retirementDurationYears} {t("common.years")}</Row>
@@ -242,7 +243,7 @@ export function Output() {
 
         {/* API payload */}
         <aside>
-          <section className="surface sticky top-20 rounded-2xl p-5">
+          <section className="surface static rounded-2xl p-5 lg:sticky lg:top-20">
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-semibold text-foreground">{t("output.payload")}</h3>
               <Button variant="ghost" size="xs" onClick={() => setShowJson((v) => !v)}>

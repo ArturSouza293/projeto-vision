@@ -69,7 +69,7 @@ export function ExpenseStep() {
         <StatTile
           label={deficit ? t("cashflow.deficit") : t("cashflow.surplus")}
           tone={deficit ? "negative" : "positive"}
-          value={<Money value={totals.surplus} />}
+          value={<Money value={totals.surplus} compact />}
           hint={t("common.perMonth")}
         />
         <StatTile
@@ -161,7 +161,7 @@ export function ExpenseStep() {
                         value={item.subcategory ?? ""}
                         placeholder={t("expense.subcategory")}
                         onChange={(e) => updateExpense(item.id, { subcategory: e.target.value || undefined })}
-                        className="h-7 w-40 text-xs"
+                        className="h-7 w-full text-xs sm:w-40"
                       />
                     )}
                   </div>

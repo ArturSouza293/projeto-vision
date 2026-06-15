@@ -42,10 +42,10 @@ export function PlanVariantsRail() {
             key={v.id}
             data-testid={`variant-${v.name.slice(-1)}`}
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm transition-colors",
+              "inline-flex items-center gap-1.5 rounded-full border px-3 py-2 text-sm transition-colors sm:py-1.5",
               active
                 ? "border-primary/60 bg-primary/10 text-foreground"
-                : "border-border text-muted-foreground hover:text-foreground",
+                : "border-border text-muted-foreground hover:text-foreground active:text-foreground",
             )}
           >
             <span className={cn("size-2 rounded-full", DOT[v.color])} />
@@ -57,7 +57,7 @@ export function PlanVariantsRail() {
               <button
                 type="button"
                 onClick={() => removeVariant(v.id)}
-                className="text-muted-foreground hover:text-negative"
+                className="grid size-7 -mr-1.5 place-items-center rounded-full text-muted-foreground hover:text-negative active:text-negative"
                 aria-label={t("variants.remove")}
               >
                 <X className="size-3.5" />

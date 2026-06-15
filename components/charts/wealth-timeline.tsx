@@ -214,7 +214,7 @@ export function WealthTimeline({
     const d = dragRef.current;
     if (!d || d.id !== ev.id) return;
     const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 4) d.moved = true;
+    if (Math.abs(dx) > 8) d.moved = true;
     const year = clampEventYear(yearFromDx(d.startYear, dx));
     setDrag({ kind: "event", id: ev.id, year });
     scheduleGhost(
@@ -247,7 +247,7 @@ export function WealthTimeline({
     const d = dragRef.current;
     if (!d || d.id !== "retire") return;
     const dx = e.clientX - d.startX;
-    if (Math.abs(dx) > 4) d.moved = true;
+    if (Math.abs(dx) > 8) d.moved = true;
     const age = clampRetAge(currentAge + (yearFromDx(d.startYear, dx) - thisYear));
     setDrag({ kind: "retire", year: thisYear + (age - currentAge) });
     scheduleGhost(plan, { ...assumptions, retirementAge: age, growthScenario: "custom" });
@@ -339,8 +339,11 @@ export function WealthTimeline({
               {t("timeline.subtitle")}
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3 text-xs font-semibold" style={{ color: T.muted }}>
+          <div className="flex flex-wrap items-center gap-3 md:gap-4">
+            <div
+              className="hidden flex-wrap items-center gap-2 text-xs font-semibold sm:flex sm:gap-3"
+              style={{ color: T.muted }}
+            >
               <span className="flex items-center gap-1.5">
                 <i className="inline-block size-2 rounded-full" style={{ background: T.in }} />
                 {t("lifeEvents.inflow")}
@@ -354,7 +357,7 @@ export function WealthTimeline({
                 {t("timeline.legendMilestone")}
               </span>
             </div>
-            <Button size="sm" onClick={() => setCustomOpen(true)}>
+            <Button size="sm" className="shrink-0" onClick={() => setCustomOpen(true)}>
               <Plus className="size-4" />
               {t("timeline.addEvent")}
             </Button>
@@ -409,6 +412,7 @@ export function WealthTimeline({
               onKeyDown={onRetireKey}
               className={cn(
                 "absolute flex items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold whitespace-nowrap text-white select-none focus-visible:outline-2 focus-visible:outline-offset-2",
+                "before:absolute before:-inset-y-2 before:content-['']",
                 CHIP_TRANSITION,
                 drag?.kind === "retire" ? "cursor-grabbing" : "cursor-grab",
               )}
@@ -445,6 +449,7 @@ export function WealthTimeline({
                   onKeyDown={(e) => onKeyNudge(e, ev)}
                   className={cn(
                     "absolute flex items-center gap-2 rounded-[10px] border bg-white px-2.5 whitespace-nowrap select-none hover:-translate-y-px focus-visible:outline-2 focus-visible:outline-offset-2",
+                    "before:absolute before:-inset-y-2 before:content-['']",
                     CHIP_TRANSITION,
                     dragging ? "cursor-grabbing" : "cursor-grab",
                   )}
@@ -673,7 +678,7 @@ function EventFields({
         </div>
       )}
 
-      <div className="min-w-52 flex-[2_1_220px]">
+      <div className="min-w-0 flex-[2_1_220px] sm:min-w-52">
         <span className={label} style={{ color: T.faint }}>
           {t("eventForm.year")} — <b style={{ color: T.ink }}>{ev.year}</b>
         </span>
@@ -732,7 +737,7 @@ function RetireFields({
   const label = "mb-1.5 block text-[11px] font-bold tracking-[0.06em] uppercase";
   return (
     <div className="flex flex-wrap items-end gap-x-4 gap-y-3">
-      <div className="min-w-64 flex-[2_1_260px]">
+      <div className="min-w-0 flex-[2_1_260px] sm:min-w-64">
         <span className={label} style={{ color: T.faint }}>
           {t("workspace.retirementAge")} — <b style={{ color: T.ink }}>{age}</b> · {year}
         </span>

@@ -38,7 +38,7 @@ export function WealthArea({
   const data = ghostByYear ? points.map((p) => ({ ...p, ghost: ghostByYear.get(p.year) })) : points;
 
   return (
-    <div className="h-72 w-full">
+    <div className="h-56 w-full sm:h-72">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 12, right: 8, left: 8, bottom: 0 }}>
           <defs>

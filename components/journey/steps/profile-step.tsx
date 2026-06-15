@@ -171,12 +171,12 @@ function DependentsEditor() {
       ) : (
         <div className="space-y-2">
           {deps.map((d) => (
-            <div key={d.id} className="flex items-center gap-2">
+            <div key={d.id} className="flex flex-wrap items-center gap-2">
               <Input
                 value={d.name}
                 placeholder={t("profile.dependents.name")}
                 onChange={(e) => updateDependent(d.id, { name: e.target.value })}
-                className="min-w-0 flex-1"
+                className="w-full min-w-0 sm:flex-1"
               />
               <Select value={d.relation} onValueChange={(v) => updateDependent(d.id, { relation: v as DependentRelation })}>
                 <SelectTrigger className="w-28 shrink-0">
@@ -195,7 +195,7 @@ function DependentsEditor() {
                 aria-label={t("profile.dependents.birthDate")}
                 value={d.birthDate ?? ""}
                 onChange={(e) => updateDependent(d.id, { birthDate: e.target.value || undefined })}
-                className="w-36 shrink-0"
+                className="w-full shrink-0 sm:w-36"
               />
               <Input
                 type="number"
@@ -210,9 +210,9 @@ function DependentsEditor() {
                     age: Number.isNaN(e.target.valueAsNumber) ? 0 : e.target.valueAsNumber,
                   })
                 }
-                className="w-14 shrink-0 tabular-nums"
+                className="w-16 shrink-0 tabular-nums sm:w-14"
               />
-              <Button type="button" variant="ghost" size="icon-sm" onClick={() => removeDependent(d.id)}>
+              <Button type="button" variant="ghost" size="icon-sm" className="size-11 md:size-8" onClick={() => removeDependent(d.id)}>
                 <Trash2 className="size-4 text-muted-foreground" />
               </Button>
             </div>
@@ -305,7 +305,7 @@ export function ProfileStep() {
 
       <Form {...form}>
         <form className="space-y-5">
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
             <h3 className="mb-4 text-sm font-semibold text-foreground">
               {t("profile.section.personal")}
             </h3>
@@ -396,7 +396,7 @@ export function ProfileStep() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-border bg-card p-5">
+          <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
               <h3 className="mb-4 text-sm font-semibold text-foreground">
                 {t("profile.section.household")}
               </h3>
@@ -459,7 +459,7 @@ export function ProfileStep() {
               </div>
             </section>
 
-            <section className="rounded-2xl border border-border bg-card p-5">
+            <section className="rounded-2xl border border-border bg-card p-4 sm:p-5">
               <h3 className="mb-4 text-sm font-semibold text-foreground">
                 {t("profile.section.tax")}
               </h3>
