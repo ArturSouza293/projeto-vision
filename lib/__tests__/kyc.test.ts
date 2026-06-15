@@ -5,7 +5,8 @@
  */
 import { describe, expect, it } from "vitest";
 
-import { shareOfWallet, shareOfWalletInsight } from "@/lib/kyc";
+import { cashFlowTotals } from "@/lib/calc";
+import { kycExpenseComparison, shareOfWallet, shareOfWalletInsight } from "@/lib/kyc";
 import { SEED_PLANS } from "@/lib/mock/clients";
 import { blankPlan } from "@/lib/plan";
 
@@ -33,6 +34,25 @@ describe("share of wallet", () => {
   it("caso criado do zero não tem KYC → share nulo", () => {
     expect(shareOfWallet(blankPlan("novo"))).toBeNull();
     expect(shareOfWalletInsight(blankPlan("novo"))).toBeNull();
+  });
+});
+
+describe("comparação de despesas (declarado-KYC × plano)", () => {
+  it("v9: deriva totais e delta a partir do motor + dossiê (não inline no componente)", () => {
+    const plan = seed("camila-diego");
+    const cmp = kycExpenseComparison(plan);
+    expect(cmp).not.toBeNull();
+    // total do plano = mesma fonte do workspace (motor)
+    expect(cmp!.planTotal).toBe(cashFlowTotals(plan.cashFlow, plan.netWorth).expense);
+    // declarado = soma das despesas fixas do dossiê
+    const declared = plan.clientProfile.kyc!.fluxoCaixa.despesasFixas.reduce((s, d) => s + d.valor, 0);
+    expect(cmp!.kycDeclared).toBe(declared);
+    expect(cmp!.delta).toBe(cmp!.planTotal - cmp!.kycDeclared);
+    expect(cmp!.hasPlanExpenses).toBe(plan.cashFlow.expenses.length > 0);
+  });
+
+  it("caso criado do zero não tem KYC → comparação nula", () => {
+    expect(kycExpenseComparison(blankPlan("novo"))).toBeNull();
   });
 });
 

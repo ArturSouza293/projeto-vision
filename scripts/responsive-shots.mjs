@@ -130,29 +130,19 @@ async function run() {
     issues.push(await probe(page, "sidebar", width));
     await shot(page, "03_sidebar", width);
     await page.getByTestId("persona-camila-diego").click({ force: true });
-    await page.waitForSelector('[data-testid="timeline-track"]', { timeout: 20000 });
-    await page.waitForTimeout(900);
 
-    // 4) workspace
+    // 4) v9 — persona seed abre na aba "Cliente 360" (página inteira). Screenshot dela.
+    await page.waitForSelector('[data-testid="client-360"]', { timeout: 20000 });
+    await page.waitForTimeout(700);
+    issues.push(await probe(page, "client-360", width));
+    await shot(page, "05_client360", width);
+
+    // 5) troca para "Life Planning" (o simulador) e segue o resto das telas lá.
+    await page.getByTestId("tab-life-planning").click({ force: true });
+    await page.waitForSelector('[data-testid="timeline-track"]', { timeout: 20000 });
+    await page.waitForTimeout(800);
     issues.push(await probe(page, "workspace", width));
     await shot(page, "04_workspace", width);
-
-    // 5) Visão 360 (desktop: botão direto; mobile: menu ⋮)
-    try {
-      if (width.w >= HEADER_FULL_MIN) {
-        await page.getByTestId("open-vision-360").click({ force: true });
-      } else {
-        await page.getByRole("button", { name: "Mais" }).click({ force: true });
-        await page.waitForTimeout(250);
-        await page.getByRole("menuitem").first().click({ force: true }); // Visão 360 é o 1º item
-      }
-      await page.waitForSelector('[data-testid="client-360"]', { timeout: 6000 });
-      await page.waitForTimeout(400);
-      issues.push(await probe(page, "client-360", width));
-      await shot(page, "05_client360", width);
-      await page.keyboard.press("Escape");
-      await page.waitForTimeout(300);
-    } catch (e) { console.log(`  [${width.id}] client-360 skip: ${e.message.split("\n")[0]}`); }
 
     // 6) Premissas (botão no painel de parâmetros)
     try {

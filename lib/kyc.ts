@@ -3,7 +3,7 @@
  * inline em componente. Os números financeiros vêm do mesmo motor que o resto
  * do app (`investableWealth`); só o saldo declarado é dado estático do KYC.
  */
-import { investableWealth } from "@/lib/calc";
+import { cashFlowTotals, investableWealth } from "@/lib/calc";
 import { KYC_DOSSIERS } from "@/lib/mock/kyc";
 import type { ClientKYC, Plan } from "@/lib/types";
 
@@ -58,5 +58,34 @@ export function shareOfWalletInsight(plan: Plan): ShareOfWalletInsight | null {
     share,
     pct: Math.round(share * 100),
     captureOpportunity: share < 0.5 && capable,
+  };
+}
+
+export interface ExpenseComparison {
+  /** Total mensal das despesas fixas DECLARADAS no dossiê KYC. */
+  kycDeclared: number;
+  /** Total mensal de despesas do PLANO (motor: cashFlowTotals.expense). */
+  planTotal: number;
+  /** planTotal − kycDeclared (positivo = plano gasta mais que o declarado). */
+  delta: number;
+  /** Há despesas cadastradas no plano? (senão, mostrar só o lado do KYC.) */
+  hasPlanExpenses: boolean;
+}
+
+/**
+ * Despesas declaradas no KYC × despesas do plano (motor). Mantém a aritmética
+ * FORA do componente (Regra Zero): o número do plano vem de `cashFlowTotals`
+ * (origem única), o do KYC soma as despesas fixas estáticas do dossiê.
+ */
+export function kycExpenseComparison(plan: Plan): ExpenseComparison | null {
+  const kyc = kycFor(plan);
+  if (!kyc) return null;
+  const kycDeclared = kyc.fluxoCaixa.despesasFixas.reduce((s, d) => s + d.valor, 0);
+  const planTotal = cashFlowTotals(plan.cashFlow, plan.netWorth).expense;
+  return {
+    kycDeclared,
+    planTotal,
+    delta: planTotal - kycDeclared,
+    hasPlanExpenses: plan.cashFlow.expenses.length > 0,
   };
 }

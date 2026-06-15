@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
 import { motion } from "framer-motion";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
-import { Database, EllipsisVertical, LogOut, Menu, Plus, Save, ScanFace, Sparkles } from "@/components/app/icons";
+import { Database, EllipsisVertical, LogOut, Menu, Plus, Save, Sparkles } from "@/components/app/icons";
 
 import { BradescoLogo } from "@/components/app/bradesco-logo";
 import { LocaleToggle } from "@/components/app/locale-toggle";
 import { CopilotPanel } from "@/components/advisor-copilot/copilot-panel";
-import { Client360Modal } from "@/components/engine/client-360-modal";
+import { Client360Page } from "@/components/engine/client-360-page";
+import { ClientRecordTabs, CLIENT_TAB_IDS } from "@/components/engine/client-record-tabs";
 import { DataStudio } from "@/components/engine/data-studio";
 import { kycFor } from "@/lib/kyc";
 import { Output } from "@/components/engine/output";
@@ -32,7 +32,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { useVisionStore } from "@/lib/store/plan-store";
-import type { EnginePhase } from "@/lib/types";
+import type { ClientTab, EnginePhase } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 const PHASES: EnginePhase[] = ["simulate", "output"];
@@ -115,12 +115,19 @@ export function EngineShell() {
   const setSidebarOpen = useVisionStore((s) => s.setSidebarOpen);
   const advisorName = useVisionStore((s) => s.advisorName);
   const logout = useVisionStore((s) => s.logout);
+  const clientTabs = useVisionStore((s) => s.clientTabs);
+  const setClientTab = useVisionStore((s) => s.setClientTab);
 
-  // v8 — Visão 360 (drawer). Só aparece no workspace de uma persona seed
-  // (resolvido pelo clientId via kycFor, robusto a snapshot persistido velho).
-  // Casos criados do zero têm clientId aleatório → sem 360.
-  const [vision360Open, setVision360Open] = useState(false);
+  // v9 — registro do cliente em 2 abas. A aba "Cliente 360" só existe quando o
+  // caso tem KYC (persona seed); casos do zero (clientId aleatório, sem kyc)
+  // mostram só "Life Planning". A aba ativa é lembrada por clientId; default =
+  // Cliente 360 quando há KYC (contexto antes de simular), senão Life Planning.
   const hasKyc = Boolean(plan && kycFor(plan));
+  const storedTab = plan ? clientTabs[plan.clientId] : undefined;
+  const clientTab: ClientTab = hasKyc ? storedTab ?? "client360" : "lifePlanning";
+  const showTabs = Boolean(plan) && hasKyc;
+  // O seletor de fase (Simular/Entrega) pertence ao Life Planning.
+  const showPhaseNav = Boolean(plan) && clientTab === "lifePlanning";
 
   async function handleSave() {
     const res = await savePlan();
@@ -174,7 +181,7 @@ export function EngineShell() {
             )}
           </div>
 
-          {plan && (
+          {showPhaseNav && (
             <div className="hidden shrink-0 justify-center xl:flex">
               <PhaseNav />
             </div>
@@ -183,21 +190,8 @@ export function EngineShell() {
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
             {plan && (
               <>
-                {/* Desktop (md+): individual action buttons. Below md they
+                {/* Desktop (xl+): individual action buttons. Below xl they
                     collapse into the overflow menu so the header never overflows. */}
-                {hasKyc && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    data-testid="open-vision-360"
-                    onClick={() => setVision360Open(true)}
-                    title={t("vision360.tooltip")}
-                    className={cn("hidden xl:inline-flex", headerBtn)}
-                  >
-                    <ScanFace className="size-4" />
-                    <span className="hidden md:inline">{t("vision360.open")}</span>
-                  </Button>
-                )}
                 <Button
                   variant="outline"
                   size="sm"
@@ -251,12 +245,6 @@ export function EngineShell() {
               <DropdownMenuContent align="end" className="w-56">
                 {plan && (
                   <>
-                    {hasKyc && (
-                      <DropdownMenuItem className="py-2.5" onSelect={() => setVision360Open(true)}>
-                        <ScanFace className="size-4" />
-                        {t("vision360.open")}
-                      </DropdownMenuItem>
-                    )}
                     <DropdownMenuItem className="py-2.5" onSelect={() => setDataTab("profile")}>
                       <Database className="size-4" />
                       {t("engine.data")}
@@ -293,8 +281,9 @@ export function EngineShell() {
         </div>
 
         {/* Mobile phase switcher — its own full-width row so the top bar stays
-            uncrowded (desktop keeps the centered nav inside the bar). */}
-        {plan && (
+            uncrowded (desktop keeps the centered nav inside the bar). Só no
+            Life Planning (a aba Cliente 360 não tem fases). */}
+        {showPhaseNav && (
           <div className="flex justify-center border-t border-white/15 px-4 py-1.5 xl:hidden">
             <PhaseNav />
           </div>
@@ -303,14 +292,56 @@ export function EngineShell() {
 
       <main className="mx-auto w-full max-w-[1400px] flex-1 px-4 py-7 sm:px-6 lg:px-8">
         {plan ? (
-          <motion.div
-            key={phase}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
-          >
-            {phase === "simulate" ? <Workspace /> : <Output />}
-          </motion.div>
+          showTabs ? (
+            // Registro com KYC: tabset (Cliente 360 · Life Planning). AMBOS os
+            // painéis ficam montados (toggle por `hidden`) para preservar o
+            // estado das duas abas ao alternar — cenário ativo, posição na
+            // timeline e edições não se perdem.
+            <div className="space-y-5">
+              <ClientRecordTabs value={clientTab} onChange={setClientTab} />
+
+              <div
+                role="tabpanel"
+                id={CLIENT_TAB_IDS.client360.panel}
+                aria-labelledby={CLIENT_TAB_IDS.client360.tab}
+                tabIndex={0}
+                hidden={clientTab !== "client360"}
+                className="outline-none"
+              >
+                <Client360Page />
+              </div>
+
+              <div
+                role="tabpanel"
+                id={CLIENT_TAB_IDS.lifePlanning.panel}
+                aria-labelledby={CLIENT_TAB_IDS.lifePlanning.tab}
+                tabIndex={0}
+                hidden={clientTab !== "lifePlanning"}
+                className="outline-none"
+              >
+                <motion.div
+                  key={phase}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {phase === "simulate" ? <Workspace /> : <Output />}
+                </motion.div>
+              </div>
+            </div>
+          ) : (
+            // Caso criado do zero (sem KYC): só Life Planning, sem abas —
+            // experiência cai direto no simulador (idêntica ao comportamento
+            // anterior, zero regressão).
+            <motion.div
+              key={phase}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.32, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {phase === "simulate" ? <Workspace /> : <Output />}
+            </motion.div>
+          )
         ) : introSeen ? (
           <Welcome />
         ) : (
@@ -320,7 +351,6 @@ export function EngineShell() {
 
       <PersonaSidebar />
       <DataStudio />
-      <Client360Modal open={vision360Open} onOpenChange={setVision360Open} />
 
       <Sheet open={copilotOpen} onOpenChange={setCopilotOpen}>
         <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-md">

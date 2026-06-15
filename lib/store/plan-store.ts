@@ -41,6 +41,7 @@ import type {
   Scenario,
   ScenarioAssumptions,
   ClientProfile,
+  ClientTab,
   EnginePhase,
   OutboundResult,
   OutputPayload,
@@ -106,6 +107,12 @@ export interface VisionStore {
   activePlan: Plan | null;
   phase: EnginePhase;
   setPhase: (p: EnginePhase) => void;
+
+  // v9 — aba ativa do registro do cliente, lembrada POR cliente (clientId).
+  // O default (client360 quando há KYC, senão lifePlanning) é resolvido no
+  // componente; aqui só guardamos a escolha explícita do advisor.
+  clientTabs: Record<string, ClientTab>;
+  setClientTab: (tab: ClientTab) => void;
 
   dataDrawerOpen: boolean;
   setDataDrawerOpen: (v: boolean) => void;
@@ -313,6 +320,14 @@ export const useVisionStore = create<VisionStore>()(
       activePlan: null,
       phase: "simulate",
       setPhase: (p) => set({ phase: p }),
+
+      clientTabs: {},
+      setClientTab: (tab) =>
+        set((s) =>
+          s.activePlan
+            ? { clientTabs: { ...s.clientTabs, [s.activePlan.clientId]: tab } }
+            : {},
+        ),
 
       dataDrawerOpen: false,
       setDataDrawerOpen: (v) => set({ dataDrawerOpen: v }),
@@ -890,6 +905,7 @@ export const useVisionStore = create<VisionStore>()(
         locale: s.locale,
         activePlan: s.activePlan,
         phase: s.phase,
+        clientTabs: s.clientTabs,
         advisorName: s.advisorName,
         recentPlans: s.recentPlans,
         // v5: variants survive a reload locally (session-scoped — NOT synced

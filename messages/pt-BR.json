@@ -576,7 +576,21 @@
     "kpiSurplus": "Sobra mensal",
     "kpiGoals": "Objetivos",
     "kpiProbability": "Probabilidade",
-    "openFullPlan": "Abrir plano completo"
+    "openFullPlan": "Abrir plano completo",
+    "openLifePlanning": "Abrir Life Planning",
+    "secSummary": "Resumo da ficha",
+    "secIdentification": "Identificação do cliente",
+    "secProfileFamily": "Perfil pessoal e familiar",
+    "secAssetsIntl": "Ativos, patrimônio e posição internacional",
+    "declaredKyc": "Declarado (KYC)",
+    "inPlan": "No plano",
+    "totalMonthly": "Total mensal",
+    "vsDeclared": "vs. declarado"
+  },
+  "clientTabs": {
+    "ariaLabel": "Navegação do registro do cliente",
+    "client360": "Cliente 360",
+    "lifePlanning": "Life Planning"
   },
   "copilot": {
     "title": "BIA advisor",

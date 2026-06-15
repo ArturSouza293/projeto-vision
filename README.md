@@ -165,15 +165,27 @@ product opportunities from each plan's signals, grounded in the Bradesco product
 
 ---
 
-## Client 360 (KYC dossiers · v8)
+## Client 360 + Life Planning (2-tab client record · v9)
 
 Each **seed persona** carries a KYC "Conheça seu Cliente" dossier (9 categories,
-in `lib/mock/kyc.ts`) surfaced by a **"Visão 360"** drawer
-(`components/engine/client-360-drawer.tsx`).
+in `lib/mock/kyc.ts`). When a client record is open it shows a **2-tab
+navigation** at the top:
 
-- **Gate by data presence**: the header button renders **only when the active
+- **Cliente 360** (`components/engine/client-360-page.tsx`) — a full-page dossier
+  (6 sections: summary, identification, relationship, personal & family, assets &
+  international, cash flow & alerts) + an engine-KPI footer. (v8 surfaced this as
+  a modal; v9 promoted it to a first-class tab.)
+- **Life Planning** — the simulator/planning workspace (timeline, KPIs, Plano
+  Ideal, Output) — unchanged.
+
+Switching tabs **preserves both panels' state** (the simulator is not unmounted),
+and the active tab is remembered **per client**.
+
+- **Gate by data presence**: the **"Cliente 360" tab renders only when the active
   case has `clientProfile.kyc`**. Cases created from scratch never carry KYC, so
-  the button is simply absent there — that presence check IS the demo mechanism.
+  the tab is simply absent and the record opens straight into Life Planning —
+  that presence check IS the demo mechanism. Default tab when KYC is present:
+  **Cliente 360** (context before simulating).
 - **Static mock data, no AI**: the dossiers (including the "BIA summaries") are
   pre-written illustrative data shown with an "exemplo ilustrativo" badge — the
   360 makes **zero** API calls.
@@ -181,10 +193,11 @@ in `lib/mock/kyc.ts`) surfaced by a **"Visão 360"** drawer
   is an inclusion whitelist (numbers/booleans only); a test in
   `lib/__tests__/plano-ideal.test.ts` sweeps every persona to prove no KYC field
   or value leaks into the payload.
-- **Plan numbers from the engine**: the drawer footer's 4 KPIs come from
-  `projectPlan` (same source as the workspace) — no arithmetic in the component.
-- **i18n**: UI labels are bilingual (`vision360` namespace, EN/PT). The dossier
-  **content** stays in PT on purpose (it's data, not UI).
+- **Plan numbers from the engine**: the page's expense comparison (declared-KYC ×
+  plan) and the footer's 4 KPIs come from `cashFlowTotals` / `projectPlan` (same
+  source as the workspace) — no arithmetic in the component.
+- **i18n**: UI labels are bilingual (`vision360` + `clientTabs` namespaces,
+  EN/PT). The dossier **content** stays in PT on purpose (it's data, not UI).
 
 ---
 

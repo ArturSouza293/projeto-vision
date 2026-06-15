@@ -41,6 +41,11 @@ async function newSession(browser) {
 async function openPersona(page, id) {
   await page.getByTestId("open-sidebar").click();
   await page.getByTestId(`persona-${id}`).click();
+  // v9: personas seed abrem na aba "Cliente 360" por padrão; o simulador vive na
+  // aba "Life Planning". Troca para ela (no-op em caso do zero, que não tem aba).
+  const lp = page.getByTestId("tab-life-planning");
+  await lp.waitFor({ timeout: 20000 }).catch(() => {});
+  if (await lp.count()) await lp.click({ force: true });
   await page.waitForSelector('[data-testid="timeline-track"]', { timeout: 20000 });
   await page.waitForTimeout(900);
 }

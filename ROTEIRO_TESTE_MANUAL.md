@@ -134,24 +134,33 @@
     mais)"; o JSON do pacote (CRM) leva a lista completa com `origemSinal`
     em cada oportunidade.
 
-## Bloco 9 — Visão 360 (KYC "Conheça seu Cliente") · v8
+## Bloco 9 — Cliente 360 + Life Planning: registro em 2 abas · v9
 
-35. Abra uma **persona seed** (ex.: **Ricardo**). No header aparece o botão
-    **"Visão 360"** (ícone de raio-x), entre *Dados* e *Salvar*. ✅ *Em um caso
-    criado do zero o botão NÃO aparece — o gate da feature é a presença de KYC.*
-36. Clique em **Visão 360**. Abre um drawer largo com o cabeçalho (nome, idade,
-    segmento, **momento de vida**, conhecimento financeiro e **share of wallet
-    ~23%** com a leitura "oportunidade de captura"). ✅
-37. Confira o card **Relacionamento** (primeiro, em destaque): os **temas
-    sensíveis** aparecem num bloco vermelho inconfundível; canais, frequência,
-    estilo e o resumo da BIA com badge **"exemplo ilustrativo · em produção:
-    BIA"**. O painel de **Alertas** mostra severidade (ex.: TEDs para a XP =
-    Alta). ✅ *Nenhuma chamada de IA é feita — os resumos são mock.*
-38. No rodapé, os **4 números do plano** (patrimônio, sobra mensal, objetivos
-    N/M, probabilidade) devem ser **idênticos** aos KPIs do workspace por trás —
-    vêm do mesmo motor. Clique em **"Abrir plano completo"** para voltar. Troque
-    **EN/PT** e reabra: os rótulos trocam de idioma; os dados do dossiê seguem
-    em PT (são dados, não UI). ✅
+35. Abra uma **persona seed** (ex.: **Ricardo**). O registro abre com um
+    **tabset de 2 abas** no topo — **"Cliente 360" | "Life Planning"** — já na
+    aba **Cliente 360** (contexto antes de simular). ✅ *Não há mais botão/modal
+    "Visão 360" no header.*
+36. Abra um **caso criado do zero** (CTA "Começar do zero"). A aba **"Cliente
+    360" NÃO aparece** — o registro mostra só "Life Planning" e cai direto no
+    simulador. ✅ *O gate da feature é a presença de KYC.*
+37. De volta numa persona seed, percorra a aba **Cliente 360** e confira as **6
+    seções, NESTA ordem**: (1) **Resumo da ficha** com badge "exemplo ilustrativo
+    · em produção: BIA"; (2) **Identificação** (nome, idade, segmento,
+    conhecimento, **momento de vida** e **share of wallet ~23%** com leitura de
+    "oportunidade de captura" no Ricardo); (3) **Relacionamento** com os **temas
+    sensíveis** num bloco vermelho inconfundível; (4) **Perfil pessoal e
+    familiar**; (5) **Ativos, patrimônio e posição internacional**; (6) **Fluxo
+    de caixa e alertas** — com **despesas declarado-KYC × plano lado a lado** e o
+    painel de **Alertas** por severidade. ✅ *Nenhuma chamada de IA — resumos mock.*
+38. **Troque para "Life Planning" e volte para "Cliente 360"**: o simulador
+    **preserva o estado** (cenário ativo, posição na timeline, edições) — nada se
+    perde ao alternar. Na aba Life Planning aparece o seletor **Simular/Entrega**;
+    na aba Cliente 360 ele some. ✅
+39. No **rodapé** da aba Cliente 360, os **4 números do motor** (patrimônio,
+    sobra mensal, objetivos N/M, probabilidade) devem ser **idênticos** aos KPIs
+    da aba Life Planning — mesma origem (motor). Clique **"Abrir Life Planning"**
+    (ou "Abrir plano completo"). Troque **EN/PT**: os rótulos das abas e seções
+    trocam de idioma; os dados do dossiê seguem em PT (são dados, não UI). ✅
 
 ## Se algo falhar
 

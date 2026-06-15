@@ -1,5 +1,41 @@
 # Changelog
 
+## v9.2 — Cliente 360 + Life Planning: navegação em 2 abas no registro do cliente
+
+Promove a Visão 360 do v8 de modal para **aba de primeira classe**. Ao abrir um
+cliente, o registro passa a ter um tabset de 2 abas no topo:
+
+- **Cliente 360** — dossiê em **página inteira** (`client-360-page.tsx`), nas 6
+  seções do spec, nesta ordem: (1) Resumo da ficha, (2) Identificação +
+  Share of Wallet, (3) Relacionamento (temas sensíveis em destaque), (4) Perfil
+  pessoal e familiar, (5) Ativos, patrimônio e posição internacional, (6) Fluxo
+  de caixa e alertas — com **despesas declarado-KYC × plano lado a lado** (número
+  do plano vem do motor, `cashFlowTotals`). Bloco de Proteção (sucessão/seguros)
+  preservado do v8. Rodapé com 4 KPIs do motor + atalho "Abrir Life Planning".
+- **Life Planning** — o simulador inteiro (timeline, KPIs, Plano Ideal, Output,
+  copilot), **movido como está, sem regressão**.
+
+Detalhes:
+
+- **Modal removido**: `client-360-modal.tsx` deletado; item "Visão 360" do menu e
+  o estado/handlers de abertura removidos (sem código morto). O `data-testid`
+  `client-360` foi preservado (agora na página).
+- **Gate por presença de dados**: a aba "Cliente 360" só aparece quando o caso
+  tem `kyc` (personas seed). Casos do zero mostram só "Life Planning". Default ao
+  abrir um caso com KYC = Cliente 360 (contexto antes de simular).
+- **Estado preservado entre abas**: os dois painéis ficam montados (toggle por
+  `hidden`), então alternar não desmonta o simulador (cenário/timeline/edições
+  intactos). O seletor de fase (Simular/Entrega) aparece só no Life Planning.
+- **Aba lembrada por cliente**: `clientTabs[clientId]` no store (persistido).
+- **A11y**: tablist com `role=tab`/`aria-selected`/roving tabindex/setas/Home/End,
+  painéis `role=tabpanel`. i18n `clientTabs.*` (EN/PT).
+- **Privacidade/Regra Zero intactas**: nenhuma chamada de API na aba 360; o teste
+  da whitelist do payload da BIA (sem `kyc`) e o teste de Share of Wallet
+  (Ricardo ≈ 23%) continuam verdes.
+- **Automação atualizada** (sem link quebrado): golden/demo/screenshots trocam
+  para a aba `tab-life-planning` ao precisar do simulador (as personas seed agora
+  abrem na aba Cliente 360).
+
 ## v9.1 — Gate de acesso (proteção leve da PI, client-side)
 
 Re-adiciona uma senha de acesso ao protótipo (**"horizonte"**), desenhada para

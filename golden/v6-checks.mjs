@@ -63,6 +63,12 @@ const browser = await chromium.launch();
   await page.waitForSelector('[data-testid="why-card-c1"]', { timeout: 20000 });
   await page.getByTestId("open-sidebar").click();
   await page.getByTestId("persona-camila-diego").click();
+  // v9: persona seed abre na aba "Cliente 360"; vai para "Life Planning".
+  {
+    const lp = page.getByTestId("tab-life-planning");
+    await lp.waitFor({ timeout: 20000 }).catch(() => {});
+    if (await lp.count()) await lp.click({ force: true });
+  }
   await page.waitForSelector('[data-testid="timeline-track"]', { timeout: 20000 });
   await page.waitForTimeout(800);
   await page.getByTestId("timeline-track").evaluate((el) =>

@@ -174,6 +174,14 @@ async function prepareFixtures(browser) {
 
   await page.getByTestId("open-sidebar").click();
   await page.getByTestId(`persona-${SB.personaId}`).click();
+  // v9: a persona seed abre na aba "Cliente 360"; o fixture do workspace deve
+  // refletir o "Life Planning" (simulador) — troca de aba antes de dumpar, de
+  // modo que as cenas/takes que usam este fixture abram direto no simulador.
+  {
+    const lp = page.getByTestId("tab-life-planning");
+    await lp.waitFor({ timeout: 20000 }).catch(() => {});
+    if (await lp.count()) await lp.click({ force: true });
+  }
   await page.waitForSelector('[data-testid="timeline-track"]', { timeout: 20000 });
   await page.waitForTimeout(1500);
 
@@ -345,18 +353,16 @@ const SCENE_FNS = {
   /** Take cap2 — quem importa: Visão 360 da persona (perfil pessoal + família
    *  + relacionamento, com scroll calmo pelo dossiê). v8. */
   async cap2_perfil(page, p, mark) {
-    await page.waitForSelector('[data-testid="open-vision-360"]');
+    // v9: a Visão 360 virou a aba "Cliente 360" (página inteira), não mais modal.
+    await page.waitForSelector('[data-testid="tab-client-360"]');
     await sleep(page, 300);
     mark("action");
-    await clickTestId(page, "open-vision-360", 500);
+    await clickTestId(page, "tab-client-360", 500);
     await page.waitForSelector('[data-testid="client-360"]');
     await sleep(page, p.openSettle);
     await driftOver(page, page.locator('[data-testid="client-360"]'), p.readPause);
-    await page.getByTestId("client-360").evaluate((el, px) => {
-      el.querySelector(".overflow-y-auto")?.scrollBy({ top: px, behavior: "smooth" });
-    }, p.scrollPx);
+    await page.evaluate((px) => window.scrollBy({ top: px, behavior: "smooth" }), p.scrollPx);
     await sleep(page, p.scrollPause);
-    await page.keyboard.press("Escape");
     await sleep(page, 450);
     mark("end");
   },

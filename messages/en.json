@@ -576,7 +576,21 @@
     "kpiSurplus": "Monthly surplus",
     "kpiGoals": "Goals",
     "kpiProbability": "Probability",
-    "openFullPlan": "Open full plan"
+    "openFullPlan": "Open full plan",
+    "openLifePlanning": "Open Life Planning",
+    "secSummary": "Client summary",
+    "secIdentification": "Client identification",
+    "secProfileFamily": "Personal & family profile",
+    "secAssetsIntl": "Assets, wealth & international position",
+    "declaredKyc": "Declared (KYC)",
+    "inPlan": "In the plan",
+    "totalMonthly": "Monthly total",
+    "vsDeclared": "vs. declared"
+  },
+  "clientTabs": {
+    "ariaLabel": "Client record navigation",
+    "client360": "Client 360",
+    "lifePlanning": "Life Planning"
   },
   "copilot": {
     "title": "BIA advisor",
