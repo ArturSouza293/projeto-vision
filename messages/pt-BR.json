@@ -975,6 +975,15 @@
     "note": "Sessão local — só para identificar o seu trabalho.",
     "logout": "Sair"
   },
+  "gate": {
+    "title": "Acesso ao protótipo",
+    "subtitle": "Conteúdo restrito do Projeto Vision. Informe a senha de acesso para continuar.",
+    "label": "Senha de acesso",
+    "placeholder": "Digite a senha",
+    "enter": "Entrar",
+    "wrong": "Senha incorreta. Tente novamente.",
+    "note": "Pedimos a senha apenas uma vez por dispositivo."
+  },
   "sidebar": {
     "title": "Personas & planos",
     "subtitle": "Acelere pegando alguém pronto, ou comece do zero.",

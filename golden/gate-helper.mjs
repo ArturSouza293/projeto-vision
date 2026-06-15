@@ -1,28 +1,29 @@
 /**
- * v6 — helper para os scripts de QA passarem o gate de demonstração.
- * A senha NUNCA é hardcoded: vem de process.env.GATE_PASSWORD ou do
- * .env.local (gitignored). Sem senha disponível, assume gate desarmado.
+ * Helper para a automação (Playwright) passar pelo gate de acesso (client-side).
+ *
+ * O gate v9 é uma trava client-side persistida no localStorage (lib/gate.ts).
+ * Aqui gravamos a flag ANTES de qualquer script da página rodar (addInitScript),
+ * como se o testador já tivesse digitado a senha — sem isso os scripts de demo
+ * e de QA parariam na tela de senha. Espelha a chave GATE_STORAGE_KEY.
+ *
+ * (Versões antigas faziam POST /api/gate por cookie; o endpoint não existe mais.)
  */
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
+const GATE_STORAGE_KEY = "vision-gate";
+const GATE_UNLOCK_VALUE = "1";
 
-const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), "..");
-
-export function gatePassword() {
-  if (process.env.GATE_PASSWORD) return process.env.GATE_PASSWORD;
-  try {
-    const txt = fs.readFileSync(path.join(ROOT, ".env.local"), "utf8");
-    const m = txt.match(/^GATE_PASSWORD=(.*)$/m);
-    return m?.[1]?.trim() || undefined;
-  } catch {
-    return undefined;
-  }
+/** Pré-libera o gate no contexto Playwright (chame antes de newPage/goto). */
+export async function passGate(ctx) {
+  await ctx.addInitScript(
+    ({ k, v }) => {
+      try {
+        localStorage.setItem(k, v);
+      } catch {}
+    },
+    { k: GATE_STORAGE_KEY, v: GATE_UNLOCK_VALUE },
+  );
 }
 
-/** Autentica o contexto Playwright no gate (cookie compartilhado). */
-export async function passGate(ctx, base) {
-  const password = gatePassword();
-  if (!password) return; // gate desarmado
-  await ctx.request.post(`${base}/api/gate`, { data: { password } });
+/** Senha do gate (legado — referência da cena de gate, hoje fora do storyboard). */
+export function gatePassword() {
+  return process.env.GATE_PASSWORD || "horizonte";
 }

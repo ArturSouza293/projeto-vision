@@ -975,6 +975,15 @@
     "note": "Local session — just to label your work.",
     "logout": "Log out"
   },
+  "gate": {
+    "title": "Prototype access",
+    "subtitle": "Restricted Projeto Vision content. Enter the access password to continue.",
+    "label": "Access password",
+    "placeholder": "Enter the password",
+    "enter": "Enter",
+    "wrong": "Incorrect password. Try again.",
+    "note": "We only ask for the password once per device."
+  },
   "sidebar": {
     "title": "Personas & plans",
     "subtitle": "Accelerate by grabbing a ready one, or start from scratch.",

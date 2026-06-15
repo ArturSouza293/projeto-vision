@@ -1,5 +1,27 @@
 # Changelog
 
+## v9.1 — Gate de acesso (proteção leve da PI, client-side)
+
+Re-adiciona uma senha de acesso ao protótipo (**"horizonte"**), desenhada para
+NÃO repetir os problemas do gate antigo (que derrubou o domínio no corp).
+
+- **Client-side, sem POST**: a senha é validada por SHA-256 (Web Crypto) no
+  próprio navegador contra um hash com salt — o texto puro não vai pro bundle, e
+  não há POST com campo "senha" (era o que o DLP do banco bloqueava).
+- **Branded, parece o app** (logo Bradesco + card): evita a "tela preta de
+  senha" que o proxy corporativo classificava como phishing (PX022C).
+- **Baixo atrito**: a liberação persiste no `localStorage` → o testador digita a
+  senha **uma vez por dispositivo** e nunca mais vê o gate.
+- `lib/gate.ts` (hash + verify + flag; senha trocável via `NEXT_PUBLIC_GATE_HASH`
+  na Vercel, sem mexer no código), `components/app/gate.tsx`, integrado em
+  `app/page.tsx` antes do login. i18n `gate.*` (EN/PT).
+- Automação (demo + golden + screenshots): `golden/gate-helper.mjs` agora
+  pré-libera o gate gravando a flag no `localStorage` via `addInitScript` — a
+  demo continua sem a tela de senha e o QA roda direto.
+- **Limite honesto**: por ser client-side, detém acesso casual/acidental, não um
+  atacante técnico (devtools). É o equilíbrio com o atrito de teste; barreira
+  real exigiria server-side, que reintroduz o risco de bloqueio no corp.
+
 ## v9 — Protótipo inteiramente responsivo (mobile-first, qualquer aparelho)
 
 Varredura completa de responsividade (auditoria de 73 pontos em 7 grupos →

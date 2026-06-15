@@ -12,6 +12,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { chromium } from "playwright";
+import { passGate } from "../golden/gate-helper.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT = path.join(__dirname, "..", "demo", "narrate", "tmp", "resp");
@@ -78,8 +79,30 @@ async function run() {
   const browser = await chromium.launch();
   const issues = [];
 
+  // 0) Checagem funcional do GATE (sem bypass): senha errada barra, "horizonte" libera.
+  {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 800 } });
+    const page = await ctx.newPage();
+    await page.goto(BASE, { waitUntil: "domcontentloaded" });
+    const pwd = page.locator('input[type="password"]');
+    await pwd.waitFor({ timeout: 15000 });
+    await page.screenshot({ path: path.join(OUT, "gate_screen.png") }).catch(() => {});
+    await pwd.fill("errada");
+    await page.keyboard.press("Enter");
+    await sleep(500);
+    const stillGated = await page.locator('input[type="password"]').count();
+    await page.locator('input[type="password"]').fill("horizonte");
+    await page.keyboard.press("Enter");
+    await page.waitForSelector("input:not([type=password])", { timeout: 8000 }).catch(() => {});
+    await sleep(600);
+    const unlocked = (await page.locator('input[type="password"]').count()) === 0;
+    console.log(`  [gate] senha errada barra: ${stillGated > 0 ? "OK" : "FALHA"}; "horizonte" libera: ${unlocked ? "OK" : "FALHA"}`);
+    await ctx.close();
+  }
+
   for (const width of WIDTHS) {
     const ctx = await browser.newContext({ viewport: { width: width.w, height: width.h }, deviceScaleFactor: 1 });
+    await passGate(ctx); // pré-libera o gate (testa as telas do app, não o gate)
     const page = await ctx.newPage();
 
     // 1) login
