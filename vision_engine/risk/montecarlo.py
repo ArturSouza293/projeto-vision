@@ -16,7 +16,8 @@ import random
 from dataclasses import dataclass
 from decimal import Decimal
 
-from core.money import D, Number, brl
+from core.errors import OutOfRange
+from core.money import D, Number, brl, quantize, require_int
 
 
 @dataclass(frozen=True)
@@ -50,6 +51,12 @@ def simular_acumulacao(
     meta: Number | None = None,
 ) -> ResultadoMonteCarlo:
     """Simula ``n_simulacoes`` trajetórias de acumulação (passo mensal)."""
+    require_int(anos, minimo=1, nome="anos")
+    require_int(n_simulacoes, minimo=1, nome="n_simulacoes")
+    if D(mu_real_aa) <= D(-1):
+        raise OutOfRange("mu_real_aa deve ser > -1 (1+μ > 0)")
+    if D(sigma_aa) < 0:
+        raise OutOfRange("sigma_aa deve ser >= 0")
     rng = random.Random(seed)
     meses = anos * 12
     vp0 = float(D(vp_inicial))
@@ -67,15 +74,22 @@ def simular_acumulacao(
     finais.sort()
 
     def pct(p: float) -> Decimal:
-        idx = min(len(finais) - 1, int(p * len(finais)))
-        return _dec2(finais[idx])
+        # percentil com interpolação linear (sem viés de rank), base 0..n-1
+        if len(finais) == 1:
+            return _dec2(finais[0])
+        pos = p * (len(finais) - 1)
+        lo = int(pos)
+        hi = min(lo + 1, len(finais) - 1)
+        val = finais[lo] + (finais[hi] - finais[lo]) * (pos - lo)
+        return _dec2(val)
 
     media = _dec2(sum(finais) / len(finais))
     prob: Decimal | None = None
     if meta is not None:
         alvo = float(D(meta))
         atingiram = sum(1 for f in finais if f >= alvo)
-        prob = D(atingiram) / D(len(finais))
+        # probabilidade quantizada (4 casas) — não vaza Decimal de 28 dígitos
+        prob = quantize(D(atingiram) / D(len(finais)), "0.0001")
 
     return ResultadoMonteCarlo(
         seed=seed,

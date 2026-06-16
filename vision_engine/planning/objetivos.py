@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from core.money import D
+from core.money import D, require_int
 from core.tvm import anual_para_mensal, vf, vf_anuidade
 
 
@@ -19,6 +19,7 @@ def aporte_necessario_mensal(
     PMT = (VF_meta − VP_atual·(1+i)^n)·i / [(1+i)^n − 1]. Retorna 0 se a meta já
     está financiada pelo patrimônio atual (falta ≤ 0).
     """
+    require_int(meses, minimo=1, nome="meses")
     i = anual_para_mensal(taxa_real_aa)
     fator = (D(1) + i) ** meses
     falta = D(vf_meta) - D(vp_atual) * fator

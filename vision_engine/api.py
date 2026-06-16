@@ -10,17 +10,32 @@ Deploy (Railway/qualquer host):  uvicorn api:app --host 0.0.0.0 --port $PORT
 
 from __future__ import annotations
 
+import logging
 import os
 from typing import Any
 
-from fastapi import FastAPI, Header, HTTPException
+from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 import contract as _contract  # noqa: F401  (importa p/ registrar as ferramentas)
 from contract.errors import EngineError
 from contract.registry import call_tool, list_tools, tool_schemas
 
-app = FastAPI(title="Vision Engine API", version="0.1.0")
+_log = logging.getLogger("vision_engine")
+
+app = FastAPI(title="Vision Engine API", version="0.2.0")
+
+
+@app.exception_handler(Exception)
+async def _unexpected_handler(_req: Request, exc: Exception) -> JSONResponse:
+    """Rede de segurança: exceção não prevista vira 500 ESTRUTURADO (nunca corpo
+    opaco/vazio). O detalhe interno é logado, não exposto ao cliente."""
+    _log.exception("erro inesperado no motor", exc_info=exc)
+    return JSONResponse(
+        status_code=500,
+        content={"detail": {"erro": "INTERNAL", "detalhe": "erro interno do motor"}},
+    )
 
 
 def _check_key(x_engine_key: str | None) -> None:

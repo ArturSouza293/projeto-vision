@@ -10,6 +10,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from decimal import Decimal
 
+from core.errors import OutOfRange
 from core.money import D, Number
 
 
@@ -36,6 +37,12 @@ def irr(
     cobre qualquer TIR de fluxo convencional sem um teto arbitrário. Para fluxos
     não-convencionais (múltiplas TIRs), use :func:`mtir`.
     """
+    vals = [D(f) for f in fluxos]
+    if len(vals) < 2:
+        raise OutOfRange("irr requer ao menos 2 fluxos")
+    if not (any(v > 0 for v in vals) and any(v < 0 for v in vals)):
+        # sem entrada E saída não existe TIR — não fabricar um número
+        raise OutOfRange("irr requer fluxos com sinais opostos (ao menos uma entrada e uma saída)")
     a, b = D(lo), D(hi)
     fa, fb = npv(a, fluxos), npv(b, fluxos)
     if fa == 0:
@@ -50,8 +57,9 @@ def irr(
     if fb == 0:
         return b
     if fa * fb > 0:
-        raise ValueError(
-            "VPL não muda de sinal — fluxo não-convencional? use mtir()"
+        raise OutOfRange(
+            "TIR fora do bracket pesquisado (TIR < −99,9999% ou fluxo "
+            "não-convencional com múltiplas raízes) — use mtir()"
         )
     tol_d = D(tol)
     mid = (a + b) / D(2)
@@ -80,7 +88,7 @@ def mtir(
     fin, rei = D(taxa_financiamento), D(taxa_reinvestimento)
     n = len(fluxos) - 1
     if n <= 0:
-        raise ValueError("fluxos insuficientes para MTIR")
+        raise OutOfRange("fluxos insuficientes para MTIR (mínimo 2)")
     vf_positivos = D(0)
     vp_negativos = D(0)
     for t, fc in enumerate(fluxos):
@@ -90,7 +98,10 @@ def mtir(
         elif fc_d < 0:
             vp_negativos += fc_d / (D(1) + fin) ** t
     if vp_negativos == 0:
-        raise ValueError("sem saídas para financiar — MTIR indefinida")
+        raise OutOfRange("sem saídas para financiar — MTIR indefinida")
+    if vf_positivos == 0:
+        # guard simétrico: sem entradas não há retorno a medir (evitava −100% falso)
+        raise OutOfRange("sem entradas — MTIR indefinida")
     return (vf_positivos / -vp_negativos) ** (D(1) / D(n)) - D(1)
 
 

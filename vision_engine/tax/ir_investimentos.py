@@ -7,9 +7,33 @@ sobre o RENDIMENTO/ganho, em ``Decimal``. Rendimento ≤ 0 ⇒ IR 0.
 from __future__ import annotations
 
 from decimal import Decimal
-from typing import Any
+from typing import Any, Literal
 
+from core.errors import OutOfRange
 from core.money import D
+
+ClasseProduto = Literal["isento", "tributavel"]
+
+
+def classificar_produto(produto: str, params: dict[str, Any]) -> ClasseProduto:
+    """Classifica o produto de renda fixa: ``"isento"`` ou ``"tributavel"``.
+
+    Tri-estado em vez de binário: produto DESCONHECIDO (typo, vazio, fora das
+    listas) vira ``OutOfRange`` em vez de ser tributado em silêncio. Comparação
+    normalizada (``strip().upper()``) tolera espaços e caixa. Isentos e
+    tributáveis vêm do YAML (param-driven, auditável).
+    """
+    nome = produto.strip().upper()
+    isentos = {str(p).strip().upper() for p in params.get("isentos_pf", [])}
+    tributaveis = {str(p).strip().upper() for p in params.get("tributaveis_pf", [])}
+    if nome in isentos:
+        return "isento"
+    if nome in tributaveis:
+        return "tributavel"
+    raise OutOfRange(
+        f"produto de renda fixa desconhecido: {produto!r} — informe um produto "
+        f"isento ({sorted(isentos)}) ou tributável ({sorted(tributaveis)})"
+    )
 
 
 def aliquota_renda_fixa(dias_corridos: int, params: dict[str, Any]) -> Decimal:

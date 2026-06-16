@@ -93,7 +93,7 @@ def test_indicadores() -> None:
 def test_alocacao() -> None:
     assert alocacao.alocacao_alvo("moderado")["renda_fixa"] == Decimal("0.55")
     for perfil in ("conservador", "moderado", "arrojado"):
-        total = sum(alocacao.ALOCACAO_ALVO[perfil].values(), Decimal(0))  # type: ignore[arg-type]
+        total = sum(alocacao.ALOCACAO_ALVO[perfil].values(), Decimal(0))
         assert total == Decimal("1.00")
     dv = alocacao.desvio_rebalanceamento({"renda_fixa": Decimal("0.70")}, "moderado")
     assert dv["renda_fixa"] == Decimal("0.15")

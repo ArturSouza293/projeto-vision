@@ -9,6 +9,7 @@ import pytest
 
 from core import cashflow as cf
 from core import tvm
+from core.errors import OutOfRange
 from params.loader import load_params
 from tax import previdencia as prev
 
@@ -31,12 +32,13 @@ def test_fv_growing_annuity() -> None:
 
 
 def test_perpetuidade_erro_i_menor_que_g() -> None:
-    with pytest.raises(ValueError, match="i > g"):
+    with pytest.raises(OutOfRange, match="i > g"):
         tvm.perpetuidade("100", "0.03", "0.05")
 
 
 def test_mtir_sem_saidas_erro() -> None:
-    with pytest.raises(ValueError):
+    # só entradas (sem saídas) → erro ESTRUTURADO, não ValueError cru
+    with pytest.raises(OutOfRange):
         cf.mtir(["100", "200"], "0.10", "0.08")
 
 
@@ -50,7 +52,7 @@ def test_payback_descontado() -> None:
 
 
 def test_prev_base_tipo_invalido() -> None:
-    with pytest.raises(ValueError, match="PGBL|VGBL"):
+    with pytest.raises(OutOfRange, match="PGBL|VGBL"):
         prev.base_tributavel(Decimal("1000"), Decimal("100"), "OUTRO")  # type: ignore[arg-type]
 
 

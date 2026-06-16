@@ -14,7 +14,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from decimal import Decimal
 
-from core.money import D, Number
+from core.errors import OutOfRange
+from core.money import D, Number, require_int, require_taxa
 from core.tvm import pmt_de_vp
 
 
@@ -30,9 +31,22 @@ class Parcela:
     saldo_final: Decimal
 
 
+def _valida_emprestimo(principal: Number, i: Number, n: int) -> tuple[Decimal, Decimal]:
+    """Guardas comuns aos três sistemas: principal > 0, n inteiro ≥ 1, 1 + i > 0.
+
+    Sem isso, ``n=0`` dava ``DivisionByZero`` cru (Price/SAC) ou tabela vazia
+    silenciosa (Americano), e principal/​taxa absurdos passavam sem rejeição.
+    """
+    require_int(n, minimo=1, nome="n")
+    p = D(principal)
+    if p <= 0:
+        raise OutOfRange(f"principal deve ser > 0 (recebido {p})")
+    return p, require_taxa(i)
+
+
 def price(principal: Number, i: Number, n: int) -> list[Parcela]:
     """Sistema PRICE: prestação constante, amortização crescente."""
-    i_d = D(i)
+    _, i_d = _valida_emprestimo(principal, i, n)
     pmt = pmt_de_vp(principal, i_d, n)
     saldo = D(principal)
     out: list[Parcela] = []
@@ -50,8 +64,8 @@ def price(principal: Number, i: Number, n: int) -> list[Parcela]:
 
 def sac(principal: Number, i: Number, n: int) -> list[Parcela]:
     """Sistema SAC: amortização constante, prestação decrescente."""
-    i_d = D(i)
-    amort = D(principal) / D(n)
+    p, i_d = _valida_emprestimo(principal, i, n)
+    amort = p / D(n)
     saldo = D(principal)
     out: list[Parcela] = []
     for k in range(1, n + 1):
@@ -66,8 +80,7 @@ def sac(principal: Number, i: Number, n: int) -> list[Parcela]:
 
 def americano(principal: Number, i: Number, n: int) -> list[Parcela]:
     """Sistema Americano: só juros a cada período; principal (bullet) no fim."""
-    i_d = D(i)
-    saldo = D(principal)
+    saldo, i_d = _valida_emprestimo(principal, i, n)
     out: list[Parcela] = []
     for k in range(1, n + 1):
         juros = saldo * i_d

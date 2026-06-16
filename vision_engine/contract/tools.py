@@ -29,12 +29,16 @@ from tax import ganho_capital, ir_investimentos, irpf
 def irpf_mensal_tool(inp: IrpfMensalInput) -> ResultEnvelope:
     ps = load_params("irpf", inp.data_referencia)
     valor = irpf.irpf_mensal(inp.base, ps.dados)
+    redutor = ps.dados.get("mensal", {}).get("redutor_lei_15270", {})
+    calibrado = bool(redutor.get("calibrado", True))
     return ResultEnvelope(
         valor=brl(valor),
         unidade="BRL",
         formula="max(base·alíquota − dedução de tabela − redutor Lei 15.270; 0)",
         parametros_versao=ps.versao,
-        premissas={"base_mensal": str(inp.base)},
+        # redutor_calibrado=false sinaliza que o coeficiente da rampa do redutor
+        # (R$5k–7,35k) ainda não foi confirmado no texto oficial (não fabricar).
+        premissas={"base_mensal": str(inp.base), "redutor_calibrado": str(calibrado).lower()},
     )
 
 
@@ -45,7 +49,9 @@ def irpf_mensal_tool(inp: IrpfMensalInput) -> ResultEnvelope:
 )
 def ir_renda_fixa_tool(inp: IrRendaFixaInput) -> ResultEnvelope:
     ps = load_params("ir_investimentos", inp.data_referencia)
-    isento = ir_investimentos.is_isento_pf(inp.produto, ps.dados)
+    # classificação tri-estado: produto desconhecido -> OutOfRange (não tributa
+    # em silêncio). Isento -> IR 0; tributável -> tabela regressiva.
+    isento = ir_investimentos.classificar_produto(inp.produto, ps.dados) == "isento"
     valor = (
         Decimal(0)
         if isento

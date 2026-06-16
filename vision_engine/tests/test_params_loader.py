@@ -7,6 +7,7 @@ from decimal import Decimal
 
 import pytest
 
+from core.errors import ParamMissing
 from params.loader import available_tipos, load_params
 
 
@@ -52,9 +53,17 @@ def test_macro_jun_2026() -> None:
 
 
 def test_resolve_por_data_anterior_falha() -> None:
-    # antes de qualquer vigência de IRPF -> erro estruturado
-    with pytest.raises(LookupError):
+    # antes de qualquer vigência de IRPF -> erro ESTRUTURADO (não LookupError cru)
+    with pytest.raises(ParamMissing) as exc:
         load_params("irpf", date(1990, 1, 1))
+    assert exc.value.codigo == "PARAM_MISSING"
+    assert "2026-01-01" in exc.value.detalhe  # nomeia o range disponível
+
+
+def test_tipo_desconhecido_estruturado() -> None:
+    with pytest.raises(ParamMissing) as exc:
+        load_params("nao_existe", date(2026, 6, 1))
+    assert exc.value.codigo == "PARAM_MISSING"
 
 
 def test_versao_auditavel() -> None:

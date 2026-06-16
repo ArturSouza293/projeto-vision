@@ -17,6 +17,7 @@ dados:
     redutor_lei_15270:
       isencao_ate: "5000.00" # imposto efetivo zero até aqui (mensal)
       reducao_fim: "7350.00" # redução decrescente de 5.000,01 a 7.350
+      calibrado: false # coeficiente da rampa NÃO confirmado no texto oficial
   deducoes:
     dependente_mes: "189.59"
     educacao_ano: "3561.50"

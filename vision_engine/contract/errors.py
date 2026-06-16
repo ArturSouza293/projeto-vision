@@ -1,41 +1,26 @@
-"""Erros estruturados do motor.
+"""Erros estruturados do motor (re-exporta ``core.errors``).
 
-Quando falta um dado ou um valor está fora de faixa, o motor devolve um erro
-ESTRUTURADO (código + detalhe) e a LLM **pergunta** ao usuário — nunca "chuta".
+A taxonomia vive em ``core.errors`` para evitar ciclo de import (este pacote,
+ao ser importado, registra todas as ferramentas). Camadas baixas levantam erro
+estruturado importando de ``core.errors``; aqui mantemos os nomes para compat.
 """
 
 from __future__ import annotations
 
+from core.errors import (
+    CalcError,
+    EngineError,
+    OutOfRange,
+    ParamInvalid,
+    ParamMissing,
+    ToolNotFound,
+)
 
-class EngineError(Exception):
-    """Base dos erros estruturados. Subclasses definem ``codigo``."""
-
-    codigo: str = "ENGINE_ERROR"
-
-    def __init__(self, detalhe: str) -> None:
-        super().__init__(detalhe)
-        self.detalhe = detalhe
-
-    def to_dict(self) -> dict[str, str]:
-        return {"erro": self.codigo, "detalhe": self.detalhe}
-
-
-class ParamMissing(EngineError):
-    """Parâmetro vigente não encontrado para a data de referência."""
-
-    codigo = "PARAM_MISSING"
-
-
-class OutOfRange(EngineError):
-    """Entrada inválida ou fora da faixa aceita (falha de validação)."""
-
-    codigo = "OUT_OF_RANGE"
-
-
-class ToolNotFound(EngineError):
-    """Ferramenta não registrada no registry."""
-
-    codigo = "TOOL_NOT_FOUND"
-
-
-__all__ = ["EngineError", "ParamMissing", "OutOfRange", "ToolNotFound"]
+__all__ = [
+    "EngineError",
+    "ParamMissing",
+    "ParamInvalid",
+    "OutOfRange",
+    "CalcError",
+    "ToolNotFound",
+]

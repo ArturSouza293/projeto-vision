@@ -13,7 +13,7 @@ from typing import Any
 
 from pydantic import BaseModel, ValidationError
 
-from contract.errors import OutOfRange, ToolNotFound
+from contract.errors import CalcError, EngineError, OutOfRange, ToolNotFound
 from contract.models import ResultEnvelope
 
 ToolFn = Callable[[Any], ResultEnvelope]
@@ -34,6 +34,8 @@ def tool(name: str, model: type[BaseModel], descricao: str) -> Callable[[ToolFn]
     """Decorator que registra uma função do motor como ferramenta da LLM."""
 
     def deco(fn: ToolFn) -> ToolFn:
+        if name in TOOLS and TOOLS[name].fn is not fn:
+            raise ValueError(f"ferramenta duplicada no registry: '{name}'")
         TOOLS[name] = ToolSpec(name=name, input_model=model, fn=fn, descricao=descricao)
         return fn
 
@@ -49,7 +51,16 @@ def call_tool(name: str, payload: dict[str, Any]) -> ResultEnvelope:
         entrada = spec.input_model.model_validate(payload)
     except ValidationError as e:
         raise OutOfRange(e.errors().__str__()) from e
-    return spec.fn(entrada)
+    try:
+        return spec.fn(entrada)
+    except EngineError:
+        raise  # já estruturado
+    except ValueError as e:
+        # erro de domínio das funções puras (ex.: i ≤ g, fluxo não-convencional)
+        raise OutOfRange(str(e)) from e
+    except (ArithmeticError, LookupError) as e:
+        # aritmética degenerada / acesso ausente que escapou da validação
+        raise CalcError(f"falha de cálculo em '{name}': {type(e).__name__}") from e
 
 
 def tool_schemas() -> dict[str, dict[str, Any]]:

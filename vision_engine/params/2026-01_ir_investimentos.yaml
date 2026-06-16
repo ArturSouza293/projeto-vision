@@ -14,6 +14,11 @@ dados:
     - { ate_dias: null, aliquota: "0.15" } # acima de 720 dias
   # Isentos de IR para PF:
   isentos_pf: ["LCI", "LCA", "CRI", "CRA", "DEB_INCENTIVADA", "LIG", "POUPANCA"]
+  # Tributáveis (tabela regressiva). Produto fora de isentos/tributáveis é
+  # REJEITADO (classificar_produto) — nunca tributado em silêncio.
+  tributaveis_pf:
+    ["CDB", "RDB", "LC", "DEBENTURE", "TESOURO", "TESOURO_SELIC",
+     "TESOURO_PREFIXADO", "TESOURO_IPCA", "CRA_COMUM", "FUNDO_RF"]
   fundos_come_cotas:
     longo_prazo_pct: "0.15"
     curto_prazo_pct: "0.20"

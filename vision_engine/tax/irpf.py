@@ -12,6 +12,7 @@ from __future__ import annotations
 from decimal import Decimal
 from typing import Any
 
+from core.errors import OutOfRange
 from core.money import D
 
 # ----------------------------------------------------------------------------
@@ -40,6 +41,8 @@ def _imposto_tabela(base: Decimal, faixas: list[dict[str, Any]]) -> Decimal:
 def irpf_mensal(base: Decimal, params: dict[str, Any]) -> Decimal:
     """IR mensal devido sobre a ``base`` de cálculo, aplicando o redutor."""
     base = D(base)
+    if base < 0:
+        raise OutOfRange(f"base de cálculo do IRPF não pode ser negativa (recebido {base})")
     mensal = params["mensal"]
     faixas: list[dict[str, Any]] = mensal["faixas"]
     imposto = _imposto_tabela(base, faixas)
@@ -70,6 +73,8 @@ def irpf_anual(base_anual: Decimal, params: dict[str, Any]) -> Decimal:
 
 def deducao_dependentes(qtd: int, params: dict[str, Any]) -> Decimal:
     """Dedução mensal por dependentes (modelo completo)."""
+    if not isinstance(qtd, int) or isinstance(qtd, bool) or qtd < 0:
+        raise OutOfRange(f"quantidade de dependentes deve ser inteiro >= 0 (recebido {qtd!r})")
     return D(params["deducoes"]["dependente_mes"]) * D(qtd)
 
 
