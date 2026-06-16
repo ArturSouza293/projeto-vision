@@ -16,10 +16,13 @@ export const dynamic = "force-dynamic";
  * ENGINE_API_KEY (opcional, casa com a do servidor do motor).
  */
 export async function POST(req: Request) {
-  const base = process.env.ENGINE_API_URL;
-  if (!base) {
+  const raw = process.env.ENGINE_API_URL;
+  if (!raw) {
     return NextResponse.json({ error: "not-configured" }, { headers: { "x-engine": "off" } });
   }
+  // Tolera URL colada sem esquema (ex.: "host.up.railway.app" sem https://): o
+  // fetch do Node exige URL absoluta, então prefixamos https:// quando faltar.
+  const base = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
 
   let body: { tool?: unknown; payload?: unknown };
   try {
