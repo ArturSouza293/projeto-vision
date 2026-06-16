@@ -72,18 +72,24 @@ vision_engine/
    marginais + isenção imóvel único), `previdencia.py` (regressivo, PGBL×VGBL).
    Golden values do PDF. Gate verde: ruff + mypy --strict + pytest 70/70;
    cobertura **core 90% · tax 93% (total 96%)**.
-2. **`market/`**: `indexadores.py` (CDI/Selic/IPCA, fator base 252) +
-   `renda_fixa.py` (preço/rentabilidade Tesouro, CDB %CDI, líquido de IR/IOF).
-3. **`planning/`**: aposentadoria, objetivos (PMT necessário), reserva, dívidas
-   (CET), alocação, seguros — sobre `core` + `tax`. Espelhar as convenções
-   C1–C10 do motor TS (paridade de números onde fizer sentido).
-4. **`contract/`** (G4): `models.py` (Pydantic + `ResultEnvelope`), `errors.py`
-   (`PARAM_MISSING`, `OUT_OF_RANGE`), `registry.py` (tool registry + JSON Schema)
-   e os guardrails de system prompt (Seção 6 do brief).
-5. **`risk/montecarlo.py`** (seed exposto) + CI (`ruff`/`mypy`/`pytest --cov`).
-6. **Integração** (decisão à parte): expor o motor (FastAPI?) e religar o front
-   ao envelope — onde a decisão de deploy/host entra (ex.: Railway, que o
-   usuário já usa). Provável híbrido (TS p/ ao vivo, Python p/ imposto/auditoria).
+2. **`market/`** — **✓ FEITO**: `indexadores.py` (CDI de Selic, fatores base 252,
+   poupança, FGC) + `renda_fixa.py` (prefixado/CDB %CDI + `liquido_renda_fixa`
+   com IOF→IR e decomposição auditável).
+3. **`planning/`** — **✓ FEITO**: `indicadores.py`, `objetivos.py` (PMT do §4.5),
+   `aposentadoria.py`, `reserva.py`, `dividas.py` (avalanche × bola de neve),
+   `seguros.py`, `alocacao.py` (pesos-alvo — modelo ilustrativo documentado).
+4. **`contract/`** (G4) — **✓ FEITO**: `models.py` (Pydantic + `ResultEnvelope`),
+   `errors.py` (`PARAM_MISSING`/`OUT_OF_RANGE`/`TOOL_NOT_FOUND`), `registry.py`
+   (`@tool` + `call_tool` + `tool_schemas` JSON Schema), `tools.py` (5 ferramentas),
+   `prompt.py` (`SYSTEM_PROMPT_GUARDRAILS`).
+5. **`risk/montecarlo.py`** — **✓ FEITO** (seed exposto; amostragem float é a
+   exceção estocástica documentada; saídas em Decimal).
+6. **Integração ao app** — **⬜ pendente** (decisão à parte): expor o motor
+   (FastAPI?) e religar o front ao envelope — onde a decisão de deploy/host entra
+   (ex.: Railway). Provável híbrido (TS p/ ao vivo, Python p/ imposto/auditoria).
+
+**Standalone COMPLETO.** Gate global: ruff + mypy --strict (32 arq) + pytest
+**104/104**, cobertura **98%** (todo módulo ≥91%). Falta só a integração (item 6).
 
 ## 4. A confirmar contra fontes oficiais (não assumir)
 

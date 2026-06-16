@@ -4,9 +4,10 @@ Motor de cálculo do Projeto Vision **especializado no Brasil**, **determinísti
 (mesma entrada + mesma versão de parâmetros ⇒ mesma saída) e **auditável** (todo
 número vem de código testado; a LLM apenas lê e narra — nunca calcula).
 
-> **Status:** fundação (núcleo de cálculo + camada de parâmetros). Tributação,
-> mercado, planejamento e contrato com a LLM nas próximas fases — ver
-> [`MIGRATION.md`](MIGRATION.md).
+> **Status:** motor standalone **COMPLETO** — `core` · `params` · `tax` (BR) ·
+> `market` · `planning` · `risk` · `contract` (envelope + tool registry p/ a LLM).
+> Gate verde: ruff + mypy --strict (32 arq) + pytest **104/104**, cobertura 98%.
+> Falta só a **integração ao app** (decisão à parte) — ver [`MIGRATION.md`](MIGRATION.md).
 
 ## Princípio inegociável
 
@@ -20,7 +21,12 @@ estruturados. Isso garante auditabilidade — requisito de contexto regulado
 ```
 core/      funções puras em Decimal (sem I/O): money, tvm, cashflow, amortizacao
 params/    Apêndice (Parte 5 do PDF) externalizado: YAML datado + loader
-tests/     golden (âncoras HP-12C) + property-based (hypothesis)
+tax/       tributação BR: irpf, ir_investimentos, iof, ganho_capital, previdencia
+market/    renda fixa: indexadores (base 252) + bruto/líquido (IOF+IR)
+planning/  CFP (PDF §4): indicadores, objetivos, aposentadoria, reserva, dívidas, seguros, alocação
+risk/      montecarlo determinístico (seed exposto)
+contract/  Pydantic ResultEnvelope + erros estruturados + tool registry (LLM)
+tests/     golden (âncoras HP-12C/PDF) + property-based (hypothesis)
 ```
 
 - **Sem `float`** no caminho de cálculo — `core.money.D()` rejeita `float`;
