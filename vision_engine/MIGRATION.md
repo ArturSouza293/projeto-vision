@@ -64,11 +64,14 @@ vision_engine/
 
 ## 3. Plano faseado (próximas rodadas)
 
-1. **`tax/`** (G1 — maior valor): `irpf.py` (Lei 15.270 + redutor calibrado ao
-   texto oficial, golden values), `ir_investimentos.py` (regressiva + come-cotas
-   + FII + ações + JCP + exterior; isenções LCI/LCA mantidas), `iof.py` (vetor
-   0–30), `ganho_capital.py` (faixas progressivas + isenções), `previdencia.py`
-   (regressivo × progressivo, PGBL × VGBL). Cobertura ≥ 90%.
+1. **`tax/`** (G1 — maior valor) — **✓ FEITO** (puro, params injetados):
+   `irpf.py` (tabela + redutor Lei 15.270 — modelo CONTÍNUO/MONOTÔNICO, a
+   calibrar no texto oficial; ver §4), `ir_investimentos.py` (regressiva +
+   come-cotas + FII + ações swing/day + JCP + exterior; isenções LCI/LCA
+   mantidas), `iof.py` (vetor 0–30), `ganho_capital.py` (faixas progressivas
+   marginais + isenção imóvel único), `previdencia.py` (regressivo, PGBL×VGBL).
+   Golden values do PDF. Gate verde: ruff + mypy --strict + pytest 70/70;
+   cobertura **core 90% · tax 93% (total 96%)**.
 2. **`market/`**: `indexadores.py` (CDI/Selic/IPCA, fator base 252) +
    `renda_fixa.py` (preço/rentabilidade Tesouro, CDB %CDI, líquido de IR/IOF).
 3. **`planning/`**: aposentadoria, objetivos (PMT necessário), reserva, dívidas
