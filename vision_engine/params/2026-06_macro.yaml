@@ -1,0 +1,17 @@
+# Macro e índices — snapshot jun/2026 (Parte 5.1 do PDF).
+# Valores numéricos como STRING para virarem Decimal sem passar por float.
+tipo: macro
+vigencia_inicio: 2026-06-01
+fonte: "BACEN/COPOM (Selic); ANBIMA (CDI); IBGE/Focus (IPCA); CMN (poupança); FGC"
+responsavel: "(definir antes de produção)"
+dados:
+  selic_meta_aa: "0.1450" # 14,50% a.a. (COPOM 17/jun pode reduzir a 14,25%)
+  cdi_aa: "0.1440" # ≈ Selic − 0,10 p.p.
+  ipca_meta_aa: "0.03" # meta contínua 3% (banda 1,5%–4,5%)
+  ipca_projetado_2026_aa: "0.0486" # Boletim Focus
+  poupanca:
+    regra: "Selic > 8,5% a.a. => 0,5% a.m. + TR; senão 70% da Selic + TR"
+    rendimento_am_atual: "0.005" # 0,5% a.m. + TR (Selic atual > 8,5%)
+  fgc:
+    limite_por_cpf_instituicao: "250000"
+    teto_global_4anos: "1000000"

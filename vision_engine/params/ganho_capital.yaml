@@ -1,0 +1,17 @@
+# Ganho de capital (bens e direitos, inclusive imóveis) — Partes 3.4 / 5.5.
+# Faixas PROGRESSIVAS sobre o ganho (cada fatia tributada à sua alíquota).
+tipo: ganho_capital
+vigencia_inicio: 2016-01-01
+fonte: "Receita Federal; Lei 13.259/2015 (alíquotas progressivas) — confirmar vigência"
+responsavel: "(definir antes de produção)"
+dados:
+  faixas:
+    - { ate: "5000000", aliquota: "0.15" }
+    - { ate: "10000000", aliquota: "0.175" }
+    - { ate: "30000000", aliquota: "0.20" }
+    - { ate: null, aliquota: "0.225" } # acima de 30 mi
+  isencoes:
+    imovel_unico_ate: "440000" # sem outra alienação em 5 anos
+    reinvestimento_residencial_dias: 180
+    bens_pequeno_valor_mes: "35000"
+    acoes_mes: "20000"

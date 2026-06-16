@@ -1,0 +1,32 @@
+# IR sobre investimentos — regra VIGENTE (MP 1303/2025 caducou em out/2025,
+# então a tabela regressiva e as isenções de LCI/LCA/etc. seguem MANTIDAS).
+# Partes 3.2 / 5.3 do PDF.
+tipo: ir_investimentos
+vigencia_inicio: 2026-01-01
+fonte: "Receita Federal; MP 1303/2025 NÃO aprovada (regra anterior mantida)"
+responsavel: "(definir antes de produção)"
+dados:
+  # Renda fixa/Tesouro — regressiva por PRAZO (dias corridos), sobre o rendimento.
+  renda_fixa_regressiva:
+    - { ate_dias: 180, aliquota: "0.225" }
+    - { ate_dias: 360, aliquota: "0.20" }
+    - { ate_dias: 720, aliquota: "0.175" }
+    - { ate_dias: null, aliquota: "0.15" } # acima de 720 dias
+  # Isentos de IR para PF:
+  isentos_pf: ["LCI", "LCA", "CRI", "CRA", "DEB_INCENTIVADA", "LIG", "POUPANCA"]
+  fundos_come_cotas:
+    longo_prazo_pct: "0.15"
+    curto_prazo_pct: "0.20"
+    meses_antecipacao: [5, 11] # último dia útil de maio e novembro
+    nota: "complemento até a alíquota da tabela regressiva é cobrado no resgate"
+  fii:
+    rendimentos_pf: "isento" # condições: fundo listado, ≥50 cotistas, cotista <10%
+    ganho_venda_pct: "0.20" # sem isenção por valor de venda
+  acoes:
+    swing_pct: "0.15"
+    day_trade_pct: "0.20"
+    isencao_vendas_mes: "20000" # swing trade
+    irrf_dedo_duro_swing_pct: "0.00005"
+    irrf_dedo_duro_day_pct: "0.01"
+  jcp_irrf_pct: "0.15"
+  exterior_lei_14754_pct: "0.15" # anual (offshore/controladas)

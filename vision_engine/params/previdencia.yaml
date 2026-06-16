@@ -1,0 +1,20 @@
+# Previdência privada (PGBL/VGBL) — tributação. Partes 3.5 / 5.5.
+# Regime REGRESSIVO por prazo de acumulação (irreversível) OU progressivo.
+tipo: previdencia
+vigencia_inicio: 2005-01-01
+fonte: "Receita Federal; Lei 11.053/2004 (regime regressivo)"
+responsavel: "(definir antes de produção)"
+dados:
+  regressivo:
+    - { ate_anos: 2, aliquota: "0.35" }
+    - { ate_anos: 4, aliquota: "0.30" }
+    - { ate_anos: 6, aliquota: "0.25" }
+    - { ate_anos: 8, aliquota: "0.20" }
+    - { ate_anos: 10, aliquota: "0.15" }
+    - { ate_anos: null, aliquota: "0.10" } # acima de 10 anos
+  progressivo:
+    irrf_fonte_pct: "0.15" # compensável na declaração (tabela IRPF)
+  pgbl_vgbl:
+    pgbl_base: "principal+rendimento"
+    vgbl_base: "rendimento"
+    pgbl_deducao_pct: "0.12" # exige INSS/RPPS + modelo completo

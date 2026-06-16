@@ -1,0 +1,31 @@
+# IRPF — tabela mensal base 2026 + redutor Lei 15.270/2025 (Partes 3.1 / 5.2).
+# A tabela progressiva NOMINAL não mudou; a reforma agiu por redutores.
+tipo: irpf
+vigencia_inicio: 2026-01-01
+fonte: "Lei 15.270/2025; Receita Federal"
+responsavel: "(definir antes de produção)"
+dados:
+  mensal:
+    # base de cálculo mensal (R$). `ate: null` = última faixa (sem teto).
+    faixas:
+      - { ate: "2428.80", aliquota: "0.0", deduzir: "0.0" }
+      - { ate: "2826.65", aliquota: "0.075", deduzir: "182.16" }
+      - { ate: "3751.05", aliquota: "0.15", deduzir: "394.16" }
+      - { ate: "4664.68", aliquota: "0.225", deduzir: "675.49" }
+      - { ate: null, aliquota: "0.275", deduzir: "908.73" }
+    # IR base = base*aliquota − deduzir ; IR devido = max(IR base − redutor; 0)
+    redutor_lei_15270:
+      isencao_ate: "5000.00" # imposto efetivo zero até aqui (mensal)
+      reducao_fim: "7350.00" # redução decrescente de 5.000,01 a 7.350
+  deducoes:
+    dependente_mes: "189.59"
+    educacao_ano: "3561.50"
+    isencao_65mais_mes: "1903.98"
+    simplificado_pct: "0.20"
+    simplificado_teto_ano: "16754.34" # CONFIRMAR valor vigente
+    pgbl_dedutivel_pct: "0.12" # exige INSS/RPPS + modelo completo
+  irpfm_alta_renda:
+    incide_renda_anual_acima: "600000"
+    aliquota_max: "0.10" # cheia acima de R$ 1,2 mi
+    dividendos_irrf_pct: "0.10" # se > R$ 50 mil/mês de uma mesma fonte
+    dividendos_limite_mensal_fonte: "50000"

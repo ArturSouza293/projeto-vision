@@ -1,0 +1,41 @@
+# IOF regressivo — resgate de renda fixa/fundos em menos de 30 dias.
+# Vetor diário oficial 1..30 (% sobre o RENDIMENTO, incide ANTES do IR).
+# 30 dias ou mais => 0%. Partes 3.3 / 5.4 do PDF (valores parciais do PDF
+# conferem com a tabela oficial completa abaixo).
+tipo: iof
+vigencia_inicio: 2026-01-01
+fonte: "Receita Federal — tabela regressiva de IOF (0 a 30 dias)"
+responsavel: "(definir antes de produção)"
+dados:
+  # dia do resgate -> alíquota sobre o rendimento
+  por_dia:
+    "1": "0.96"
+    "2": "0.93"
+    "3": "0.90"
+    "4": "0.86"
+    "5": "0.83"
+    "6": "0.80"
+    "7": "0.76"
+    "8": "0.73"
+    "9": "0.70"
+    "10": "0.66"
+    "11": "0.63"
+    "12": "0.60"
+    "13": "0.56"
+    "14": "0.53"
+    "15": "0.50"
+    "16": "0.46"
+    "17": "0.43"
+    "18": "0.40"
+    "19": "0.36"
+    "20": "0.33"
+    "21": "0.30"
+    "22": "0.26"
+    "23": "0.23"
+    "24": "0.20"
+    "25": "0.16"
+    "26": "0.13"
+    "27": "0.10"
+    "28": "0.06"
+    "29": "0.03"
+  acima_30_dias: "0.0"

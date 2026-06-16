@@ -1,0 +1,8 @@
+# venv local + caches de ferramentas (regeneráveis)
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
