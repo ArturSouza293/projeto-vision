@@ -13,7 +13,7 @@ dependencies = ["pyyaml>=6"]
 dev = ["pytest>=8", "hypothesis>=6", "mypy>=1.10", "ruff>=0.5", "types-PyYAML"]
 
 [tool.setuptools]
-packages = ["core", "params", "tax"]
+packages = ["core", "params", "tax", "market", "planning", "contract", "risk"]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
@@ -22,7 +22,7 @@ testpaths = ["tests"]
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["core", "params", "tax"]
+files = ["core", "params", "tax", "market", "planning", "contract", "risk"]
 
 [tool.ruff]
 line-length = 100
