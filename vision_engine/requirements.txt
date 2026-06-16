@@ -1,0 +1,6 @@
+# Dependências de RUNTIME do servidor (api.py) — usadas no deploy (Railway etc.).
+# O venv local de dev tem mais (pytest/mypy/ruff/hypothesis) — ver pyproject.
+fastapi>=0.110
+uvicorn[standard]>=0.29
+pydantic>=2
+pyyaml>=6

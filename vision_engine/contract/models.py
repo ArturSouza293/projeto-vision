@@ -13,7 +13,7 @@ from __future__ import annotations
 from datetime import date
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 
 class ResultEnvelope(BaseModel):
@@ -28,6 +28,11 @@ class ResultEnvelope(BaseModel):
     parametros_versao: str | None = None  # ex.: "irpf@2026-01-01"
     passos: list[str] = Field(default_factory=list)
     detalhe: dict[str, str] | None = None  # tabelas/decomposições
+
+    @field_serializer("valor")
+    def _serializa_valor(self, v: Decimal) -> str:
+        """Decimal → string no JSON (preserva exatidão; nunca vira float)."""
+        return str(v)
 
 
 class IrpfMensalInput(BaseModel):

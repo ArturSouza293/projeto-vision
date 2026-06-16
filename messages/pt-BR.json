@@ -592,6 +592,21 @@
     "client360": "Cliente 360",
     "lifePlanning": "Life Planning"
   },
+  "engineAudit": {
+    "title": "Motor de cálculo auditável",
+    "badge": "Python · determinístico",
+    "scenario": "CDB {pct}% do CDI por 2 anos sobre {valor} (patrimônio investível).",
+    "compute": "Calcular no motor",
+    "computing": "Calculando…",
+    "again": "Recalcular",
+    "liquido": "Rendimento líquido (2 anos)",
+    "bruto": "Rendimento bruto",
+    "valorFinal": "Valor final líquido",
+    "formula": "fórmula",
+    "params": "parâmetros",
+    "notConfigured": "Motor não configurado neste ambiente (defina ENGINE_API_URL).",
+    "errorBody": "Não foi possível falar com o motor agora."
+  },
   "copilot": {
     "title": "BIA advisor",
     "subtitle": "O consultor do consultor",

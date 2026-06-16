@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { EngineAuditCard } from "@/components/engine/engine-audit-card";
 import { achievableGoalCount, ageFromDob, cashFlowTotals } from "@/lib/calc";
 import { formatCompactCurrency, formatCurrency } from "@/lib/format";
 import { kycExpenseComparison, kycFor, shareOfWalletInsight } from "@/lib/kyc";
@@ -465,6 +466,9 @@ export function Client360Page() {
           {t("vision360.seeOpportunities")}
         </Button>
       </Section>
+
+      {/* Motor auditável (Python) — cálculo sob demanda, líquido de impostos */}
+      <EngineAuditCard plan={plan} />
 
       {/* Rodapé — 4 números do MOTOR (origem única) + ponte para o Life Planning */}
       <footer className="rounded-2xl border border-border bg-muted/40 px-4 py-3 sm:px-5">

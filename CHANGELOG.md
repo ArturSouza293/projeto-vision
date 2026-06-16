@@ -1,5 +1,25 @@
 # Changelog
 
+## v10 — Motor Python integrado ao app (híbrido, sob demanda)
+
+O motor determinístico Python (`vision_engine/`) agora alimenta o app por API,
+sem tocar no recálculo AO VIVO (que segue no motor TS, client-side).
+
+- **`vision_engine/api.py`** (FastAPI) sobre o tool registry: `/health`, `/tools`,
+  `/call/{tool}` → envelope auditável (`valor` como STRING = Decimal exato) ou erro
+  estruturado (422); auth opcional por `X-Engine-Key`. `requirements.txt` +
+  `Procfile` p/ deploy (Railway). Teste: 6/6.
+- **`app/api/engine/route.ts`** — proxy **server-side** (o navegador não vê o host
+  do motor → seguro pro corp); degrada com elegância sem `ENGINE_API_URL`.
+- **Cliente 360** ganhou o card **"Motor de cálculo auditável"**: calcula SOB
+  DEMANDA (botão, não no recálculo ao vivo) a renda fixa LÍQUIDA de impostos do
+  cliente (bruto → IOF → IR) com `fórmula` + versão dos parâmetros. O simulador
+  (Life Planning) continua recalculando ao vivo no TS — zero regressão.
+- Verificado ponta a ponta: API 6/6, app→proxy→motor (Playwright), 165 testes,
+  golden 33/33, tsc/build limpos.
+- Deploy guiado em [`vision_engine/DEPLOY.md`](vision_engine/DEPLOY.md) (Railway +
+  variáveis no Vercel: `ENGINE_API_URL`, `ENGINE_API_KEY`).
+
 ## v9.2 — Cliente 360 + Life Planning: navegação em 2 abas no registro do cliente
 
 Promove a Visão 360 do v8 de modal para **aba de primeira classe**. Ao abrir um

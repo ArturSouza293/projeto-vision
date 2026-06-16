@@ -592,6 +592,21 @@
     "client360": "Client 360",
     "lifePlanning": "Life Planning"
   },
+  "engineAudit": {
+    "title": "Auditable calculation engine",
+    "badge": "Python · deterministic",
+    "scenario": "CDB at {pct}% of CDI for 2 years on {valor} (investable wealth).",
+    "compute": "Compute in the engine",
+    "computing": "Computing…",
+    "again": "Recompute",
+    "liquido": "Net return (2 years)",
+    "bruto": "Gross return",
+    "valorFinal": "Net final value",
+    "formula": "formula",
+    "params": "parameters",
+    "notConfigured": "Engine not configured in this environment (set ENGINE_API_URL).",
+    "errorBody": "Couldn't reach the engine right now."
+  },
   "copilot": {
     "title": "BIA advisor",
     "subtitle": "The advisor of the advisor",
