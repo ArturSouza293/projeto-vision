@@ -19,6 +19,8 @@ sem tocar no recálculo AO VIVO (que segue no motor TS, client-side).
   golden 33/33, tsc/build limpos.
 - Deploy guiado em [`vision_engine/DEPLOY.md`](vision_engine/DEPLOY.md) (Railway +
   variáveis no Vercel: `ENGINE_API_URL`, `ENGINE_API_KEY`).
+- chore(deploy): republicação forçada no Vercel p/ promover esta versão a
+  produção (o auto-deploy não havia publicado o commit do v10).
 
 ## v9.2 — Cliente 360 + Life Planning: navegação em 2 abas no registro do cliente
 
