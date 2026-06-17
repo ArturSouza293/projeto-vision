@@ -72,6 +72,19 @@ class AporteObjetivoInput(BaseModel):
     meses: int = Field(gt=0)
 
 
+class PgblDeducaoInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    contribuicao_ano: Decimal = Field(ge=0, description="Contribuição anual a PGBL (R$)")
+    renda_bruta_tributavel_ano: Decimal = Field(gt=0, description="Renda bruta tributável anual")
+    data_referencia: date
+
+
+class PrevidenciaProgressivaInput(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    beneficio_mensal: Decimal = Field(gt=0, description="Benefício mensal de previdência (R$)")
+    data_referencia: date
+
+
 __all__ = [
     "ResultEnvelope",
     "IrpfMensalInput",
@@ -79,4 +92,6 @@ __all__ = [
     "GanhoCapitalInput",
     "CdbLiquidoInput",
     "AporteObjetivoInput",
+    "PgblDeducaoInput",
+    "PrevidenciaProgressivaInput",
 ]
