@@ -642,7 +642,40 @@
   "clientTabs": {
     "ariaLabel": "Navegação do registro do cliente",
     "client360": "Cliente 360",
-    "lifePlanning": "Life Planning"
+    "lifePlanning": "Life Planning",
+    "engines": "Motores"
+  },
+  "engines": {
+    "title": "Motores de Cálculo e Simulações",
+    "intro": "Playground de simulação do consultor. Nesta fase os motores são front-end: inputs editáveis e fórmula visível; o resultado vem do backend (a implementar). O Life Planning segue sendo a fonte única do plano.",
+    "backendBadge": "backend a implementar",
+    "formula": "Fórmula",
+    "previewPlaceholder": "Prévia — cálculo a implementar no backend.",
+    "months": "meses",
+    "saveSim": "Salvar simulação",
+    "compareTitle": "Comparar simulações",
+    "exportEmail": "Exportar para e-mail",
+    "noSims": "Nenhuma simulação salva ainda.",
+    "exportNote": "O e-mail abre no seu cliente de e-mail (você envia). Nenhum dado vai a serviço externo.",
+    "emailIntro": "Resumo das simulações para",
+    "emailSubject": "Simulações — Projeto Vision",
+    "emailDisclaimer": "Prévia ilustrativa — cálculos finais no motor.",
+    "loanCollateral": {
+      "title": "Empréstimo com garantia de investimentos",
+      "subtitle": "Mostrar que o cliente NÃO descapitaliza: manter investido + crédito vs. resgatar.",
+      "formula": "parcela = Price/SAC(saldo, i, n) · equilíbrio: rendimento ≥ custo do crédito · antecipação: VP das parcelas restantes",
+      "note": "Negócio: preserve o capital investido e use o crédito com garantia; antecipe quando custo > rendimento.",
+      "investment": "Investimento (garantia)",
+      "rate": "Taxa de juros",
+      "term": "Prazo"
+    },
+    "rateCompare": {
+      "title": "Comparativo de taxas",
+      "subtitle": "Comparação transparente: custo efetivo do crédito (CET) × rentabilidade líquida das alternativas.",
+      "formula": "CET (custo efetivo) × rentabilidade líquida (de IR/IOF/custos), em base anual comparável",
+      "cet": "CET do crédito",
+      "netReturn": "Rentabilidade líquida"
+    }
   },
   "engineAudit": {
     "title": "Motor de cálculo auditável",

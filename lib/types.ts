@@ -753,7 +753,7 @@ export type EnginePhase = "simulate" | "output";
  * v9 — abas de primeiro nível do registro do cliente. "client360" = dossiê
  * Cliente 360 (só quando o caso tem KYC); "lifePlanning" = simulador/planejamento.
  */
-export type ClientTab = "client360" | "lifePlanning";
+export type ClientTab = "client360" | "lifePlanning" | "engines";
 
 export type Fit = "high" | "medium" | "low";
 

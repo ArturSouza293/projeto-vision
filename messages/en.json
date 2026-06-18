@@ -642,7 +642,40 @@
   "clientTabs": {
     "ariaLabel": "Client record navigation",
     "client360": "Client 360",
-    "lifePlanning": "Life Planning"
+    "lifePlanning": "Life Planning",
+    "engines": "Engines"
+  },
+  "engines": {
+    "title": "Calculation Engines & Simulations",
+    "intro": "Advisor simulation playground. In this phase the engines are front-end: editable inputs and visible formula; the result comes from the backend (to be implemented). Life Planning remains the single source of the plan.",
+    "backendBadge": "backend to implement",
+    "formula": "Formula",
+    "previewPlaceholder": "Preview — calculation to be implemented in the backend.",
+    "months": "months",
+    "saveSim": "Save simulation",
+    "compareTitle": "Compare simulations",
+    "exportEmail": "Export to email",
+    "noSims": "No simulations saved yet.",
+    "exportNote": "Email opens in your mail client (you send it). No data goes to an external service.",
+    "emailIntro": "Simulation summary for",
+    "emailSubject": "Simulations — Project Vision",
+    "emailDisclaimer": "Illustrative preview — final calculations in the engine.",
+    "loanCollateral": {
+      "title": "Investment-collateralised loan",
+      "subtitle": "Show the client does NOT decapitalise: keep invested + credit vs. redeem.",
+      "formula": "payment = Price/SAC(balance, i, n) · break-even: return ≥ credit cost · prepayment: PV of remaining payments",
+      "note": "Business: preserve invested capital and use collateralised credit; prepay when cost > return.",
+      "investment": "Investment (collateral)",
+      "rate": "Interest rate",
+      "term": "Term"
+    },
+    "rateCompare": {
+      "title": "Rate comparison",
+      "subtitle": "Transparent comparison: effective credit cost (CET) × net return of alternatives.",
+      "formula": "CET (effective cost) × net return (of tax/IOF/fees), on a comparable annual basis",
+      "cet": "Credit CET",
+      "netReturn": "Net return"
+    }
   },
   "engineAudit": {
     "title": "Auditable calculation engine",
