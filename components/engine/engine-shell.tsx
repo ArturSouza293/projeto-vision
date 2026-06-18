@@ -9,7 +9,6 @@ import { BradescoLogo } from "@/components/app/bradesco-logo";
 import { LocaleToggle } from "@/components/app/locale-toggle";
 import { CopilotPanel } from "@/components/advisor-copilot/copilot-panel";
 import { Client360Page } from "@/components/engine/client-360-page";
-import { EnginesTab } from "@/components/engine/engines-tab";
 import { ClientRecordTabs, CLIENT_TAB_IDS } from "@/components/engine/client-record-tabs";
 import { DataStudio } from "@/components/engine/data-studio";
 import { kycFor } from "@/lib/kyc";
@@ -328,17 +327,6 @@ export function EngineShell() {
                 >
                   {phase === "simulate" ? <Workspace /> : <Output />}
                 </motion.div>
-              </div>
-
-              <div
-                role="tabpanel"
-                id={CLIENT_TAB_IDS.engines.panel}
-                aria-labelledby={CLIENT_TAB_IDS.engines.tab}
-                tabIndex={0}
-                hidden={clientTab !== "engines"}
-                className="outline-none"
-              >
-                <EnginesTab />
               </div>
             </div>
           ) : (

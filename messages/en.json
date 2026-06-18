@@ -130,9 +130,6 @@
     },
     "antonio": {
       "tagline": "Consolidated old-money estate — succession & liquidity is the work"
-    },
-    "sonia": {
-      "tagline": "Retiree protecting her son's lifelong income — legacy is the work"
     }
   },
   "flags": {
@@ -300,13 +297,6 @@
       "inss": "Include INSS"
     }
   },
-  "cartao": {
-    "title": "Credit card",
-    "byCategory": "Spend by category",
-    "total": "Card total",
-    "outsideBank": "Outside the bank",
-    "note": "Card spend via Open Finance (mock). Informational — not added to the plan's expenses to avoid double counting."
-  },
   "networth": {
     "title": "Build the balance sheet",
     "subtitle": "Assets and liabilities. Net worth and liquidity update live.",
@@ -424,12 +414,6 @@
     "currentAmount": "Already saved",
     "monthlyContribution": "Monthly contribution",
     "funded": "{pct}% funded",
-    "successionType": "Succession type",
-    "succession": {
-      "inventario": "Pay probate",
-      "imoveis": "Leave properties",
-      "legado": "Leave a legacy (lifelong income)"
-    },
     "achieved": "Achieved",
     "mandatory": "Mandatory goal — can be tuned, not removed",
     "horizon": "{years}-year horizon",
@@ -480,7 +464,7 @@
     "growthScenario": "Growth scenario",
     "kpi": {
       "wealthAtRetirement": "Wealth at retirement",
-      "retirementDuration": "Income horizon",
+      "retirementDuration": "Income lasts",
       "probability": "Probability of success",
       "estate": "Estate at horizon",
       "incomeGap": "Retirement income gap",
@@ -493,10 +477,7 @@
       "wealth": "Wealth",
       "income": "Income",
       "needs": "Needs",
-      "contributions": "Contributions",
-      "wealthReal": "Actual",
-      "wealthDesejavel": "Target",
-      "toggleDesejavel": "Show target line"
+      "contributions": "Contributions"
     },
     "growth": {
       "base": "Base",
@@ -604,126 +585,12 @@
     "declaredKyc": "Declared (KYC)",
     "inPlan": "In the plan",
     "totalMonthly": "Monthly total",
-    "vsDeclared": "vs. declared",
-    "howToCall": "Preferred name",
-    "birthday": "Birthday",
-    "dob": "Born",
-    "hotTopic": "Hot topic",
-    "knowInvest": "Investing knowledge",
-    "knowBanking": "Banking knowledge",
-    "nps": "NPS",
-    "bankEmployee": "Bank employee",
-    "keyPerson": "Person who matters most",
-    "decisor": "decision-maker",
-    "bradescoAccount": "Bradesco account",
-    "noBradescoAccount": "No Bradesco account",
-    "internalInsurance": "Internal insurance (Bradesco)",
-    "uncovered": "Assets without insurance",
-    "expires": "Expires",
-    "irPreloaded": "Pre-loaded tax return",
-    "taxableIncome": "Taxable income",
-    "taxDue": "Tax due",
-    "taxRefund": "Refund",
-    "assetsRights": "Assets & rights",
-    "card": "Credit card",
-    "avgSpend": "Avg. spend",
-    "outsideBank": "Outside the bank",
-    "insights": "Insights",
-    "intlDetail": "International detail",
-    "products": "Products",
-    "wealthHistory": "Wealth history",
-    "past": "Past",
-    "future": "Future",
-    "editable": "editable"
-  },
-  "vitalSign": {
-    "title": "Next step",
-    "subtitle": "When the usufruct gap is negative, prioritise the lever that matches the binding vital sign. Magnitudes come from the engine.",
-    "priority": "priority",
-    "magnitude": "Magnitude",
-    "simulate": "Simulate this",
-    "seeEffect": "see effect when simulating",
-    "month": "mo",
-    "year": "year",
-    "years": "years",
-    "lever": {
-      "aporte": "Increase monthly contribution",
-      "adiar_usufruto": "Delay usufruct (work longer)",
-      "padrao_vida": "Adjust target lifestyle",
-      "perfil_retorno": "Review risk profile / return",
-      "alocar_existente": "Allocate existing investments/pension",
-      "protecao_sucessao": "Address protection & succession"
-    }
+    "vsDeclared": "vs. declared"
   },
   "clientTabs": {
     "ariaLabel": "Client record navigation",
     "client360": "Client 360",
-    "lifePlanning": "Life Planning",
-    "engines": "Engines"
-  },
-  "engines": {
-    "title": "Calculation Engines & Simulations",
-    "intro": "Advisor simulation playground. In this phase the engines are front-end: editable inputs and visible formula; the result comes from the backend (to be implemented). Life Planning remains the single source of the plan.",
-    "backendBadge": "backend to implement",
-    "formula": "Formula",
-    "previewPlaceholder": "Preview — calculation to be implemented in the backend.",
-    "months": "months",
-    "saveSim": "Save simulation",
-    "compareTitle": "Compare simulations",
-    "exportEmail": "Export to email",
-    "noSims": "No simulations saved yet.",
-    "exportNote": "Email opens in your mail client (you send it). No data goes to an external service.",
-    "emailIntro": "Simulation summary for",
-    "emailSubject": "Simulations — Project Vision",
-    "emailDisclaimer": "Illustrative preview — final calculations in the engine.",
-    "loanCollateral": {
-      "title": "Investment-collateralised loan",
-      "subtitle": "Show the client does NOT decapitalise: keep invested + credit vs. redeem.",
-      "formula": "payment = Price/SAC(balance, i, n) · break-even: return ≥ credit cost · prepayment: PV of remaining payments",
-      "note": "Business: preserve invested capital and use collateralised credit; prepay when cost > return.",
-      "investment": "Investment (collateral)",
-      "rate": "Interest rate",
-      "term": "Term"
-    },
-    "rateCompare": {
-      "title": "Rate comparison",
-      "subtitle": "Transparent comparison: effective credit cost (CET) × net return of alternatives.",
-      "formula": "CET (effective cost) × net return (of tax/IOF/fees), on a comparable annual basis",
-      "cet": "Credit CET",
-      "netReturn": "Net return"
-    }
-  },
-  "usufruto": {
-    "title": "Usufruct income",
-    "economicallyActive": "Economically active?",
-    "maintenanceMode": "Maintenance mode: income already solved — focus on sustaining it over the horizon (incl. post-mortem for a dependent).",
-    "targetIncome": "Target income (mo)",
-    "targetCapital": "Target capital",
-    "perpetual": "Perpetual (preserve principal)",
-    "horizon": "Horizon",
-    "years": "years",
-    "month": "mo",
-    "formula": "Formula",
-    "formulaPerpetual": "capital = income / i (real) · income = capital · i",
-    "formulaFinite": "capital = PV of the real annuity over the horizon · income = capital / factor",
-    "realReturn": "Real return"
-  },
-  "carteira": {
-    "title": "Portfolio view",
-    "current": "Current",
-    "recommended": "Recommended",
-    "fit": "Fit to profile",
-    "offline": "AI offline mode",
-    "gaps": "Misalignments",
-    "over": "overweight",
-    "under": "underweight",
-    "class": {
-      "liquidez": "Liquidity",
-      "rendaFixa": "Fixed income",
-      "rendaVariavel": "Equities",
-      "previdencia": "Pension",
-      "internacional": "International"
-    }
+    "lifePlanning": "Life Planning"
   },
   "engineAudit": {
     "title": "Auditable calculation engine",
@@ -1080,7 +947,7 @@
   },
   "kpi": {
     "wealthAtRetirement": "Wealth at retirement",
-    "retirementDuration": "Income horizon",
+    "retirementDuration": "Income lasts",
     "probability": "Probability of success",
     "estate": "Estate at horizon",
     "incomeGap": "Retirement income gap",
@@ -1093,7 +960,7 @@
       "body": "What you'll have accumulated at retirement — today's investable wealth plus contributions and real growth."
     },
     "duration": {
-      "title": "Income horizon",
+      "title": "How long income lasts",
       "body": "How many years the portfolio sustains the retirement income need before depleting."
     },
     "probability": {

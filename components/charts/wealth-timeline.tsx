@@ -36,7 +36,6 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { LIFE_EVENT_PRESETS, lifeEventPreset } from "@/lib/life-event-meta";
 import { formatCurrency } from "@/lib/format";
-import { projecaoDesejavel } from "@/lib/next-step";
 import { projectPlan } from "@/lib/plan";
 import { useVisionStore } from "@/lib/store/plan-store";
 import type { LifeEvent, Plan, ProjectionPoint, ScenarioAssumptions } from "@/lib/types";
@@ -118,12 +117,6 @@ export function WealthTimeline({
   const [drag, setDrag] = useState<DragState | null>(null);
   const [editId, setEditId] = useState<string | null>(null); // event id ou "retire"
   const [customOpen, setCustomOpen] = useState(false);
-  // C10 — sobreposição "real × desejável" (motor; só existe se há lacuna a fechar).
-  const [showIdeal, setShowIdeal] = useState(false);
-  const desejavel = useMemo(
-    () => projecaoDesejavel(plan, assumptions),
-    [plan, assumptions],
-  );
 
   useEffect(() => {
     if (!wrapRef.current) return;
@@ -323,18 +316,7 @@ export function WealthTimeline({
 
   return (
     <div className="space-y-3">
-      {desejavel && (
-        <label className="flex cursor-pointer items-center justify-end gap-2 px-1 text-xs text-muted-foreground">
-          <span>{t("scenarios.chart.toggleDesejavel")}</span>
-          <Switch checked={showIdeal} onCheckedChange={setShowIdeal} />
-        </label>
-      )}
-      <WealthArea
-        points={points}
-        retirementYear={retirementYear}
-        ghostPoints={ghost}
-        desejavelPoints={showIdeal ? desejavel : null}
-      />
+      <WealthArea points={points} retirementYear={retirementYear} ghostPoints={ghost} />
 
       {/* ---------------- faixa da linha do tempo (v6) ---------------- */}
       <div

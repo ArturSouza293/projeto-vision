@@ -22,15 +22,12 @@ export function WealthArea({
   retirementYear,
   events = [],
   ghostPoints,
-  desejavelPoints,
 }: {
   points: ProjectionPoint[];
   retirementYear: number;
   events?: { year: number; title: string }[];
   /** A second, dimmed "what-if" curve overlaid during a timeline drag. */
   ghostPoints?: ProjectionPoint[] | null;
-  /** C10 — a trajetória "desejável" (zera a lacuna) sobreposta à curva real. */
-  desejavelPoints?: ProjectionPoint[] | null;
 }) {
   const t = useTranslations();
   const locale = useVisionStore((s) => s.locale);
@@ -38,33 +35,10 @@ export function WealthArea({
   // Merge the ghost series by YEAR (not index) so it stays aligned even if the
   // two series differ in length (e.g. a retirement drag changing the horizon).
   const ghostByYear = ghostPoints ? new Map(ghostPoints.map((g) => [g.year, g.wealth])) : null;
-  // C10 — mesma estratégia para a curva desejável (real × desejável no mesmo eixo).
-  const idealByYear = desejavelPoints
-    ? new Map(desejavelPoints.map((g) => [g.year, g.wealth]))
-    : null;
-  const data =
-    ghostByYear || idealByYear
-      ? points.map((p) => ({
-          ...p,
-          ...(ghostByYear ? { ghost: ghostByYear.get(p.year) } : {}),
-          ...(idealByYear ? { desejavel: idealByYear.get(p.year) } : {}),
-        }))
-      : points;
+  const data = ghostByYear ? points.map((p) => ({ ...p, ghost: ghostByYear.get(p.year) })) : points;
 
   return (
     <div className="h-56 w-full sm:h-72">
-      {desejavelPoints && (
-        <div className="mb-1 flex items-center justify-end gap-4 px-1 text-[11px] text-muted-foreground">
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-0.5 w-4 rounded-full bg-[var(--primary)]" />
-            {t("scenarios.chart.wealthReal")}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="inline-block h-0 w-4 border-t-2 border-dashed border-[var(--positive)]" />
-            {t("scenarios.chart.wealthDesejavel")}
-          </span>
-        </div>
-      )}
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart data={data} margin={{ top: 12, right: 8, left: 8, bottom: 0 }}>
           <defs>
@@ -79,13 +53,13 @@ export function WealthArea({
             tickLine={false}
             axisLine={false}
             minTickGap={28}
-            tick={{ fontSize: 11, fontWeight: 600, fill: "var(--muted-foreground)" }}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
           />
           <YAxis
             width={58}
             tickLine={false}
             axisLine={false}
-            tick={{ fontSize: 11, fontWeight: 700, fill: "var(--foreground)" }}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
             tickFormatter={(v) => formatCompactCurrency(Number(v), locale)}
           />
           <Tooltip content={<MoneyTooltip />} />
@@ -115,19 +89,6 @@ export function WealthArea({
               stroke="var(--info)"
               strokeWidth={2}
               strokeDasharray="5 4"
-              fill="none"
-              dot={false}
-              isAnimationActive={false}
-            />
-          )}
-          {desejavelPoints && (
-            <Area
-              type="monotone"
-              dataKey="desejavel"
-              name={t("scenarios.chart.wealthDesejavel")}
-              stroke="var(--positive)"
-              strokeWidth={2}
-              strokeDasharray="6 4"
               fill="none"
               dot={false}
               isAnimationActive={false}

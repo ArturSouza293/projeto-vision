@@ -33,26 +33,14 @@ export type SistemaAmortizacao = "PRICE" | "SAC";
 /** The 3 mandatory goal types + free-form extras. */
 export type TipoObjetivo = "reserva" | "aposentadoria" | "sucessao" | "outro";
 
-/** Natureza do objetivo de sucessão (C9): pagar só o inventário, deixar só
- *  imóveis, ou deixar um legado (renda vitalícia/multigeracional). */
-export type SubtipoSucessao = "inventario" | "imoveis" | "legado";
-
 /* ------------------------------------------------------------------ case */
 
 export interface Profile {
   idadeAtual: number;
   idadeConjuge?: number;
   dependentes?: { idade: number }[];
-  /** Início do usufruto (desacumulação). "aposentadoria" = INSS; "usufruto" =
-   *  pós parar de trabalhar (C8) — pode ser a mesma idade ou diferente. */
+  /** Retirement age (start of decumulation). */
   idadeUsufruto: number;
-  /** Cliente economicamente ATIVO? false = inativo/aposentado → usufruto em
-   *  modo manutenção (renda já resolvida; foco em manter por um horizonte). C8. */
-  economicamenteAtivo?: boolean;
-  /** Horizonte de renda do usufruto, em anos (override). Permite renda ALÉM da
-   *  longevidade do titular — ex.: sustentar dependente "maior incapaz" por ~50
-   *  anos pós-morte. Ausente ⇒ usa (longevidade − idadeUsufruto). C8. */
-  horizonteRendaAnos?: number;
 }
 
 export interface RendaRecorrente {
@@ -144,8 +132,6 @@ export interface Goal {
   valorAtual?: number;
   aporteMensal?: number;
   prioridade?: "alta" | "media" | "baixa";
-  /** Para tipo "sucessao": natureza do objetivo (C9). */
-  subtipoSucessao?: SubtipoSucessao;
 }
 
 /** Timeline v2 life event (+ optional month). */

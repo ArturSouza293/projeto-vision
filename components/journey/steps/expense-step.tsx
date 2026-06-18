@@ -5,7 +5,6 @@ import { useTranslations } from "next-intl";
 import { Plus, Trash2, TriangleAlert } from "@/components/app/icons";
 import { MoneyInput } from "@/components/app/number-field";
 import { Money } from "@/components/app/money";
-import { CartaoSection } from "@/components/engine/cartao-gastos";
 import { StepHeader } from "@/components/journey/step-header";
 import { StatTile } from "@/components/journey/stat-tile";
 import { Button } from "@/components/ui/button";
@@ -46,8 +45,6 @@ export function ExpenseStep() {
   const locale = useVisionStore((s) => s.locale);
   const cashFlow = useVisionStore((s) => s.activePlan!.cashFlow);
   const netWorth = useVisionStore((s) => s.activePlan!.netWorth);
-  // v10 C4 — cartão (via Open Finance), só nas personas com KYC; informativo.
-  const cartao = useVisionStore((s) => s.activePlan!.clientProfile.kyc?.fluxoCaixa.cartao);
   const addExpense = useVisionStore((s) => s.addExpense);
   const updateExpense = useVisionStore((s) => s.updateExpense);
   const removeExpense = useVisionStore((s) => s.removeExpense);
@@ -174,9 +171,6 @@ export function ExpenseStep() {
           </div>
         )}
       </section>
-
-      {/* v10 C4 — planilha de gastos do cartão (mock, via Open Finance) */}
-      {cartao && <CartaoSection cartao={cartao} />}
 
       {/* Retirement income link */}
       <section className="space-y-3 rounded-2xl border border-border bg-card p-5">

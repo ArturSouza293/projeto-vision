@@ -70,32 +70,12 @@ export function alvoReserva(c: PlanningCase, a: Assumptions, multiplicador?: 6 |
 
 /* ------------------------------------------------------------- sucessão */
 
-/**
- * Liquidez-alvo de sucessão. Varia por SUBTIPO (C9) — golden-safe: sem subtipo,
- * idêntico ao histórico `max(0, pct × bruto − previdência − seguros)`.
- *  - undefined/"inventario": custo de inventário/ITCMD sobre o patrimônio bruto;
- *  - "imoveis" (deixar só imóveis): inventário SÓ sobre os imóveis;
- *  - "legado" (renda vitalícia ao herdeiro): inventário + capital que perpetua a
- *    `rendaLegadoMensal` (perpetuidade real), tudo abatido por previdência/seguros.
- */
-export function alvoSucessao(
-  c: PlanningCase,
-  a: Assumptions,
-  subtipo?: "inventario" | "imoveis" | "legado",
-  opts?: { rendaLegadoMensal?: number; retornoRealAA?: number },
-): number {
+/** Sucessão = max(0, pct × patrimônio bruto − previdência − seguros). */
+export function alvoSucessao(c: PlanningCase, a: Assumptions): number {
+  const bruto = patrimonioBruto(c);
   const previdencia = porClasse(c, "previdencia");
   const seguros = porClasse(c, "seguro");
-  if (subtipo === "imoveis") {
-    return Math.max(0, a.percentualSucessao * porClasse(c, "imovel") - seguros);
-  }
-  const inventario = a.percentualSucessao * patrimonioBruto(c);
-  if (subtipo === "legado" && opts?.rendaLegadoMensal && opts.rendaLegadoMensal > 0) {
-    const iM = annualToMonthly(opts.retornoRealAA ?? a.retornosReaisAA[a.perfilRetorno]);
-    const capitalLegado = iM > 0 ? opts.rendaLegadoMensal / iM : Number.POSITIVE_INFINITY;
-    return Math.max(0, inventario + capitalLegado - previdencia - seguros);
-  }
-  return Math.max(0, inventario - previdencia - seguros);
+  return Math.max(0, a.percentualSucessao * bruto - previdencia - seguros);
 }
 
 /* --------------------------------------------------------- aposentadoria */
@@ -141,59 +121,15 @@ export function capitalNecessarioAposentadoria(
   retornoRealAA: number,
   metodo = a.metodoAposentadoria,
 ): number {
-  return capitalParaRendaMensal(rendaAlvoMensalLiquida(c), c, a, retornoRealAA, metodo);
-}
-
-/**
- * Horizonte da renda de usufruto, em MESES. Custom (`horizonteRendaAnos`,
- * permite renda além da longevidade do titular — ex.: 50 anos pós-morte para um
- * dependente "maior incapaz") ou, na ausência, (longevidade − idadeUsufruto).
- * Golden-safe: sem override, idêntico à expressão histórica.
- */
-export function horizonteUsufrutoMeses(c: PlanningCase, a: Assumptions): number {
-  const anos = c.profile.horizonteRendaAnos ?? a.longevidadeAnos - c.profile.idadeUsufruto;
-  return Math.max(0, anos * 12);
-}
-
-/**
- * Capital necessário para sustentar uma renda mensal-alvo (líquida) arbitrária —
- * base do pré-preenchimento BIDIRECIONAL do objetivo de usufruto (C8):
- *  - depletion: VP de uma anuidade real pelo horizonte (conta/horizonte custom);
- *  - preservation/perpetuity: capital cujo retorno real paga a renda para sempre.
- */
-export function capitalParaRendaMensal(
-  rendaMensalLiquida: number,
-  c: PlanningCase,
-  a: Assumptions,
-  retornoRealAA: number,
-  metodo = a.metodoAposentadoria,
-): number {
-  if (rendaMensalLiquida <= 0) return 0;
+  const gapMensal = rendaAlvoMensalLiquida(c);
+  if (gapMensal <= 0) return 0;
   const iM = annualToMonthly(retornoRealAA);
   if (metodo === "depletion") {
-    return pvAnnuity(rendaMensalLiquida, iM, horizonteUsufrutoMeses(c, a), a.timingAportes);
+    const mesesUsufruto = Math.max(0, (a.longevidadeAnos - c.profile.idadeUsufruto) * 12);
+    return pvAnnuity(gapMensal, iM, mesesUsufruto, a.timingAportes);
   }
+  // preservation / perpetuity: perpetuidade REAL na mesma granularidade
+  // mensal da desacumulação — capital × i_m = gap mensal.
   if (iM <= 0) return Number.POSITIVE_INFINITY;
-  return rendaMensalLiquida / iM;
-}
-
-/**
- * Direção INVERSA (C8): renda mensal sustentável por um dado capital. Permite
- * "preencher capital → derivar renda". É o inverso exato de
- * {@link capitalParaRendaMensal} (round-trip ≈ identidade).
- */
-export function rendaSustentavelMensal(
-  capital: number,
-  c: PlanningCase,
-  a: Assumptions,
-  retornoRealAA: number,
-  metodo = a.metodoAposentadoria,
-): number {
-  if (capital <= 0) return 0;
-  const iM = annualToMonthly(retornoRealAA);
-  if (metodo === "depletion") {
-    const fator = pvAnnuity(1, iM, horizonteUsufrutoMeses(c, a), a.timingAportes);
-    return fator > 0 ? capital / fator : 0;
-  }
-  return capital * iM; // perpetuity/preservation
+  return gapMensal / iM;
 }

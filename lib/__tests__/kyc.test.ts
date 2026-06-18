@@ -57,10 +57,10 @@ describe("comparação de despesas (declarado-KYC × plano)", () => {
 });
 
 describe("KYC nos seeds", () => {
-  it("todas as 15 personas seed têm dossiê KYC", () => {
+  it("todas as 14 personas seed têm dossiê KYC", () => {
     const semKyc = SEED_PLANS.filter((p) => !p.clientProfile.kyc).map((p) => p.clientId);
     expect(semKyc).toEqual([]);
-    expect(SEED_PLANS).toHaveLength(15); // v10: +Sônia (persona 13)
+    expect(SEED_PLANS).toHaveLength(14);
   });
 
   it("cada KYC traz as 9 categorias e ao menos um tema sensível", () => {
