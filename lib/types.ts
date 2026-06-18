@@ -144,6 +144,12 @@ export interface KYCParente {
   parentesco: string;
   nome: string;
   banco?: string;
+  /** v10 A1 — árvore genealógica: nó com conta no Bradesco (realce vermelho). */
+  temContaBradesco?: boolean;
+  /** v10 A1 — decisor da estrutura familiar (realce dourado). */
+  isDecisor?: boolean;
+  /** v10 — link de stub para o perfil dessa pessoa (na demo). */
+  perfilRefId?: string;
 }
 export interface KYCEmpresa {
   nome: string;
@@ -163,6 +169,52 @@ export interface KYCSeguroExterno {
   tipo: string;
   possui: boolean;
   obs?: string;
+  /** v10 A4 — seguradora (modal no hover). */
+  seguradora?: string;
+  /** v10 A4 — descrição da cobertura. */
+  cobertura?: string;
+  /** v10 A4 — fim de vigência da apólice (ISO) — "quando vence". */
+  vigenciaFim?: string;
+  /** v10 A4 — bem coberto (ex.: "Apto Pinheiros", "Vida"). Vazio = sem bem associado. */
+  bemCoberto?: string;
+  /** v10 A4 — valor de cobertura (BRL). */
+  valorCobertura?: number;
+}
+
+/** v10 A2 — detalhe de uma posição internacional (qual/onde/produtos). */
+export interface KYCPosicaoIntl {
+  instituicao: string;
+  pais: string;
+  tiposProduto: string[];
+  valor?: number;
+  observacoes?: string;
+}
+
+/** v10 A3 — campos derivados do IR (mock), editáveis. */
+export interface KYCIRPreCarregado {
+  anoBase: number;
+  rendaTributavel?: number;
+  impostoDevido?: number;
+  impostoRestituir?: number;
+  bensEDireitos?: number;
+  observacoes?: string;
+}
+
+/** v10 A3 — cartão de crédito (gasto + descritivo + Open Finance), mock. */
+export interface KYCCartao {
+  gastoMedioMensal: number;
+  cartoes: string[];
+  /** O que o Open Finance mostra fora do banco (mock). */
+  openFinanceForaDoBanco?: string[];
+}
+
+/** v10 A2 — evento do histórico patrimonial (passado informativo ou futuro). */
+export interface KYCEventoPatrimonial {
+  ano: number;
+  descricao: string;
+  valor?: number;
+  tipo: "passado" | "futuro";
+  kind: "entrada" | "saida";
 }
 export type KYCAlertaSeveridade = "alta" | "media" | "baixa";
 export interface KYCAlerta {
@@ -184,6 +236,20 @@ export interface ClientKYC {
     hobbies: string[];
     viagens: KYCViagens;
     pets: string[];
+    /** v10 A1 — como o cliente deseja ser chamado (saudação). */
+    comoSerChamado?: string;
+    /** v10 A1 — assunto mais "quente"/mencionado (★ no histórico). */
+    assuntoQuente?: string;
+    /** v10 A1 — réguas 0–10 separadas: conhecimento de investimentos × banking. */
+    reguaInvestimentos?: number;
+    reguaBanking?: number;
+    /** v10 A1 — NPS (0–10) + nota livre de histórico. */
+    nps?: number;
+    npsNota?: string;
+    /** v10 A1 — é funcionário do banco? */
+    funcionarioBanco?: boolean;
+    /** v10 A1 — pessoa que mais importa / interesses dos filhos. */
+    pessoaQueMaisImporta?: string;
   };
   /** 2 — Perfil familiar */
   perfilFamiliar: {
@@ -223,13 +289,27 @@ export interface ClientKYC {
     alertas: KYCAlerta[];
     /** Resumo IA mock. */
     resumoIAGastos: string;
+    /** v10 A3 — IR pré-carregado (mock, editável). */
+    irPreCarregado?: KYCIRPreCarregado;
+    /** v10 A3 — cartão de crédito (gasto + descritivo + Open Finance). */
+    cartao?: KYCCartao;
+    /** v10 A3 — insights acionáveis (template determinístico; números do motor/dados). */
+    insights?: string[];
+    /** v10 P0 — carimbo de última atualização do bloco (ISO). */
+    atualizadoEm?: string;
   };
   /** 7 — Posição internacional */
   posicaoInternacional: {
     contaInternacional: boolean;
     investeExterior: boolean;
     valorExterior?: number;
+    /** v10 A2 — detalhe: qual/onde/produtos/observações. */
+    detalhes?: KYCPosicaoIntl[];
+    /** v10 P0 — carimbo de última atualização (ISO). */
+    atualizadoEm?: string;
   };
+  /** v10 A2 — histórico patrimonial (eventos passados informativos + futuros). */
+  historicoPatrimonial?: KYCEventoPatrimonial[];
   /** 8 — Planejamentos */
   planejamentos: {
     momentoDeVida: string;
@@ -239,6 +319,10 @@ export interface ClientKYC {
     /** Estado do planejamento sucessório, como o dossiê descreve. */
     planejamentoSucessorio: string;
     segurosExternos: KYCSeguroExterno[];
+    /** v10 A4 — seguros internos (Bradesco), separados dos externos. */
+    segurosInternos?: KYCSeguroExterno[];
+    /** v10 C9 — tipo de sucessão pretendido. */
+    tipoSucessao?: "inventario" | "imoveis" | "legado";
   };
 }
 
