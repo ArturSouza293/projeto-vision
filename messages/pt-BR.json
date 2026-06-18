@@ -677,6 +677,21 @@
       "netReturn": "Rentabilidade líquida"
     }
   },
+  "usufruto": {
+    "title": "Renda para usufruto",
+    "economicallyActive": "Economicamente ativo?",
+    "maintenanceMode": "Modo manutenção: renda já resolvida — foco em mantê-la pelo horizonte (inclui pós-morte para dependente).",
+    "targetIncome": "Renda-alvo (mês)",
+    "targetCapital": "Capital-alvo",
+    "perpetual": "Perpétuo (preserva o principal)",
+    "horizon": "Horizonte",
+    "years": "anos",
+    "month": "mês",
+    "formula": "Fórmula",
+    "formulaPerpetual": "capital = renda / i (real) · renda = capital · i",
+    "formulaFinite": "capital = VP da anuidade real pelo horizonte · renda = capital / fator",
+    "realReturn": "Retorno real"
+  },
   "engineAudit": {
     "title": "Motor de cálculo auditável",
     "badge": "Python · determinístico",

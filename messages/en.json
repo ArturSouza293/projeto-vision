@@ -677,6 +677,21 @@
       "netReturn": "Net return"
     }
   },
+  "usufruto": {
+    "title": "Usufruct income",
+    "economicallyActive": "Economically active?",
+    "maintenanceMode": "Maintenance mode: income already solved — focus on sustaining it over the horizon (incl. post-mortem for a dependent).",
+    "targetIncome": "Target income (mo)",
+    "targetCapital": "Target capital",
+    "perpetual": "Perpetual (preserve principal)",
+    "horizon": "Horizon",
+    "years": "years",
+    "month": "mo",
+    "formula": "Formula",
+    "formulaPerpetual": "capital = income / i (real) · income = capital · i",
+    "formulaFinite": "capital = PV of the real annuity over the horizon · income = capital / factor",
+    "realReturn": "Real return"
+  },
   "engineAudit": {
     "title": "Auditable calculation engine",
     "badge": "Python · deterministic",
