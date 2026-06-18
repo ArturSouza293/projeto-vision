@@ -417,6 +417,12 @@
     "currentAmount": "Já guardado",
     "monthlyContribution": "Aporte mensal",
     "funded": "{pct}% financiado",
+    "successionType": "Tipo de sucessão",
+    "succession": {
+      "inventario": "Pagar inventário",
+      "imoveis": "Deixar imóveis",
+      "legado": "Deixar legado (renda vitalícia)"
+    },
     "achieved": "Conquistado",
     "mandatory": "Objetivo obrigatório — pode ser ajustado, mas não removido",
     "horizon": "Horizonte de {years} anos",

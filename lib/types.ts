@@ -543,6 +543,8 @@ export interface Goal {
   currentAmount: number;
   /** Optional dedicated monthly contribution. */
   monthlyContribution?: number;
+  /** v10 C9 — para objetivo de sucessão/legado: natureza pretendida. */
+  subtipoSucessao?: "inventario" | "imoveis" | "legado";
 }
 
 /* ------------------------------------------------------------------ */

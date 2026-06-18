@@ -135,6 +135,30 @@ function GoalCard({ goal }: { goal: Goal }) {
           </SelectContent>
         </Select>
       </div>
+
+      {/* v10 C9 — tipo de sucessão (só no objetivo de legado/sucessão) */}
+      {goal.type === "legacy" && (
+        <div className="mt-3">
+          <Select
+            value={goal.subtipoSucessao ?? "legado"}
+            onValueChange={(v) =>
+              updateGoal(goal.id, { subtipoSucessao: v as "inventario" | "imoveis" | "legado" })
+            }
+          >
+            <SelectTrigger className="h-8 w-full text-xs">
+              <span className="text-muted-foreground">{t("goals.successionType")}:</span>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {(["inventario", "imoveis", "legado"] as const).map((s) => (
+                <SelectItem key={s} value={s}>
+                  {t(`goals.succession.${s}`)}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
     </div>
   );
 }
