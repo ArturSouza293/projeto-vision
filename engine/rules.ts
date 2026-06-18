@@ -70,12 +70,32 @@ export function alvoReserva(c: PlanningCase, a: Assumptions, multiplicador?: 6 |
 
 /* ------------------------------------------------------------- sucessão */
 
-/** Sucessão = max(0, pct × patrimônio bruto − previdência − seguros). */
-export function alvoSucessao(c: PlanningCase, a: Assumptions): number {
-  const bruto = patrimonioBruto(c);
+/**
+ * Liquidez-alvo de sucessão. Varia por SUBTIPO (C9) — golden-safe: sem subtipo,
+ * idêntico ao histórico `max(0, pct × bruto − previdência − seguros)`.
+ *  - undefined/"inventario": custo de inventário/ITCMD sobre o patrimônio bruto;
+ *  - "imoveis" (deixar só imóveis): inventário SÓ sobre os imóveis;
+ *  - "legado" (renda vitalícia ao herdeiro): inventário + capital que perpetua a
+ *    `rendaLegadoMensal` (perpetuidade real), tudo abatido por previdência/seguros.
+ */
+export function alvoSucessao(
+  c: PlanningCase,
+  a: Assumptions,
+  subtipo?: "inventario" | "imoveis" | "legado",
+  opts?: { rendaLegadoMensal?: number; retornoRealAA?: number },
+): number {
   const previdencia = porClasse(c, "previdencia");
   const seguros = porClasse(c, "seguro");
-  return Math.max(0, a.percentualSucessao * bruto - previdencia - seguros);
+  if (subtipo === "imoveis") {
+    return Math.max(0, a.percentualSucessao * porClasse(c, "imovel") - seguros);
+  }
+  const inventario = a.percentualSucessao * patrimonioBruto(c);
+  if (subtipo === "legado" && opts?.rendaLegadoMensal && opts.rendaLegadoMensal > 0) {
+    const iM = annualToMonthly(opts.retornoRealAA ?? a.retornosReaisAA[a.perfilRetorno]);
+    const capitalLegado = iM > 0 ? opts.rendaLegadoMensal / iM : Number.POSITIVE_INFINITY;
+    return Math.max(0, inventario + capitalLegado - previdencia - seguros);
+  }
+  return Math.max(0, inventario - previdencia - seguros);
 }
 
 /* --------------------------------------------------------- aposentadoria */
