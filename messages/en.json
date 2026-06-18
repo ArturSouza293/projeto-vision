@@ -617,6 +617,25 @@
     "future": "Future",
     "editable": "editable"
   },
+  "vitalSign": {
+    "title": "Next step",
+    "subtitle": "When the usufruct gap is negative, prioritise the lever that matches the binding vital sign. Magnitudes come from the engine.",
+    "priority": "priority",
+    "magnitude": "Magnitude",
+    "simulate": "Simulate this",
+    "seeEffect": "see effect when simulating",
+    "month": "mo",
+    "year": "year",
+    "years": "years",
+    "lever": {
+      "aporte": "Increase monthly contribution",
+      "adiar_usufruto": "Delay usufruct (work longer)",
+      "padrao_vida": "Adjust target lifestyle",
+      "perfil_retorno": "Review risk profile / return",
+      "alocar_existente": "Allocate existing investments/pension",
+      "protecao_sucessao": "Address protection & succession"
+    }
+  },
   "clientTabs": {
     "ariaLabel": "Client record navigation",
     "client360": "Client 360",

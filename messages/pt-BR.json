@@ -617,6 +617,25 @@
     "future": "Futuro",
     "editable": "editável"
   },
+  "vitalSign": {
+    "title": "Próximo passo",
+    "subtitle": "Quando a lacuna do usufruto é negativa, priorize a alavanca coerente com o sinal vital. As magnitudes vêm do motor.",
+    "priority": "prioritária",
+    "magnitude": "Magnitude",
+    "simulate": "Simular este ajuste",
+    "seeEffect": "ver efeito ao simular",
+    "month": "mês",
+    "year": "ano",
+    "years": "anos",
+    "lever": {
+      "aporte": "Aumentar o aporte mensal",
+      "adiar_usufruto": "Adiar o usufruto (trabalhar mais)",
+      "padrao_vida": "Ajustar o padrão de vida",
+      "perfil_retorno": "Revisar perfil / retorno",
+      "alocar_existente": "Alocar investimentos/previdência existentes",
+      "protecao_sucessao": "Endereçar proteção e sucessão"
+    }
+  },
   "clientTabs": {
     "ariaLabel": "Navegação do registro do cliente",
     "client360": "Cliente 360",
