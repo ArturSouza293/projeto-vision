@@ -121,15 +121,59 @@ export function capitalNecessarioAposentadoria(
   retornoRealAA: number,
   metodo = a.metodoAposentadoria,
 ): number {
-  const gapMensal = rendaAlvoMensalLiquida(c);
-  if (gapMensal <= 0) return 0;
+  return capitalParaRendaMensal(rendaAlvoMensalLiquida(c), c, a, retornoRealAA, metodo);
+}
+
+/**
+ * Horizonte da renda de usufruto, em MESES. Custom (`horizonteRendaAnos`,
+ * permite renda além da longevidade do titular — ex.: 50 anos pós-morte para um
+ * dependente "maior incapaz") ou, na ausência, (longevidade − idadeUsufruto).
+ * Golden-safe: sem override, idêntico à expressão histórica.
+ */
+export function horizonteUsufrutoMeses(c: PlanningCase, a: Assumptions): number {
+  const anos = c.profile.horizonteRendaAnos ?? a.longevidadeAnos - c.profile.idadeUsufruto;
+  return Math.max(0, anos * 12);
+}
+
+/**
+ * Capital necessário para sustentar uma renda mensal-alvo (líquida) arbitrária —
+ * base do pré-preenchimento BIDIRECIONAL do objetivo de usufruto (C8):
+ *  - depletion: VP de uma anuidade real pelo horizonte (conta/horizonte custom);
+ *  - preservation/perpetuity: capital cujo retorno real paga a renda para sempre.
+ */
+export function capitalParaRendaMensal(
+  rendaMensalLiquida: number,
+  c: PlanningCase,
+  a: Assumptions,
+  retornoRealAA: number,
+  metodo = a.metodoAposentadoria,
+): number {
+  if (rendaMensalLiquida <= 0) return 0;
   const iM = annualToMonthly(retornoRealAA);
   if (metodo === "depletion") {
-    const mesesUsufruto = Math.max(0, (a.longevidadeAnos - c.profile.idadeUsufruto) * 12);
-    return pvAnnuity(gapMensal, iM, mesesUsufruto, a.timingAportes);
+    return pvAnnuity(rendaMensalLiquida, iM, horizonteUsufrutoMeses(c, a), a.timingAportes);
   }
-  // preservation / perpetuity: perpetuidade REAL na mesma granularidade
-  // mensal da desacumulação — capital × i_m = gap mensal.
   if (iM <= 0) return Number.POSITIVE_INFINITY;
-  return gapMensal / iM;
+  return rendaMensalLiquida / iM;
+}
+
+/**
+ * Direção INVERSA (C8): renda mensal sustentável por um dado capital. Permite
+ * "preencher capital → derivar renda". É o inverso exato de
+ * {@link capitalParaRendaMensal} (round-trip ≈ identidade).
+ */
+export function rendaSustentavelMensal(
+  capital: number,
+  c: PlanningCase,
+  a: Assumptions,
+  retornoRealAA: number,
+  metodo = a.metodoAposentadoria,
+): number {
+  if (capital <= 0) return 0;
+  const iM = annualToMonthly(retornoRealAA);
+  if (metodo === "depletion") {
+    const fator = pvAnnuity(1, iM, horizonteUsufrutoMeses(c, a), a.timingAportes);
+    return fator > 0 ? capital / fator : 0;
+  }
+  return capital * iM; // perpetuity/preservation
 }
