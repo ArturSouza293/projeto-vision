@@ -692,6 +692,23 @@
     "formulaFinite": "capital = VP da anuidade real pelo horizonte · renda = capital / fator",
     "realReturn": "Retorno real"
   },
+  "carteira": {
+    "title": "Visão carteira",
+    "current": "Atual",
+    "recommended": "Recomendada",
+    "fit": "Aderência ao perfil",
+    "offline": "IA modo offline",
+    "gaps": "Desalinhamentos",
+    "over": "sobreponderado",
+    "under": "subponderado",
+    "class": {
+      "liquidez": "Liquidez",
+      "rendaFixa": "Renda fixa",
+      "rendaVariavel": "Renda variável",
+      "previdencia": "Previdência",
+      "internacional": "Internacional"
+    }
+  },
   "engineAudit": {
     "title": "Motor de cálculo auditável",
     "badge": "Python · determinístico",

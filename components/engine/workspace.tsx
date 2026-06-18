@@ -27,6 +27,7 @@ import { PremisesDialog } from "@/components/engine/premises-dialog";
 import { PlanoIdealButton } from "@/components/engine/plano-ideal-button";
 import { NextStepCard } from "@/components/engine/next-step-card";
 import { UsufrutoPanel } from "@/components/engine/usufruto-panel";
+import { PortfolioView } from "@/components/engine/portfolio-view";
 import { nextStepInputs } from "@/lib/next-step";
 import { nextStepFromVitalSign, type AlavancaId } from "@/lib/vital-signs";
 import { Button } from "@/components/ui/button";
@@ -447,6 +448,9 @@ export function Workspace() {
 
       {/* C8 — objetivo de renda para usufruto (bidirecional renda↔capital) */}
       <UsufrutoPanel retornoRealAA={a.expectedRealReturn} locale={locale} />
+
+      {/* C3 — visão carteira (atual × recomendada + FIT) */}
+      <PortfolioView plan={plan} />
 
       <KpiDetailDialog
         kind={kpiModal}

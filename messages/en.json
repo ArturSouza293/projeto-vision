@@ -692,6 +692,23 @@
     "formulaFinite": "capital = PV of the real annuity over the horizon · income = capital / factor",
     "realReturn": "Real return"
   },
+  "carteira": {
+    "title": "Portfolio view",
+    "current": "Current",
+    "recommended": "Recommended",
+    "fit": "Fit to profile",
+    "offline": "AI offline mode",
+    "gaps": "Misalignments",
+    "over": "overweight",
+    "under": "underweight",
+    "class": {
+      "liquidez": "Liquidity",
+      "rendaFixa": "Fixed income",
+      "rendaVariavel": "Equities",
+      "previdencia": "Pension",
+      "internacional": "International"
+    }
+  },
   "engineAudit": {
     "title": "Auditable calculation engine",
     "badge": "Python · deterministic",
