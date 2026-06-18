@@ -464,7 +464,7 @@
     "growthScenario": "Growth scenario",
     "kpi": {
       "wealthAtRetirement": "Wealth at retirement",
-      "retirementDuration": "Income lasts",
+      "retirementDuration": "Income horizon",
       "probability": "Probability of success",
       "estate": "Estate at horizon",
       "incomeGap": "Retirement income gap",

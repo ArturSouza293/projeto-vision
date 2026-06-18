@@ -464,7 +464,7 @@
     "growthScenario": "Cenário de crescimento",
     "kpi": {
       "wealthAtRetirement": "Patrimônio na aposentadoria",
-      "retirementDuration": "Renda dura",
+      "retirementDuration": "Horizonte de renda",
       "probability": "Probabilidade de sucesso",
       "estate": "Patrimônio no horizonte",
       "incomeGap": "Lacuna na aposentadoria",
