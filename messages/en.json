@@ -300,6 +300,13 @@
       "inss": "Include INSS"
     }
   },
+  "cartao": {
+    "title": "Credit card",
+    "byCategory": "Spend by category",
+    "total": "Card total",
+    "outsideBank": "Outside the bank",
+    "note": "Card spend via Open Finance (mock). Informational — not added to the plan's expenses to avoid double counting."
+  },
   "networth": {
     "title": "Build the balance sheet",
     "subtitle": "Assets and liabilities. Net worth and liquidity update live.",

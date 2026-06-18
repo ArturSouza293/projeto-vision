@@ -480,6 +480,17 @@ export const KYC_DOSSIERS: Record<string, ClientKYC> = {
       ],
       resumoIAGastos:
         "Viagem é inegociável — plano que corta viagem será abandonado; plano que organiza baldes será seguido.",
+      cartao: {
+        gastoMedioMensal: 3200,
+        cartoes: ["Bradesco Elo Nanquim", "Bradesco Visa (dele)"],
+        openFinanceForaDoBanco: ["cartão de milhas Nubank (gasto de viagem)"],
+        gastosPorCategoria: [
+          { categoria: "lifestyle", valor: 1300, label: "Viagem & gastronomia" },
+          { categoria: "living", valor: 900 },
+          { categoria: "vehicle", valor: 500, label: "Combustível" },
+          { categoria: "other", valor: 500 },
+        ],
+      },
     },
     posicaoInternacional: { contaInternacional: true, investeExterior: false, valorExterior: 0 },
     planejamentos: { momentoDeVida: "Acumulação acelerada com meta de imóvel (2–3 anos)" },
@@ -1013,6 +1024,12 @@ export const KYC_DOSSIERS: Record<string, ClientKYC> = {
         gastoMedioMensal: 4500,
         cartoes: ["Bradesco Visa Infinite"],
         openFinanceForaDoBanco: ["cartão de uma corretora (fatura baixa)"],
+        gastosPorCategoria: [
+          { categoria: "health", valor: 1600, label: "Saúde do Bernardo" },
+          { categoria: "living", valor: 1200 },
+          { categoria: "lifestyle", valor: 900 },
+          { categoria: "other", valor: 800 },
+        ],
       },
       insights: [
         "Superávit de ~R$ 2 mil/mês já vai ao fundo do Bernardo — formalizar como aporte automático.",

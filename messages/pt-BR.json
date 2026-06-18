@@ -300,6 +300,13 @@
       "inss": "Considerar INSS"
     }
   },
+  "cartao": {
+    "title": "Cartão de crédito",
+    "byCategory": "Gastos por categoria",
+    "total": "Total no cartão",
+    "outsideBank": "Fora do banco",
+    "note": "Planilha do cartão via Open Finance (mock). Informativa — não é somada às despesas do plano para evitar dupla contagem."
+  },
   "networth": {
     "title": "Monte o balanço patrimonial",
     "subtitle": "Ativos e passivos. Patrimônio e liquidez atualizam ao vivo.",

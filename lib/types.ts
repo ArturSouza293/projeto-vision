@@ -212,6 +212,20 @@ export interface KYCCartao {
   cartoes: string[];
   /** O que o Open Finance mostra fora do banco (mock). */
   openFinanceForaDoBanco?: string[];
+  /**
+   * v10 C4 — planilha de gastos do cartão por categoria (mock; futuro: puxar
+   * gerenciador/Open Finance). Usa a MESMA taxonomia de `ExpenseCategory` para
+   * conectar com a aba Despesas. Informativo: não soma no `cashFlow` do plano.
+   */
+  gastosPorCategoria?: CartaoGastoCategoria[];
+}
+
+/** v10 C4 — uma linha da planilha de gastos do cartão. */
+export interface CartaoGastoCategoria {
+  categoria: ExpenseCategory;
+  valor: number;
+  /** Rótulo opcional (sobrepõe o nome da categoria). */
+  label?: string;
 }
 
 /** v10 A2 — evento do histórico patrimonial (passado informativo ou futuro). */

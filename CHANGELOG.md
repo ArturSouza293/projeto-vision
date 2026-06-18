@@ -43,6 +43,11 @@ pinados**; UI/seed não mexem no golden.
   mostrar/ocultar (`projecaoDesejavel` no `lib/next-step.ts` — projeção que zera a lacuna só
   com aporte, mesmo motor/Regra Zero; só aparece quando há lacuna). **Escala (eixos) em bold**
   nos números-chave para facilitar a leitura. `golden:check` INALTERADO.
+- **C4**: **Cartão de crédito** (seção no plano) — planilha de gastos por **categoria** (via
+  Open Finance, mock) na aba **Despesas** e no card de A3, reaproveitando uma `CartaoGastosTable`.
+  Conecta com Despesas pela MESMA taxonomia `ExpenseCategory`; **informativo/read-only** — NÃO
+  entra em `cashFlow.expenses` (sem dupla contagem ⇒ `golden:check` INALTERADO). Soma/ordenação
+  em `lib/cartao.ts` (Regra Zero) + 5 testes. Mock: Camila & Diego e Sônia.
 
 **PARTE D — diagnóstico**
 - Persona **13 (Sônia, A Guardiã do Legado)**: seed completo + dossiê KYC v10 (maior incapaz
@@ -55,8 +60,8 @@ pinados**; UI/seed não mexem no golden.
 IR/cartão/seguros, histórico) · aba **Motores** (shells + exportar) · aba **Life Planning** →
 num cenário com lacuna, o card **"Próximo passo"** + o **painel de usufruto** bidirecional.
 
-**Parcial (fase seguinte, incremental, sem golden):** C4 (cartão como item do plano de
-fluxo de caixa) — baixo valor, deixado para um próximo incremento.
+**Escopo v10.1 completo:** PARTE 0 + A + B + C (C1–C11) + D entregues. `golden:check`
+INALTERADO em toda a fase. Próximo passo de produto é review do diff + deploy sob ordem.
 
 ## v10 — Motor Python integrado ao app (híbrido, sob demanda)
 

@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { CartaoGastosTable } from "@/components/engine/cartao-gastos";
 import { EngineAuditCard } from "@/components/engine/engine-audit-card";
 import { FreshnessStamp, SourceBadge } from "@/components/app/data-source";
 import {
@@ -685,6 +686,12 @@ export function Client360Page() {
             <Field label={t("vision360.card")}>
               <Chips items={cartao.cartoes} />
             </Field>
+            {cartao.gastosPorCategoria?.length ? (
+              <div className="mt-2">
+                <div className="mb-1.5 text-[11px] text-muted-foreground">{t("cartao.byCategory")}</div>
+                <CartaoGastosTable cartao={cartao} />
+              </div>
+            ) : null}
             {cartao.openFinanceForaDoBanco?.length ? (
               <Field label={t("vision360.outsideBank")}>
                 <span className="flex flex-wrap items-center gap-1.5">
