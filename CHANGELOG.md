@@ -39,6 +39,10 @@ pinados**; UI/seed não mexem no golden.
   despesa por dependente/convênio). **C11**: `NextStepCard` plugado na workspace (magnitudes
   por bisseção em `projectPlan`; CTA "simular este ajuste"). **C8**: `UsufrutoPanel` (toggle
   economicamente ativo + bidirecional renda↔capital + horizonte perpétuo/finito).
+- **C10**: linha **real × desejável** sobreposta no gráfico de patrimônio, com toggle para
+  mostrar/ocultar (`projecaoDesejavel` no `lib/next-step.ts` — projeção que zera a lacuna só
+  com aporte, mesmo motor/Regra Zero; só aparece quando há lacuna). **Escala (eixos) em bold**
+  nos números-chave para facilitar a leitura. `golden:check` INALTERADO.
 
 **PARTE D — diagnóstico**
 - Persona **13 (Sônia, A Guardiã do Legado)**: seed completo + dossiê KYC v10 (maior incapaz
@@ -51,9 +55,8 @@ pinados**; UI/seed não mexem no golden.
 IR/cartão/seguros, histórico) · aba **Motores** (shells + exportar) · aba **Life Planning** →
 num cenário com lacuna, o card **"Próximo passo"** + o **painel de usufruto** bidirecional.
 
-**Parcial (fase seguinte, incremental, sem golden):** C9 UI (tipos de sucessão no objetivo,
-evento de imóvel unificado, ano-alvo herdado), C10 (overlay de cenários + linha desejável×real
-+ escala bold), C3 (visão carteira atual×recomendada) e C4 (cartão no plano).
+**Parcial (fase seguinte, incremental, sem golden):** C4 (cartão como item do plano de
+fluxo de caixa) — baixo valor, deixado para um próximo incremento.
 
 ## v10 — Motor Python integrado ao app (híbrido, sob demanda)
 

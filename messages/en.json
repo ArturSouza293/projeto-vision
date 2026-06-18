@@ -486,7 +486,10 @@
       "wealth": "Wealth",
       "income": "Income",
       "needs": "Needs",
-      "contributions": "Contributions"
+      "contributions": "Contributions",
+      "wealthReal": "Actual",
+      "wealthDesejavel": "Target",
+      "toggleDesejavel": "Show target line"
     },
     "growth": {
       "base": "Base",

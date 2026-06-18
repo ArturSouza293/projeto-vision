@@ -5,7 +5,12 @@
  */
 import { achievableGoalCount, ageFromDob, netWorthTotals } from "@/lib/calc";
 import { projectPlan } from "@/lib/plan";
-import type { Plan, ProjectionResult, ScenarioAssumptions } from "@/lib/types";
+import type {
+  Plan,
+  ProjectionPoint,
+  ProjectionResult,
+  ScenarioAssumptions,
+} from "@/lib/types";
 import type { MagnitudesMotor, SinaisVitais } from "@/lib/vital-signs";
 
 /** Δ aporte mensal (motor) para cobrir a lacuna. null = já coberto ou inalcançável. */
@@ -26,6 +31,24 @@ function deltaAporteParaZerar(plan: Plan, a: ScenarioAssumptions): number | null
     }
   }
   return Math.round(hi);
+}
+
+/**
+ * C10 — projeção "desejável": a trajetória de patrimônio que zera a lacuna só
+ * com aporte (mesmo motor, Regra Zero). Retorna null se a lacuna já está coberta
+ * ou se é inalcançável apenas via aporte (aí não há linha a sobrepor).
+ */
+export function projecaoDesejavel(
+  plan: Plan,
+  a: ScenarioAssumptions,
+): ProjectionPoint[] | null {
+  if (projectPlan(plan, a).incomeGap >= 0) return null; // já no alvo
+  const delta = deltaAporteParaZerar(plan, a);
+  if (delta == null) return null; // inalcançável só com aporte
+  return projectPlan(plan, {
+    ...a,
+    monthlyContribution: a.monthlyContribution + delta,
+  }).points;
 }
 
 /** Anos para adiar o usufruto (motor) até cobrir a lacuna. null se já coberto/inalcançável. */

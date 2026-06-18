@@ -486,7 +486,10 @@
       "wealth": "Patrimônio",
       "income": "Renda",
       "needs": "Necessidades",
-      "contributions": "Aportes"
+      "contributions": "Aportes",
+      "wealthReal": "Real",
+      "wealthDesejavel": "Desejável",
+      "toggleDesejavel": "Mostrar linha desejável"
     },
     "growth": {
       "base": "Base",
