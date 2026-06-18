@@ -280,6 +280,8 @@ export interface ClientKYC {
     origemCapital: string;
     /** Saldo consolidado no banco (BRL) — numerador do share of wallet. */
     saldoConsolidadoBanco: number;
+    /** v10 P0 — carimbo de última atualização (ISO). */
+    atualizadoEm?: string;
   };
   /** 5 — Ativos não financeiros */
   ativosNaoFinanceiros: {
