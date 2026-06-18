@@ -9,6 +9,8 @@
 import { useRef } from "react";
 import { useTranslations } from "next-intl";
 
+import { Calculator } from "lucide-react";
+
 import { ScanFace, SlidersHorizontal } from "@/components/app/icons";
 import type { ClientTab } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -16,6 +18,7 @@ import { cn } from "@/lib/utils";
 export const CLIENT_TAB_IDS: Record<ClientTab, { tab: string; panel: string }> = {
   client360: { tab: "ctab-client360", panel: "cpanel-client360" },
   lifePlanning: { tab: "ctab-life-planning", panel: "cpanel-life-planning" },
+  engines: { tab: "ctab-engines", panel: "cpanel-engines" },
 };
 
 const TABS: {
@@ -26,6 +29,7 @@ const TABS: {
 }[] = [
   { value: "client360", labelKey: "clientTabs.client360", testid: "tab-client-360", icon: ScanFace },
   { value: "lifePlanning", labelKey: "clientTabs.lifePlanning", testid: "tab-life-planning", icon: SlidersHorizontal },
+  { value: "engines", labelKey: "clientTabs.engines", testid: "tab-engines", icon: Calculator },
 ];
 
 export function ClientRecordTabs({

@@ -25,6 +25,11 @@ import { KpiDetailDialog, type KpiModalKind } from "@/components/engine/kpi-deta
 import { PlanVariantsRail } from "@/components/engine/plan-variants-rail";
 import { PremisesDialog } from "@/components/engine/premises-dialog";
 import { PlanoIdealButton } from "@/components/engine/plano-ideal-button";
+import { NextStepCard } from "@/components/engine/next-step-card";
+import { UsufrutoPanel } from "@/components/engine/usufruto-panel";
+import { PortfolioView } from "@/components/engine/portfolio-view";
+import { nextStepInputs } from "@/lib/next-step";
+import { nextStepFromVitalSign, type AlavancaId } from "@/lib/vital-signs";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -293,6 +298,21 @@ export function Workspace() {
       : null,
   ].filter((m): m is { value: number; label: string; tone: "info" | "primary" } => m != null);
 
+  // C11 — próximo passo por sinal vital. Magnitudes vêm do MOTOR (bisseção em
+  // projectPlan); o card só aparece quando há lacuna (recomendações não-vazias).
+  const { sinais, magnitudes } = nextStepInputs(plan, a, result);
+  const nextSteps = nextStepFromVitalSign(sinais, magnitudes);
+  const simularAlavanca = (alavanca: AlavancaId) => {
+    if (alavanca === "aporte" && magnitudes.deltaAporteParaZerar) {
+      update({ monthlyContribution: a.monthlyContribution + magnitudes.deltaAporteParaZerar });
+    } else if (alavanca === "adiar_usufruto" && magnitudes.anosParaAdiar) {
+      update({ retirementAge: Math.min(retMax, a.retirementAge + magnitudes.anosParaAdiar) });
+    } else if (alavanca === "perfil_retorno" && checkpoints.full != null) {
+      update({ expectedRealReturn: checkpoints.full });
+    }
+    // demais alavancas (padrão de vida, alocar, proteção): informativas nesta fase.
+  };
+
   const fmtCompact = (n: number) => formatCompactCurrency(n, locale);
   const fmtCurrency = (n: number) => formatCurrency(n, locale);
 
@@ -422,6 +442,15 @@ export function Workspace() {
           onClick={() => setKpiModal("goals")}
         />
       </div>
+
+      {/* C11 — próximo passo por sinal vital (só aparece quando há lacuna) */}
+      <NextStepCard recomendacoes={nextSteps} locale={locale} onSimular={simularAlavanca} />
+
+      {/* C8 — objetivo de renda para usufruto (bidirecional renda↔capital) */}
+      <UsufrutoPanel retornoRealAA={a.expectedRealReturn} locale={locale} />
+
+      {/* C3 — visão carteira (atual × recomendada + FIT) */}
+      <PortfolioView plan={plan} />
 
       <KpiDetailDialog
         kind={kpiModal}

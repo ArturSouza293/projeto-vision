@@ -1,5 +1,83 @@
 # Changelog
 
+## v10.1 — Notas do teste comercial: Cliente 360 enriquecido, aba Motores, usufruto/legado, próximo passo
+
+Update grande nascido das anotações do time comercial. Toca as 3 abas + a base de
+personas. **Branch `feature/v10-major-comercial`.** Disciplina mantida: commit por
+bloco; régua verde a cada um (tsc + **202 testes** + `golden:check` INALTERADO); **sem
+push** (revisão local do diff). Parte de cálculo (motor) feita com **golden novos
+pinados**; UI/seed não mexem no golden.
+
+**PARTE 0 — transversais**
+- Primitivos `InfoTip` (i), `SourceBadge` (via Open Finance/IR/cartão/simulado) e
+  `FreshnessStamp` (última atualização + alerta de desatualizado).
+- **Guarda anti-macro-da-BIA** (`lib/macro-facts.ts`): fonte única de macro com
+  **fonte+data**; `containsMacroClaim`/`stripMacroClaims` impedem número macro vindo
+  de texto livre da BIA (Regra Zero) — +teste. Terminologia "renda dura" → **"horizonte de renda"**.
+
+**Motor (TS) — C8/C9 (golden-safe, pinado)**
+- Usufruto **bidirecional** capital↔renda (`capitalParaRendaMensal`/`rendaSustentavelMensal`),
+  horizonte customizável (renda além da morte do titular — "maior incapaz").
+- Sucessão por **subtipo** (inventário/imóveis/legado). `engine/itcmd.ts` (ITCMD por UF, ilustrativo).
+- C11 `nextStepFromVitalSign` (6 alavancas Prime Top Tier; magnitude SEMPRE do motor). Testes pinados.
+
+**PARTE A — Cliente 360** (campos opcionais; personas atuais intactas)
+- A1 perfil (como-chamar, aniversário, ★ assunto quente, réguas investimentos/banking,
+  NPS, funcionário) + **árvore genealógica com realce** (vermelho/cinza = conta Bradesco;
+  dourado = decisor). A2 posição internacional detalhada + histórico patrimonial.
+  A3 IR "via IR" editável + cartão "via Open Finance" + insights. A4 seguros internos×externos
+  com **modal no hover** + bens sem cobertura. `// TODO(Claude Design)` no perfil.
+
+**PARTE B — nova aba "Motores de Cálculo e Simulações"** (front-end mock)
+- 3ª aba; shells com inputs editáveis, **fórmula visível** e resultado em placeholder
+  "backend a implementar" (Regra Zero: zero aritmética nova no componente). Motores:
+  empréstimo com garantia (equilíbrio/antecipação, "não descapitaliza") + comparativo
+  de taxas (CET × rentabilidade líquida). Comparar simulações + exportar p/ e-mail (mailto).
+
+**PARTE C — Life Planning**
+- Modelo C1/C2/C6/C7 (maior incapaz, seguro resgatável, renda stock options/periodicidade,
+  despesa por dependente/convênio). **C11**: `NextStepCard` plugado na workspace (magnitudes
+  por bisseção em `projectPlan`; CTA "simular este ajuste"). **C8**: `UsufrutoPanel` (toggle
+  economicamente ativo + bidirecional renda↔capital + horizonte perpétuo/finito).
+- **C10**: linha **real × desejável** sobreposta no gráfico de patrimônio, com toggle para
+  mostrar/ocultar (`projecaoDesejavel` no `lib/next-step.ts` — projeção que zera a lacuna só
+  com aporte, mesmo motor/Regra Zero; só aparece quando há lacuna). **Escala (eixos) em bold**
+  nos números-chave para facilitar a leitura. `golden:check` INALTERADO.
+- **C4**: **Cartão de crédito** (seção no plano) — planilha de gastos por **categoria** (via
+  Open Finance, mock) na aba **Despesas** e no card de A3, reaproveitando uma `CartaoGastosTable`.
+  Conecta com Despesas pela MESMA taxonomia `ExpenseCategory`; **informativo/read-only** — NÃO
+  entra em `cashFlow.expenses` (sem dupla contagem ⇒ `golden:check` INALTERADO). Soma/ordenação
+  em `lib/cartao.ts` (Regra Zero) + 6 testes. Mock: Camila & Diego e Sônia.
+- Terminologia: rótulo do KPI **"Renda dura" → "Horizonte de renda"** (`kpi.retirementDuration` +
+  `kpiDetail.duration` nos 2 idiomas — agora chega na superfície visível, não só na chave aninhada).
+
+**PARTE D — diagnóstico**
+- Persona **13 (Sônia, A Guardiã do Legado)**: seed completo + dossiê KYC v10 (maior incapaz
+  Bernardo, decisora Letícia, sucessão=legado, imóveis SP). Caso-teste de C1/C8/C9/C11.
+- **Health-check da BIA** (`GET /api/bia-health`): conectividade + teste da Selic (compara
+  com a premissa). Achado: a BIA **conecta mas responde de memória** (sem dado ao vivo) →
+  macro sempre de `macro-facts`, nunca da BIA.
+
+**Como testar (rápido):** abrir a persona **Sônia** → aba **Cliente 360** (árvore com realces,
+IR/cartão/seguros, histórico) · aba **Motores** (shells + exportar) · aba **Life Planning** →
+num cenário com lacuna, o card **"Próximo passo"** + o **painel de usufruto** bidirecional.
+
+**Status honesto (ligado-ao-vivo × estrutura pronta):** auditado contra o código no fim da fase.
+- **Ligado e visível ao vivo:** Cliente 360 A1–A4, aba Motores (mock), C3 (carteira), C4 (cartão),
+  C8 (painel usufruto), C10 (linha desejável + escala bold), C11 (NextStepCard com magnitudes do
+  motor + CTA que aplica a alavanca), persona Sônia, terminologia "Horizonte de renda". `SourceBadge`
+  e `FreshnessStamp` em uso. **C1** (`horizonteRendaAnos`/maior incapaz) é o único campo do modelo C
+  que **chega ao motor** (usufruto).
+- **Pronto mas ainda NÃO ligado ao cálculo/superfície viva (pendência de wiring, fase seguinte):**
+  **C9 subtipo de sucessão** — UI captura (`goals-step`) e o `engine/` calcula por subtipo, mas a
+  projeção viva (`lib/calc.successionTarget`) ainda não consome o subtipo; **C5 ITCMD** (`engine/itcmd.ts`,
+  ilustrativo) — testado, sem superfície de UI ainda; **C2/C6/C7** — campos de modelo/seed, ainda não
+  lidos pela projeção; **guarda macro-da-BIA** (`stripMacroClaims`/`MACRO_FACTS`) — testada e usada só
+  no `/api/bia-health`, ainda não plugada na saída ao vivo da BIA/copilot; **`InfoTip`** — primitivo
+  pronto, ainda não posicionado na UI; **`/api/bia-health`** — endpoint válido, sem chamador na UI (diagnóstico via curl/browser).
+- `golden:check` **INALTERADO** em toda a fase (confirmado: `golden/` byte-idêntico vs `main`, zero
+  entradas v10 em `accepted-deltas.json`). Próximo passo de produto: review do diff + deploy sob ordem.
+
 ## v10 — Motor Python integrado ao app (híbrido, sob demanda)
 
 O motor determinístico Python (`vision_engine/`) agora alimenta o app por API,

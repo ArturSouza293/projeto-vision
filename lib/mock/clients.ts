@@ -24,6 +24,7 @@ export const PERSONA_META: Record<string, { taglineKey: string }> = {
   helena: { taglineKey: "persona.helena.tagline" },
   patricia: { taglineKey: "persona.patricia.tagline" },
   antonio: { taglineKey: "persona.antonio.tagline" },
+  sonia: { taglineKey: "persona.sonia.tagline" },
 };
 
 const camilaDiego: Plan = {
@@ -742,6 +743,82 @@ const antonio: Plan = {
   events: [],
 };
 
+// v10 — persona 13: Sônia, A Guardiã do Legado (aposentada, economicamente
+// inativa, dependente "maior incapaz" Bernardo, sucessão = legado). Caso-teste
+// de C1/C8/C9/C11. Valores ilustrativos consistentes com o dossiê.
+const sonia: Plan = {
+  clientId: "sonia",
+  clientProfile: {
+    id: "sonia",
+    firstName: "Sônia",
+    lastName: "Albuquerque",
+    dateOfBirth: "1958-03-22",
+    gender: "female",
+    maritalStatus: "widowed",
+    dependents: 1,
+    dependentsDetail: [
+      { id: "d1", name: "Bernardo", relation: "child", age: 40, maiorIncapaz: true },
+      { id: "d2", name: "Letícia", relation: "child", age: 38 },
+    ],
+    retirementUsufructAge: 60,
+    hasPartner: false,
+    employmentStatus: "retired",
+    occupation: "Aposentada — ex-dona de escola de idiomas",
+    email: "sonia.albuquerque@example.com",
+    phone: "+55 11 99731-7788",
+    city: "São Paulo",
+    state: "SP",
+    taxResidency: "BR",
+    cpfMasked: "***.***.330-**",
+    pep: false,
+    lifeInsurance: 300000,
+    segment: "principal",
+  },
+  cashFlow: {
+    incomes: [
+      { id: "i1", label: "INSS (aposentadoria)", monthly: 3000, kind: "pension" },
+      { id: "i2", label: "Renda de previdência (VGBL)", monthly: 4000, kind: "pension" },
+      { id: "i3", label: "Aluguel — sala comercial", monthly: 6000, kind: "rent" },
+      { id: "i4", label: "Renda da carteira", monthly: 5500, kind: "investments" },
+    ],
+    expenses: [
+      { id: "e1", label: "Custo de vida", monthly: 6000, category: "living" },
+      { id: "e2", label: "Cuidados do Bernardo", monthly: 6000, category: "health", dependentId: "d1", origem: "particular" },
+      { id: "e3", label: "Saúde (dela)", monthly: 2500, category: "health" },
+      { id: "e4", label: "Manutenção dos imóveis", monthly: 1500, category: "housing" },
+      { id: "e5", label: "Lifestyle / doações", monthly: 500, category: "lifestyle" },
+    ],
+    retirementIncome: { mode: "nominal", value: 16500, inss: true },
+  },
+  netWorth: {
+    assets: [
+      { id: "a1", label: "Tesouro IPCA+ (com cupom)", value: 900000, assetClass: "investments", liquid: true },
+      { id: "a2", label: "CDB / LCI / LCA", value: 750000, assetClass: "investments", liquid: true },
+      { id: "a3", label: "Fundo DI / Tesouro Selic", value: 450000, assetClass: "cash", liquid: true },
+      { id: "a4", label: "FII (renda)", value: 300000, assetClass: "investments", liquid: true },
+      { id: "a5", label: "Previdência VGBL (em renda)", value: 450000, assetClass: "pension", liquid: false },
+      { id: "a6", label: "Multimercado / ações", value: 150000, assetClass: "investments", liquid: true },
+      { id: "a7", label: "Residência quitada — SP", value: 1500000, assetClass: "real_estate", liquid: false },
+      { id: "a8", label: "Sala comercial alugada — SP", value: 1200000, assetClass: "real_estate", liquid: false },
+    ],
+    liabilities: [],
+  },
+  suitability: {
+    answers: { horizon: 1, reaction: 1, experience: 1, stability: 2, objective: 1 },
+    score: 24,
+    profile: "conservative",
+    flags: [],
+  },
+  goals: [
+    { id: "g1", type: "emergency_reserve", targetAmount: 99000, targetYear: 2027, priority: "high", currentAmount: 450000, monthlyContribution: 0 },
+    { id: "g2", type: "retirement", label: "Renda para usufruto (manutenção)", targetAmount: 3000000, targetYear: 2026, priority: "high", currentAmount: 3000000, monthlyContribution: 0 },
+    { id: "g3", type: "legacy", label: "Legado — renda vitalícia ao Bernardo (~50 anos)", targetAmount: 4000000, targetYear: 2030, priority: "high", currentAmount: 1200000, monthlyContribution: 2000 },
+  ],
+  scenarios: [],
+  approvalStatus: "draft",
+  events: [],
+};
+
 export const SEED_PLANS: Plan[] = [
   marcos,
   julia,
@@ -757,6 +834,7 @@ export const SEED_PLANS: Plan[] = [
   helena,
   patricia,
   antonio,
+  sonia,
 ];
 
 // v8 — attach the KYC "Conheça seu Cliente" dossier to each seed persona (the
