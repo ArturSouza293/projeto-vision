@@ -1080,7 +1080,7 @@
   },
   "kpi": {
     "wealthAtRetirement": "Patrimônio na aposentadoria",
-    "retirementDuration": "Renda dura",
+    "retirementDuration": "Horizonte de renda",
     "probability": "Probabilidade de sucesso",
     "estate": "Patrimônio no horizonte",
     "incomeGap": "Lacuna na aposentadoria",
@@ -1093,7 +1093,7 @@
       "body": "Quanto você terá acumulado ao se aposentar, somando o investível de hoje, os aportes e o crescimento real."
     },
     "duration": {
-      "title": "Por quanto tempo a renda dura",
+      "title": "Horizonte de renda",
       "body": "Quantos anos a carteira sustenta a necessidade de renda na aposentadoria antes de esgotar."
     },
     "probability": {

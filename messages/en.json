@@ -1080,7 +1080,7 @@
   },
   "kpi": {
     "wealthAtRetirement": "Wealth at retirement",
-    "retirementDuration": "Income lasts",
+    "retirementDuration": "Income horizon",
     "probability": "Probability of success",
     "estate": "Estate at horizon",
     "incomeGap": "Retirement income gap",
@@ -1093,7 +1093,7 @@
       "body": "What you'll have accumulated at retirement — today's investable wealth plus contributions and real growth."
     },
     "duration": {
-      "title": "How long income lasts",
+      "title": "Income horizon",
       "body": "How many years the portfolio sustains the retirement income need before depleting."
     },
     "probability": {

@@ -4,7 +4,7 @@
 
 Update grande nascido das anotações do time comercial. Toca as 3 abas + a base de
 personas. **Branch `feature/v10-major-comercial`.** Disciplina mantida: commit por
-bloco; régua verde a cada um (tsc + 192 testes + `golden:check` INALTERADO); **sem
+bloco; régua verde a cada um (tsc + **202 testes** + `golden:check` INALTERADO); **sem
 push** (revisão local do diff). Parte de cálculo (motor) feita com **golden novos
 pinados**; UI/seed não mexem no golden.
 
@@ -47,7 +47,9 @@ pinados**; UI/seed não mexem no golden.
   Open Finance, mock) na aba **Despesas** e no card de A3, reaproveitando uma `CartaoGastosTable`.
   Conecta com Despesas pela MESMA taxonomia `ExpenseCategory`; **informativo/read-only** — NÃO
   entra em `cashFlow.expenses` (sem dupla contagem ⇒ `golden:check` INALTERADO). Soma/ordenação
-  em `lib/cartao.ts` (Regra Zero) + 5 testes. Mock: Camila & Diego e Sônia.
+  em `lib/cartao.ts` (Regra Zero) + 6 testes. Mock: Camila & Diego e Sônia.
+- Terminologia: rótulo do KPI **"Renda dura" → "Horizonte de renda"** (`kpi.retirementDuration` +
+  `kpiDetail.duration` nos 2 idiomas — agora chega na superfície visível, não só na chave aninhada).
 
 **PARTE D — diagnóstico**
 - Persona **13 (Sônia, A Guardiã do Legado)**: seed completo + dossiê KYC v10 (maior incapaz
@@ -60,8 +62,21 @@ pinados**; UI/seed não mexem no golden.
 IR/cartão/seguros, histórico) · aba **Motores** (shells + exportar) · aba **Life Planning** →
 num cenário com lacuna, o card **"Próximo passo"** + o **painel de usufruto** bidirecional.
 
-**Escopo v10.1 completo:** PARTE 0 + A + B + C (C1–C11) + D entregues. `golden:check`
-INALTERADO em toda a fase. Próximo passo de produto é review do diff + deploy sob ordem.
+**Status honesto (ligado-ao-vivo × estrutura pronta):** auditado contra o código no fim da fase.
+- **Ligado e visível ao vivo:** Cliente 360 A1–A4, aba Motores (mock), C3 (carteira), C4 (cartão),
+  C8 (painel usufruto), C10 (linha desejável + escala bold), C11 (NextStepCard com magnitudes do
+  motor + CTA que aplica a alavanca), persona Sônia, terminologia "Horizonte de renda". `SourceBadge`
+  e `FreshnessStamp` em uso. **C1** (`horizonteRendaAnos`/maior incapaz) é o único campo do modelo C
+  que **chega ao motor** (usufruto).
+- **Pronto mas ainda NÃO ligado ao cálculo/superfície viva (pendência de wiring, fase seguinte):**
+  **C9 subtipo de sucessão** — UI captura (`goals-step`) e o `engine/` calcula por subtipo, mas a
+  projeção viva (`lib/calc.successionTarget`) ainda não consome o subtipo; **C5 ITCMD** (`engine/itcmd.ts`,
+  ilustrativo) — testado, sem superfície de UI ainda; **C2/C6/C7** — campos de modelo/seed, ainda não
+  lidos pela projeção; **guarda macro-da-BIA** (`stripMacroClaims`/`MACRO_FACTS`) — testada e usada só
+  no `/api/bia-health`, ainda não plugada na saída ao vivo da BIA/copilot; **`InfoTip`** — primitivo
+  pronto, ainda não posicionado na UI; **`/api/bia-health`** — endpoint válido, sem chamador na UI (diagnóstico via curl/browser).
+- `golden:check` **INALTERADO** em toda a fase (confirmado: `golden/` byte-idêntico vs `main`, zero
+  entradas v10 em `accepted-deltas.json`). Próximo passo de produto: review do diff + deploy sob ordem.
 
 ## v10 — Motor Python integrado ao app (híbrido, sob demanda)
 
