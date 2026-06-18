@@ -47,6 +47,9 @@ export interface Dependent {
   age: number;
   /** ISO birth date (yyyy-mm-dd). When set, age is derived from it. */
   birthDate?: string;
+  /** v10 C1 — dependente "maior incapaz" (interditado): habilita o horizonte de
+   *  renda estendido (renda além da morte do titular) no objetivo de usufruto/legado. */
+  maiorIncapaz?: boolean;
 }
 
 export type EmploymentStatus =
@@ -179,6 +182,9 @@ export interface KYCSeguroExterno {
   bemCoberto?: string;
   /** v10 A4 — valor de cobertura (BRL). */
   valorCobertura?: number;
+  /** v10 C2 — resgatável (ex.: VGBL/vida resgatável) → conta como ATIVO no PL;
+   *  não-resgatável → proteção (passivo de risco coberto). */
+  resgatavel?: boolean;
 }
 
 /** v10 A2 — detalhe de uma posição internacional (qual/onde/produtos). */
@@ -369,6 +375,12 @@ export interface IncomeItem {
   eventDate?: string;
   /** Periodicity for non-recurring income. */
   periodicity?: Periodicity;
+  /** v10 C6 — periodicidade do bônus (além das de evento único). */
+  bonusFrequency?: "monthly" | "quarterly" | "semiannual" | "annual";
+  /** v10 C6 — renda no exterior (stock options/RSU ficam aqui, dentro de "internacional"). */
+  foreign?: boolean;
+  /** v10 C6 — stock options / RSU. */
+  stockOption?: boolean;
 }
 
 export interface ExpenseItem {
@@ -381,6 +393,10 @@ export interface ExpenseItem {
   primary?: boolean;
   /** Optional free-text sub-category (e.g. card spend bucket: IR / IPVA / IPTU). */
   subcategory?: string;
+  /** v10 C7 — origem do convênio/saúde (Prevent Senior, empresarial, particular). */
+  origem?: string;
+  /** v10 C7 — despesa atribuída a um dependente (id) — base p/ IR e "maior incapaz". */
+  dependentId?: string;
 }
 
 /** How the retirement income need is derived from current income. */
