@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node .claude/skills/memoria/memoria.mjs resumo 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
