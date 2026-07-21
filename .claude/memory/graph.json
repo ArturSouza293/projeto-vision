@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "atualizado_em": "2026-07-20",
+  "nodes": [
+    {
+      "id": "proj-vision",
+      "tipo": "projeto",
+      "titulo": "Projeto Vision",
+      "corpo": "App Next.js 16 de planejamento financeiro (contexto Bradesco): motor de cálculo em engine/ (TypeScript) e vision_engine/ (Python), copiloto BIA via Anthropic SDK, persistência Neon, i18n EN/PT-BR. Regra Zero: a LLM nunca faz aritmética financeira — todo número vem do motor, validado por engine/validator.ts (docs/ENGINE_SPEC.md §10).",
+      "data": "2026-07-20",
+      "tags": [
+        "ativo"
+      ]
+    },
+    {
+      "id": "dec-memoria-local",
+      "tipo": "decisao",
+      "titulo": "Memória em grafo local, sem MCP",
+      "corpo": "Segundo cérebro implementado como JSON versionado em .claude/memory/graph.json, operado exclusivamente pelo CLI .claude/skills/memoria/memoria.mjs (skill /memoria). Descartado servidor MCP de memória por simplicidade e zero dependência externa.",
+      "data": "2026-07-20",
+      "tags": [
+        "arquitetura",
+        "agentes"
+      ]
+    },
+    {
+      "id": "dec-arquitetura-agentes",
+      "tipo": "decisao",
+      "titulo": "Arquitetura de agentes: orquestrador + executores + advisor",
+      "corpo": "Fluxo de desenvolvimento 'agentes orquestrando agentes': sessão principal (modelo forte) planeja/decompõe/despacha/julga; executores em .claude/agents/ roteados por custo (sonnet padrão, opus complexo, haiku leve, revisor adversarial sonnet); advisor (opus) mediado pelo orquestrador — subagente não spawna subagente. Papel review/frontend mapeado para subagente Claude, sem Codex externo. Lema: o modelo caro pensa, os baratos executam.",
+      "data": "2026-07-20",
+      "tags": [
+        "arquitetura",
+        "agentes"
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "de": "dec-memoria-local",
+      "para": "proj-vision",
+      "relacao": "pertence_a"
+    },
+    {
+      "de": "dec-arquitetura-agentes",
+      "para": "proj-vision",
+      "relacao": "pertence_a"
+    },
+    {
+      "de": "dec-memoria-local",
+      "para": "dec-arquitetura-agentes",
+      "relacao": "resultou_de"
+    }
+  ]
+}
