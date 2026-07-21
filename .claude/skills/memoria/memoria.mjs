@@ -64,14 +64,14 @@ function imprimirNo(graph, node, comArestas = true) {
 
 function cmdQuery(opts) {
   const graph = lerGrafo();
-  const texto = opts.texto?.toLowerCase();
+  const termos = opts.texto ? opts.texto.toLowerCase().split(/\s+/).filter(Boolean) : null;
   const achados = graph.nodes.filter((n) => {
     if (opts.tipo && n.tipo !== opts.tipo) return false;
     if (opts.tag && !(n.tags ?? []).some((t) => t.toLowerCase() === opts.tag.toLowerCase())) return false;
     if (opts.desde && n.data < opts.desde) return false;
-    if (texto) {
+    if (termos) {
       const alvo = `${n.titulo} ${n.corpo} ${(n.tags ?? []).join(" ")}`.toLowerCase();
-      if (!alvo.includes(texto)) return false;
+      if (!termos.every((t) => alvo.includes(t))) return false;
     }
     return true;
   });
